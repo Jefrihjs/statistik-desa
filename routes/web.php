@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DomainMonitorController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Desa\DashboardController as DesaDashboard;
 use App\Http\Controllers\Desa\SettingController;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Dashboard & Monitoring
     Route::get('/dashboard', [StatistikController::class, 'dashboard'])->name('dashboard');
     Route::get('/desa', [StatistikController::class, 'index'])->name('index');
+    Route::get('/domain-monitor', [DomainMonitorController::class, 'index'])->name('domain.monitor');
 
     /* --- Manajemen Kategori & Indikator --- */
     // Route Utama Kategori

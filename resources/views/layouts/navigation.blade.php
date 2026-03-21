@@ -20,14 +20,31 @@
                     </x-nav-link>
 
                     @if(auth()->user()->role === 'admin')
-                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
-                        class="text-[10px] font-black uppercase tracking-widest italic transition-all active:text-[#f59e0b] hover:text-[#1e3a8a]">
-                        {{ __('Manajemen User') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('admin.status-laporan')" :active="request()->routeIs('admin.status-laporan')"
-                        class="text-[10px] font-black uppercase tracking-widest italic transition-all active:text-[#f59e0b] hover:text-[#1e3a8a]">
-                        {{ __('Status Laporan Desa') }}
-                    </x-nav-link>
+                        {{-- MENU MONITOR DOMAIN DENGAN BADGE --}}
+                        @php
+                            $kritisCount = \App\Models\DomainTracker::where('status', 'Kritis')->orWhere('status', 'Expired')->count();
+                        @endphp
+
+                        <x-nav-link :href="route('admin.domain.monitor')" :active="request()->routeIs('admin.domain.monitor')"
+                            class="text-[10px] font-black uppercase tracking-widest italic transition-all active:text-[#f59e0b] hover:text-[#1e3a8a] flex items-center gap-2">
+                            {{ __('Monitor Domain') }}
+                            
+                            @if($kritisCount > 0)
+                                <span class="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white italic animate-pulse shadow-lg shadow-red-500/40">
+                                    {{ $kritisCount }}
+                                </span>
+                            @endif
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
+                            class="text-[10px] font-black uppercase tracking-widest italic transition-all active:text-[#f59e0b] hover:text-[#1e3a8a]">
+                            {{ __('Manajemen User') }}
+                        </x-nav-link>
+                        
+                        <x-nav-link :href="route('admin.status-laporan')" :active="request()->routeIs('admin.status-laporan')"
+                            class="text-[10px] font-black uppercase tracking-widest italic transition-all active:text-[#f59e0b] hover:text-[#1e3a8a]">
+                            {{ __('Status Laporan Desa') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -98,9 +115,17 @@
             </x-responsive-nav-link>
             
             @if(auth()->user()->role === 'admin')
-            <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="rounded-xl font-black uppercase text-[10px] tracking-widest italic border-none">
-                {{ __('Manajemen User') }}
-            </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.domain.monitor')" :active="request()->routeIs('admin.domain.monitor')" 
+                    class="rounded-xl font-black uppercase text-[10px] tracking-widest italic border-none flex justify-between items-center">
+                    <span>{{ __('Monitor Domain Desa') }}</span>
+                    @if($kritisCount > 0)
+                        <span class="bg-red-500 text-white px-2 py-0.5 rounded-full text-[8px]">{{ $kritisCount }}</span>
+                    @endif
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="rounded-xl font-black uppercase text-[10px] tracking-widest italic border-none">
+                    {{ __('Manajemen User') }}
+                </x-responsive-nav-link>
             @endif
         </div>
 

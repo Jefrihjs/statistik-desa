@@ -65,12 +65,13 @@
                             </div>
                         </div>
                     </div>
-
+                    @if(auth()->user()->role === 'admin')
                     <div class="bg-red-50 p-8 rounded-[2.5rem] border border-red-100">
                         <h3 class="text-xs font-black uppercase italic text-red-600 mb-4">Hapus Akun</h3>
                         <p class="text-[10px] text-red-400 font-bold uppercase leading-relaxed mb-6">Tindakan ini permanen. Seluruh data akses Anda akan dihapus dari server.</p>
                         @include('profile.partials.delete-user-form')
                     </div>
+                    @endif
                 </div>
 
             </div>

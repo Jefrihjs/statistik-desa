@@ -74,32 +74,51 @@
     </div>
 
     <dialog id="modalAddUser" class="p-0 rounded-[3rem] shadow-2xl border-none backdrop:bg-slate-900/50">
-        <div class="w-[450px] bg-white p-10">
-            <h3 class="text-xl font-black text-slate-800 uppercase italic mb-6">Buat Akun Desa</h3>
-            <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-4">
+        <div class="w-[450px] bg-white p-10 relative">
+            
+            <div class="absolute top-8 right-8">
+                <button type="button" 
+                        onclick="document.getElementById('modalAddUser').close()" 
+                        class="text-slate-400 hover:text-red-500 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-800 uppercase italic mb-8">Buat Akun Desa</h3>
+            
+            <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-5">
                 @csrf
-                <div>
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Nama Operator</label>
-                    <input type="text" name="name" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-blue-600">
+                
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2 mb-1">Nama Operator</label>
+                    <input type="text" name="name" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
-                <div>
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Email</label>
-                    <input type="email" name="email" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-blue-600">
+
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2 mb-1">Email</label>
+                    <input type="email" name="email" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
-                <div>
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Tugas di Desa</label>
-                    <select name="desa_id" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-blue-600">
+
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2 mb-1">Tugas di Desa</label>
+                    <select name="desa_id" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
                         <option value="">-- PILIH DESA --</option>
                         @foreach($desas as $desa)
                             <option value="{{ $desa->id }}">{{ $desa->nama_desa }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Password (Min 8 Karakter)</label>
-                    <input type="password" name="password" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-blue-600">
+
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-2 mb-1">Password (Min 8 Karakter)</label>
+                    <input type="password" name="password" required class="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase italic tracking-widest shadow-lg shadow-blue-100 mt-4">Simpan Akun</button>
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase italic tracking-widest shadow-lg shadow-blue-100 mt-6 hover:bg-blue-700 transition-all">
+                    Simpan Akun
+                </button>
             </form>
         </div>
     </dialog>

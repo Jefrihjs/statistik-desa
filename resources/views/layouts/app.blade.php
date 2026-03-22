@@ -11,11 +11,20 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="https://cdn.tailwindcss.com"></script>
 
         <style>
             [x-cloak] { display: none !important; }
-            :root { --navy-sicantik: #1e3a8a; --orange-sicantik: #f59e0b; }
+            /* Style Custom Label Peta Bapak */
+            .leaflet-tooltip {
+                background: #1e3a8a !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 4px 10px !important;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+                font-weight: 900;
+                text-transform: uppercase;
+            }
         </style>
         <style>
             /* Paksa hapus ikon dropdown bawaan di semua browser */
@@ -141,7 +150,11 @@
             </div>
         </div>
 
-        @stack('scripts')
+        {{-- Scripts Utama --}}
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+            {{-- Tempat naruh script khusus dari halaman (Dashboard/Peta) --}}
+            @stack('scripts')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     </body>
 </html>

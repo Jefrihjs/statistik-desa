@@ -7,6 +7,7 @@ use App\Models\DesaItemHide;
 use App\Models\Category;
 use App\Models\Indicator;
 use App\Models\Desa;
+use App\Models\DomainTracker;
 use App\Models\Statistic;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -20,6 +21,8 @@ class StatistikController extends Controller
     {
         // 1. Ambil tahun dari request (Default ke tahun berjalan)
         $tahun = (int) $request->query('tahun', date('Y'));
+
+        $domains = \App\Models\DomainTracker::with('desa')->get();
 
         $mapping = [
             'KECAMATAN MANGGAR' => ['BARU', 'LALANG', 'LALANG JAYA', 'BUKU LIMAU', 'MEKAR JAYA', 'PADANG', 'KELUBI', 'BENTAIAN JAYA', 'KURNIA JAYA'],
@@ -219,7 +222,10 @@ class StatistikController extends Controller
 
         $tahun = (int) $request->query('tahun', $daftarTahun->first() ?? date('Y'));
 
-        // 2. Data Ringkasan Atas
+        // 2. Ambil DATA DESA (Ini yang tadi kurang, Pak!) *
+        $desas = \App\Models\Desa::all(); 
+
+        // 3. Data Ringkasan Atas
         $totalPenduduk = Statistic::where('year', $tahun)
             ->whereHas('indicator', function($q) {
                 $q->whereIn('name', ['Laki-laki', 'Perempuan'])
@@ -227,15 +233,22 @@ class StatistikController extends Controller
             })->sum('value');
 
         $desaSudahInput = Statistic::where('year', $tahun)->distinct('desa_id')->count('desa_id');
-        $totalDesa = Desa::count();
+        $totalDesa = $desas->count(); // Ambil dari variabel $desas *
         $persenProgres = $totalDesa > 0 ? ($desaSudahInput / $totalDesa) * 100 : 0;
 
-        // 3. Ambil SEMUA Kategori & Total Statistiknya Sekabupaten (Untuk Grafik)
+        // 4. Ambil Semua Kategori
         $categories = Category::where('is_active', true)
             ->with(['indicators.statistics' => function($q) use ($tahun) {
                 $q->where('year', $tahun);
             }])->get();
 
+        // 5. Ambil data statistik semua desa untuk filter klik di peta *
+        $allStats = Statistic::where('year', $tahun)
+            ->with('indicator.category')
+            ->get()
+            ->groupBy('desa_id');
+
+        // 6. Kirim ke View (Pastikan SEMUA ada di sini) *
         return view('admin.dashboard', compact(
             'totalPenduduk',
             'tahun',
@@ -243,7 +256,9 @@ class StatistikController extends Controller
             'desaSudahInput',
             'totalDesa',
             'persenProgres',
-            'daftarTahun'
+            'daftarTahun',
+            'allStats',
+            'desas' // <--- Jangan lupa variabel desas ini dimasukkan
         ));
     }
 

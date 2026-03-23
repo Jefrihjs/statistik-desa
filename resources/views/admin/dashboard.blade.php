@@ -187,18 +187,27 @@
             mainZoom = d3.zoom().scaleExtent([1, 15]).on("zoom", (e) => mainG.attr("transform", e.transform));
             mainSvg.call(mainZoom);
 
-            // FUNGSI TOMBOL RESET PETA
+            // FUNGSI TOMBOL RESET PETA & DATA
             d3.select("#btnResetPeta").on("click", function() {
-                // 1. Reset Posisi Peta (Zoom & Pan)
+                // 1. Reset Posisi Peta (Zoom & Pan ke posisi awal)
                 mainSvg.transition()
                     .duration(750)
                     .call(mainZoom.transform, d3.zoomIdentity);
 
-                // 2. Reset Data Grafik ke Kabupaten
-                // Kita panggil fungsi resetKeKabupaten yang sudah kita buat sebelumnya
+                // 2. KEMBALIKAN WARNA PETA (Hapus Highlight)
+                // Semua desa dibuat terang kembali dan garis putih tipis
+                mainG.selectAll("path")
+                    .transition().duration(750)
+                    .attr("fill-opacity", 1)       // Normal lagi (tidak pudar)
+                    .attr("stroke", "#ffffff")    // Garis putih lagi
+                    .attr("stroke-width", 1)      // Ketebalan normal
+                    .style("filter", "none")      // Hapus bayangan penonjol
+                    .style("transform", "scale(1)"); // Kembalikan ukuran normal
+
+                // 3. Reset Data Grafik ke Kabupaten
                 window.resetKeKabupaten();
                 
-                // 3. Tambahan: Sembunyikan tooltip jika masih nyangkut
+                // 4. Sembunyikan tooltip jika masih nyangkut
                 d3.select(".d3-tooltip").style("opacity", 0);
             });
 
@@ -231,9 +240,58 @@
                         d3.select(this).transition().duration(200).attr("stroke", "#ffffff").attr("stroke-width", 1).style("filter", "none").style("transform", "scale(1)");
                     })
                     .on("click", function(event, d) {
+                        // 1. IDENTIFIKASI UKURAN (Agar tidak error)
+                        const container = d3.select("#petaVektor");
+                        const w = container.node().getBoundingClientRect().width;
+                        const h = container.node().getBoundingClientRect().height;
+
+                        // 2. EFEK VISUAL: TANDA DESA TERPILIH (Highlight)
+                        // Buat semua desa pudar dulu
+                        mainG.selectAll("path")
+                            .transition().duration(500)
+                            .attr("fill-opacity", 0.1)
+                            .attr("stroke", "#e2e8f0")
+                            .attr("stroke-width", 0.5);
+
+                        // Buat desa yang diklik jadi terang dan garisnya tebal
+                        d3.select(this)
+                            .raise()
+                            .transition().duration(500)
+                            .attr("fill-opacity", 1)
+                            .attr("stroke", "#1e3a8a") // Warna Biru Tua sebagai penanda
+                            .attr("stroke-width", 3)
+                            .style("filter", "url(#drop-shadow)");
+
+                        // 3. LOGIKA ZOOM KE DESA
+                        const bounds = path.bounds(d);
+                        const x = (bounds[0][0] + bounds[1][0]) / 2;
+                        const y = (bounds[0][1] + bounds[1][1]) / 2;
+                        const dx = bounds[1][0] - bounds[0][0];
+                        const dy = bounds[1][1] - bounds[0][1];
+                        
+                        // Hitung skala (pake variabel w dan h yang baru kita ambil di atas)
+                        const scale = Math.max(1, Math.min(8, 0.85 / Math.max(dx / w, dy / h)));
+                        const translate = [w / 2 - scale * x, h / 2 - scale * y];
+
+                        mainSvg.transition()
+                            .duration(750)
+                            .call(
+                                mainZoom.transform,
+                                d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+                            );
+
+                        // 4. LOGIKA UPDATE DATA GRAFIK
                         const namaPeta = (d.properties.nm_kelurahan || d.properties.NAMOBJ).toUpperCase();
-                        let idFound = null; let nmResmi = namaPeta;
-                        desas.forEach(ds => { if (namaPeta.includes(ds.nama_desa.toUpperCase())) { idFound = ds.id; nmResmi = ds.nama_desa; } });
+                        let idFound = null; 
+                        let nmResmi = namaPeta;
+                        
+                        desas.forEach(ds => { 
+                            if (namaPeta.includes(ds.nama_desa.toUpperCase())) { 
+                                idFound = ds.id; 
+                                nmResmi = ds.nama_desa; 
+                            } 
+                        });
+
                         if (idFound) window.updateAllCharts(idFound, nmResmi);
                         else window.updateAllCharts(0, namaPeta);
                     });

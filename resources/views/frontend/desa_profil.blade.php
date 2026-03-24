@@ -240,6 +240,54 @@ window.onload = function () {
     @endforeach
 };
 </script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
+<script>
+window.eksporTabelDinamis = function(idTabel, namaKategori) {
+    const table = document.getElementById(idTabel);
+    if (!table) return alert("Tabel tidak ditemukan!");
+
+    // 1. Ambil data dengan mentah (raw: true) agar Excel tidak otomatis ubah format
+    const ws = XLSX.utils.table_to_sheet(table, { raw: true });
+
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    
+    // 2. Scan tiap cell untuk perbaikan format
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            const address = XLSX.utils.encode_cell({r: R, c: C});
+            if (!ws[address]) continue;
+
+            // KOLOM A (Indikator): Paksa jadi TEXT agar 0-4 tidak jadi tanggal
+            if (C === 0) {
+                ws[address].t = 's'; // t: 's' artinya type string/text
+                ws[address].z = '@'; // z: '@' adalah format text di Excel
+            }
+
+            // STYLE HEADER (Baris 1)
+            if (R === 0) {
+                ws[address].s = {
+                    fill: { patternType: "solid", fgColor: { rgb: "000000" } },
+                    font: { bold: true, color: { rgb: "FFFFFF" }, sz: 11 },
+                    alignment: { horizontal: "center", vertical: "center" }
+                };
+            }
+        }
+    }
+
+    // 3. Atur Lebar Kolom Otomatis
+    const colWidths = [];
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+        colWidths.push({ wch: 20 }); // Set lebar standar 20 biar lega
+    }
+    ws['!cols'] = colWidths;
+
+    // 4. Proses Simpan
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Data");
+    const fileName = "Data-" + namaKategori.replace(/\s+/g, '-') + "-2026.xlsx";
+    XLSX.writeFile(wb, fileName);
+};
+</script>
 </body>
 </html>

@@ -123,7 +123,7 @@
                         Data Penduduk
                     </h3>
                     <button type="button" 
-                        onclick="eksporTabelDinamis('tabel-p-{{ $cat->slug }}', 'Penduduk')" 
+                        onclick="eksporTabelDinamis('tabel-p-{{ $cat->slug }}', '{{ $cat->name }}')"
                         class="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[9px] font-black rounded-xl uppercase transition-all shadow-md active:scale-95">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
                                         <span>Export Excel Data Penduduk</span>

@@ -150,11 +150,29 @@
             </div>
         </div>
 
-        {{-- Scripts Utama --}}
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-            {{-- Tempat naruh script khusus dari halaman (Dashboard/Peta) --}}
-            @stack('scripts')
+        {{-- 1. Library Utama (Hanya Sekali) --}}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+        {{-- 2. Fungsi Global (Harus di ATAS @stack) --}}
+        <script>
+            // Gunakan window agar nempel permanen di browser
+            window.eksporTabelDinamis = function(idTabel, namaKategori) {
+                console.log("Memulai Export untuk:", idTabel);
+                const table = document.getElementById(idTabel);
+                
+                if (!table) {
+                    alert("Tabel " + idTabel + " tidak ditemukan! Cek ID tabel di HTML.");
+                    return;
+                }
+
+                const wb = XLSX.utils.table_to_book(table, { sheet: "Data Statistik" });
+                const fileName = "Data-" + namaKategori.replace(/\s+/g, '-') + "-2026.xlsx";
+                XLSX.writeFile(wb, fileName);
+            };
+        </script>
+
+        {{-- 3. Baru panggil Script dari halaman/tab (Agama, Usia, dll) --}}
+        @stack('scripts')
+        
     </body>
 </html>

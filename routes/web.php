@@ -13,7 +13,7 @@ use App\Http\Controllers\Frontend\DesaController as FrontendDesa;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Sistem Statistik Desa Belitung Timur (SiCANTIK)
+| Web Routes - Sistem Statistik Desa Belitung Timur (Tarsius)
 |--------------------------------------------------------------------------
 */
 

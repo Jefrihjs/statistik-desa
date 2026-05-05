@@ -10,7 +10,7 @@ class DomainMonitorController extends Controller
     public function index()
     {
         $domains = DomainTracker::with('desa')
-            ->orderBy('days_left', 'asc') // Yang mau mati paling atas
+            ->orderBy('days_left', 'asc') 
             ->get();
 
         return view('admin.domain-monitor', compact('domains'));

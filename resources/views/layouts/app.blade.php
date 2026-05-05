@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'SiCANTIK - Cinta Statistik') }}</title>
+        <title>{{ config('app.name', 'TARSIUS - Tata Analisis Statistik Unggulan Desa') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -38,10 +38,10 @@
     </head>
     <body class="font-sans antialiased" 
           x-data="{ 
-            layout: localStorage.getItem('sicantik_layout') || 'navbar',
+            layout: localStorage.getItem('tarsius_layout') || 'navbar',
             toggleLayout() {
                 this.layout = this.layout === 'navbar' ? 'sidebar' : 'navbar';
-                localStorage.setItem('sicantik_layout', this.layout);
+                localStorage.setItem('tarsius_layout', this.layout);
             }
           }" x-cloak>
 
@@ -52,11 +52,11 @@
                 
                 <div class="flex items-center justify-center h-24 border-b border-white/10 px-6 mb-6">
                     <div class="bg-white p-2 rounded-2xl shadow-lg shadow-black/20 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-                        <img src="{{ asset('img/logo-sicantik.png') }}" alt="Logo SiCANTIK" class="h-10 w-auto object-contain">
+                        <img src="{{ asset('img/logo-tarsius-beltim.png') }}" alt="Logo tarsius" class="h-10 w-auto object-contain">
                     </div>
                     
                     <div class="ml-3">
-                        <span class="block text-white font-black text-xl italic tracking-tighter uppercase leading-none">Si<span class="text-[#f59e0b]">CANTIK</span></span>
+                        <span class="block text-white font-black text-xl italic tracking-tighter uppercase leading-none">TAR<span class="text-[#f59e0b]">SIUS</span></span>
                         <span class="block text-[7px] font-bold text-white/40 uppercase tracking-[0.2em] mt-1">Belitung Timur</span>
                     </div>
                 </div>

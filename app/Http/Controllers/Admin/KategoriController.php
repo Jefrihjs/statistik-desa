@@ -95,7 +95,6 @@ class KategoriController extends Controller
         return back()->with('success', 'Indikator berhasil dihapus!');
     }
 
-    // --- TAMBAHKAN INI ---
     public function toggleIndicatorStatus($id)
     {
         $indicator = Indicator::findOrFail($id);

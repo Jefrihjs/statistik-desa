@@ -2,7 +2,7 @@
     <div class="min-h-screen relative flex items-center justify-center overflow-hidden bg-[#f8fafc]">
         
         <div class="absolute inset-0 pointer-events-none opacity-[0.03]" 
-             style="background-image: url('{{ asset('img/logo-sicantik.png') }}'); 
+             style="background-image: url('{{ asset('img/logo-tarsius-beltim.png') }}'); 
                     background-size: 200px; 
                     background-repeat: repeat; 
                     background-position: center;
@@ -15,8 +15,8 @@
             
             <div class="text-center space-y-4">
                 <div class="inline-block drop-shadow-2xl transform hover:scale-105 transition-all duration-500">
-                    <img src="{{ asset('img/logo-sicantik.png') }}" 
-                        alt="Logo SiCANTIK" 
+                    <img src="{{ asset('img/logo-tarsius-beltim.png') }}" 
+                        alt="Logo Tarsius" 
                         class="h-24 w-auto mx-auto object-contain animate-pulse-slow">
                 </div>
             </div>
@@ -64,7 +64,7 @@
             </form>
 
             <p class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-4">
-                &copy; 2026 SiCANTIK Belitung Timur
+                &copy; 2026 TARSIUS v1.0 • Kabupaten Belitung Timur
             </p>
         </div>
     </div>

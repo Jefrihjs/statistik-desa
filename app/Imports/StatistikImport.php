@@ -19,20 +19,15 @@ class StatistikImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        // 1. Gunakan 'id' dari Excel (Kolom ID di template kita)
-        // Ini jauh lebih aman daripada mencari berdasarkan nama
         $indicator = Indicator::find($row['id']);
 
         if ($indicator) {
-            // 2. LOGIKA PENCEGAHAN (The Gatekeeper)
-            // Jika kategori adalah 'demografi' DAN namanya adalah 'Laki-laki' atau 'Perempuan'
-            // Kita kembalikan null (Data diabaikan/skip)
+
             if ($indicator->category->slug == 'demografi' && 
                 ($indicator->name == 'Laki-laki' || $indicator->name == 'Perempuan')) {
                 return null;
             }
 
-            // 3. Simpan data Laki-laki
             Statistic::updateOrCreate(
                 [
                     'desa_id'      => $this->desa_id, 
@@ -43,7 +38,6 @@ class StatistikImport implements ToModel, WithHeadingRow
                 ['value' => $row['laki_laki'] ?? 0]
             );
 
-            // 4. Simpan data Perempuan
             Statistic::updateOrCreate(
                 [
                     'desa_id'      => $this->desa_id, 

@@ -14,7 +14,6 @@ class DesaController extends Controller
     {
         $desa = Desa::where('slug', $slug)->firstOrFail();
 
-        // 1. Ambil daftar tahun yang tersedia
         $daftarTahun = Statistic::where('desa_id', $desa->id)
             ->select('year')
             ->distinct()
@@ -23,18 +22,15 @@ class DesaController extends Controller
 
         $tahun = (int) $request->input('tahun', $daftarTahun->first() ?? date('Y'));
 
-        // --- TAMBAHKAN LOGIKA FILTER HIDE DI SINI ---
-        // 2. Ambil ID Kategori & Indikator yang disembunyikan KHUSUS desa ini
         $hiddenItems = \App\Models\DesaItemHide::where('desa_id', $desa->id)->get();
         $hiddenCatIds = $hiddenItems->where('hideable_type', 'App\Models\Category')->pluck('hideable_id')->toArray();
         $hiddenIndIds = $hiddenItems->where('hideable_type', 'App\Models\Indicator')->pluck('hideable_id')->toArray();
 
-        // 3. Filter Query agar yang di-hide TIDAK MUNCUL
         $categories = Category::where('is_active', 1)
-            ->whereNotIn('id', $hiddenCatIds) // Saring Kategori Tersembunyi
+            ->whereNotIn('id', $hiddenCatIds) 
             ->with(['indicators' => function($q) use ($hiddenIndIds, $desa) {
                 $q->where('is_active', 1)
-                  ->whereNotIn('id', $hiddenIndIds) // Saring Indikator Tersembunyi
+                  ->whereNotIn('id', $hiddenIndIds) 
                   ->with(['statistics' => function($sq) use ($desa) {
                       $sq->where('desa_id', $desa->id);
                   }]);

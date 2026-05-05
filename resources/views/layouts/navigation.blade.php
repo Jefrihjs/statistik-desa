@@ -4,11 +4,11 @@
             <div class="flex">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="transition transform hover:scale-105 flex items-center gap-3">
-                        <img src="{{ asset('img/logo-sicantik.png') }}" alt="Logo SiCANTIK" class="block h-12 w-auto object-contain">
+                        <img src="{{ asset('img/logo-tarsius-beltim.png') }}" alt="Logo tarsius" class="block h-12 w-auto object-contain">
                         
                         <div class="hidden md:block border-l-2 border-slate-100 ps-4">
-                            <span class="block text-sm font-black text-[#1e3a8a] uppercase italic leading-none">SiCANTIK</span>
-                            <span class="block text-[8px] font-bold text-[#f59e0b] uppercase tracking-[0.2em] mt-1">Cinta Statistik</span>
+                            <span class="block text-sm font-black text-[#1e3a8a] uppercase italic leading-none">TARSIUS</span>
+                            <span class="block text-[8px] font-bold text-[#f59e0b] uppercase tracking-[0.2em] mt-1">Tata Analisis Statistik Unggulan Desa</span>
                         </div>
                     </a>
                 </div>

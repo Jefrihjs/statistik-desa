@@ -51,7 +51,7 @@
                 </div>
             </template>
 
-            {{-- TABEL HIDDEN (Untuk Keperluan Export Excel) --}}
+            {{-- TABEL HIDDEN --}}
             <div class="hidden">
                 <table id="tabelExport">
                     <thead>

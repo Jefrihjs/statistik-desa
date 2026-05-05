@@ -146,7 +146,7 @@
             </div>
 
             <div class="mt-10 text-center text-slate-400 text-[9px] font-bold uppercase tracking-[0.4em] italic">
-                SiCANTIK v1.0 • Kabupaten Belitung Timur
+                TARSIUS v1.0 • Kabupaten Belitung Timur
             </div>
         </div>
     </div>

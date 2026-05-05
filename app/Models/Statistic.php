@@ -10,7 +10,6 @@ class Statistic extends Model
 {
     use HasFactory;
 
-    // Pastikan semua kolom ini ada agar updateOrCreate berhasil
     protected $fillable = ['desa_id', 'indicator_id', 'gender', 'year', 'value'];
 
     /**
@@ -22,7 +21,7 @@ class Statistic extends Model
     }
 
     /**
-     * Relasi ke Desa (PENTING: Tambahkan ini agar error hilang)
+     * Relasi ke Desa 
      */
     public function desa(): BelongsTo
     {

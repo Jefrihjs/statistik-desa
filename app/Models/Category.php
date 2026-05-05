@@ -17,7 +17,6 @@ class Category extends Model
         'sort_order',
     ];
 
-    // Tambahkan ini: satu kategori memiliki banyak indikator
     public function indicators()
     {
         return $this->hasMany(\App\Models\Indicator::class, 'category_id');

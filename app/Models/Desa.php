@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Desa extends Model
 {
     protected $fillable = [
-        'name',
-        'slug',
-        'logo',
-        'header_color',
-        'accent_color',
-        'nama_desa',
+        'nama_desa', 
+        'slug', 
+        'logo', 
+        'header_color', 
+        'accent_color', 
         'kecamatan',
+        'layout_type',          
+        'welcome_message',     
+        'featured_category_id',
     ];
 
     public function statistics()

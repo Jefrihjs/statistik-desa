@@ -64,9 +64,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('users', UserController::class);
 
-    Route::get('/setting-antikorupsi', [AntikorupsiSettingController::class, 'index'])->name('antikorupsi.setting');
-    Route::post('/setting-antikorupsi/toggle/{id}', [AntikorupsiSettingController::class, 'toggleStatus'])->name('antikorupsi.toggle');
+    // --- FITUR ANTIKORUPSI ADMIN (SUDAH BERSIH DAN SERAGAM) ---
     Route::get('/antikorupsi-setting', [AntikorupsiSettingController::class, 'index'])->name('antikorupsi.setting');
+    Route::post('/antikorupsi-setting/toggle/{id}', [AntikorupsiSettingController::class, 'toggleStatus'])->name('antikorupsi.toggle');
 });
 
 // ==========================================

@@ -10,20 +10,12 @@ class AntikorupsiDesaController extends Controller
 {
     public function index()
     {
-        // KUNCI UTAMA: Ambil desa_id dari user yang sedang login, bukan user_id individu
         $desaId = auth()->user()->desa_id;
         abort_if(!$desaId, 404, 'Akun Anda belum terikat dengan entitas Desa manapun.');
 
-        // Cek apakah desa ini sudah memiliki record data indikator di database
-        $cekData = DokumenAntikorupsi::where('desa_id', $desaId)->exists();
-
-        // Jika belum ada, kita Auto-Generate data default khusus untuk desa ini
-        if (!$cekData) {
-            $this->generateDefaultData($desaId);
-        }
-
-        // Ambil dokumen yang HANYA dimiliki oleh desa yang bersangkutan
-        $dokumen = DokumenAntikorupsi::where('desa_id', $desaId)->get();
+        $dokumen = DokumenAntikorupsi::where('desa_id', $desaId)
+            ->orderBy('id', 'asc')
+            ->get();
 
         $data = [
             'tatalaksana' => $dokumen->where('kategori', 'tatalaksana')->groupBy('grup_indikator'),
@@ -57,44 +49,6 @@ class AntikorupsiDesaController extends Controller
         return redirect()->back()->with('success', 'Tautan Google Drive berhasil disimpan!');
     }
 
-    // --- FUNGSI AUTO-GENERATE DATA DEFAULT PER DESA ---
-    private function generateDefaultData($desaId)
-    {
-        $masterData = [
-            // TATA LAKSANA
-            ['kategori' => 'tatalaksana', 'grup_indikator' => '1. Perdes/SOP tentang Perencanaan, Pelaksanaan, Penatausahaan, dan Pertanggungjawaban APBDes', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'RPJMDes'],
-            ['kategori' => 'tatalaksana', 'grup_indikator' => '1. Perdes/SOP tentang Perencanaan, Pelaksanaan, Penatausahaan, dan Pertanggungjawaban APBDes', 'no_urut' => '2', 'sub' => 'a', 'nama_dokumen' => 'RKPDes Tahun Berjalan'],
-            ['kategori' => 'tatalaksana', 'grup_indikator' => '1. Perdes/SOP tentang Perencanaan, Pelaksanaan, Penatausahaan, dan Pertanggungjawaban APBDes', 'no_urut' => '3', 'sub' => 'a', 'nama_dokumen' => 'APBDes Tahun Berjalan'],
-            ['kategori' => 'tatalaksana', 'grup_indikator' => '2. SOP Mengenai Mekanisme Pengawasan dan Evaluasi Kinerja', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'SOTK Desa, Tupoksi Masing-Masing Kaur'],
-            ['kategori' => 'tatalaksana', 'grup_indikator' => '3. Perdes Tentang Pengendalian Gratifikasi', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'Perdes/Keputusan Kades Tentang Pengendalian Gratifikasi'],
-            
-            // PENGAWASAN
-            ['kategori' => 'pengawasan', 'grup_indikator' => '1. Kegiatan Pengawasan dan Evaluasi Kinerja', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'Undangan Kegiatan Pengawasan dan Evaluasi'],
-            ['kategori' => 'pengawasan', 'grup_indikator' => '2. Tindak Lanjut Hasil Pengawasan', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'Laporan Hasil Pemeriksaan (LHP) Inspektorat/BPD'],
-            
-            // PELAYANAN PUBLIK
-            ['kategori' => 'pelayanan', 'grup_indikator' => '1. Standar Pelayanan Minimal Desa', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'Buku Standar Pelayanan Minimal Desa'],
-            ['kategori' => 'pelayanan', 'grup_indikator' => '3. Keterbukaan Information Publik', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'SK PPID Desa'],
-
-            // PARTISIPASI
-            ['kategori' => 'partisipasi', 'grup_indikator' => '1. Partisipasi Masyarakat dalam Perencanaan', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'Undangan & Daftar Hadir Musrenbangdes'],
-
-            // KEARIFAN LOKAL
-            ['kategori' => 'kearifan', 'grup_indikator' => '1. Budaya Lokal/Hukum Adat', 'no_urut' => '1', 'sub' => '', 'nama_dokumen' => 'Dokumen Hukum Adat / Budaya Lokal terkait Nilai Kejujuran'],
-        ];
-
-        foreach ($masterData as $item) {
-            DokumenAntikorupsi::create([
-                'desa_id'        => $desaId, // Disimpan ke desa_id agar terelasi ke tabel desas bapak
-                'kategori'       => $item['kategori'],
-                'grup_indikator' => $item['grup_indikator'],
-                'no_urut'        => $item['no_urut'],
-                'sub'            => $item['sub'],
-                'nama_dokumen'   => $item['nama_dokumen'],
-                'link_drive'     => null
-            ]);
-        }
-    }
 
     // Fungsi Tambah Indikator Baru Mandiri oleh Desa
     public function store(Request $request)
@@ -102,13 +56,18 @@ class AntikorupsiDesaController extends Controller
         $request->validate([
             'kategori' => 'required',
             'grup_indikator' => 'required',
-            'nama_dokumen' => 'required',
+            'sub_judul' => 'nullable|string|max:255',
+            'no_urut' => 'nullable|string|max:20',
+            'sub' => 'nullable|string|max:20',
+            'nama_dokumen' => 'nullable|string|max:255',
+            'link_drive' => 'nullable|url',
         ]);
 
         DokumenAntikorupsi::create([
-            'desa_id'        => auth()->user()->desa_id, // Disimpan berdasarkan desa_id user login
+            'desa_id'        => auth()->user()->desa_id, 
             'kategori'       => $request->kategori,
             'grup_indikator' => $request->grup_indikator,
+            'sub_judul'      => $request->sub_judul,
             'no_urut'        => $request->no_urut,
             'sub'            => $request->sub,
             'nama_dokumen'   => $request->nama_dokumen,
@@ -137,7 +96,11 @@ class AntikorupsiDesaController extends Controller
         $request->validate([
             'kategori' => 'required',
             'grup_indikator' => 'required',
-            'nama_dokumen' => 'required',
+            'sub_judul' => 'nullable|string|max:255',
+            'no_urut' => 'nullable|string|max:20',
+            'sub' => 'nullable|string|max:20',
+            'nama_dokumen' => 'nullable|string|max:255',
+            'link_drive' => 'nullable|url',
         ]);
 
         $dokumen = DokumenAntikorupsi::where('id', $id)
@@ -147,6 +110,7 @@ class AntikorupsiDesaController extends Controller
         $dokumen->update([
             'kategori'       => $request->kategori,
             'grup_indikator' => $request->grup_indikator,
+            'sub_judul'      => $request->sub_judul,
             'no_urut'        => $request->no_urut,
             'sub'            => $request->sub,
             'nama_dokumen'   => $request->nama_dokumen,

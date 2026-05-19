@@ -1,4 +1,5 @@
 <x-app-layout>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight uppercase italic tracking-widest text-[15px]">
             {{ __('Input Dokumen Desa Antikorupsi') }}
@@ -46,34 +47,65 @@
                     <h3 class="text-lg font-black uppercase italic tracking-widest border-b pb-2 mt-8 mb-4 text-[#1e3a8a]">{{ $judulKategori }}</h3>
                     
                     @forelse($data[$keyKategori] ?? [] as $grup => $items)
-                        <div class="mb-6">
-                            <h4 class="font-bold text-slate-700 mb-3 bg-slate-50 p-3 rounded-xl border border-slate-100 text-[11px] uppercase tracking-wider">{{ $grup }}</h4>
-                            <div class="space-y-4 px-4">
+                        <div class="mb-6 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-md overflow-hidden">
+                            
+                            {{-- HEADER GRUP UTAMA --}}
+                            <div class="bg-slate-50 border-b border-slate-100 p-4 -mx-6 -mt-6 mb-4">
+                                <h4 class="font-black text-slate-800 text-xs uppercase tracking-wider italic flex items-center gap-2">
+                                    <span class="w-2 h-4 bg-[#1e3a8a] rounded-sm"></span>
+                                    {{ $grup }}
+                                </h4>
+                            </div>
+                            
+                            <div class="flex flex-col gap-3">
                                 @foreach($items as $item)
-                                <div class="flex flex-col md:flex-row md:items-center gap-4 border-b border-slate-50 pb-3 last:border-0 hover:bg-slate-50/50 p-2 rounded-lg transition-colors">
-                                    <div class="md:w-5/12">
-                                        <label class="text-xs text-slate-600 font-bold uppercase tracking-wider">
-                                            {{ $item->no_urut }}{{ $item->sub ? '.'.$item->sub : '' }} {{ $item->nama_dokumen }}
-                                        </label>
-                                    </div>
-                                    <div class="md:w-5/12">
-                                        <input type="url" name="links[{{ $item->id }}]" value="{{ $item->link_drive }}" placeholder="Paste Link Google Drive..." class="w-full border-slate-200 rounded-xl shadow-inner focus:border-[#58896a] focus:ring focus:ring-[#58896a] focus:ring-opacity-20 text-xs bg-slate-50 focus:bg-white transition-all">
-                                    </div>
-                                    <div class="md:w-2/12 flex justify-end gap-2">
-                                        <!-- Tombol Edit memanggil openEdit dari fungsi script bawah -->
-                                        <button type="button" @click="openEdit({{ json_encode($item) }})" class="text-blue-500 hover:text-blue-700 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="Edit Indikator">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        </button>
-                                        <button type="button" onclick="if(confirm('Yakin ingin menghapus indikator ini?')) document.getElementById('delete-form-{{ $item->id }}').submit();" class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors" title="Hapus Indikator">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </div>
-                                </div>
+                                    {{-- PROTEKSI OBJEK --}}
+                                    @if(is_object($item))
+                                        
+                                        @if(!empty($item->sub_judul) && empty($item->nama_dokumen))
+                                            {{-- BARIS PEMBATAS SUB JUDUL --}}
+                                            <div class="flex justify-between items-center bg-slate-100/80 p-3 rounded-xl border border-slate-200 mt-2 mb-1">
+                                                <span class="font-black text-[#1e3a8a] text-[11px] uppercase tracking-wider">📂 {{ $item->sub_judul }}</span>
+                                                <button type="button" onclick="konfirmasiHapusIndikator('{{ $item->id }}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Hapus Sub Judul">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                </button>
+                                            </div>
+                                        @else
+                                            {{-- BARIS INPUT DOKUMEN NORMAL --}}
+                                            <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+                                                <div class="md:w-5/12 flex items-start gap-2">
+                                                    <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-black text-[10px] tracking-tight mt-0.5 shrink-0">
+                                                        {{ $item->no_urut ?? '' }}{{ !empty($item->sub) ? '.'.$item->sub : '' }}
+                                                    </span>
+                                                    <label class="text-xs text-slate-700 font-bold uppercase tracking-wide leading-relaxed">
+                                                        @if(!empty($item->sub_judul))
+                                                            <span class="text-blue-600 font-black block text-[9px] mb-0.5">{{ $item->sub_judul }}</span>
+                                                        @endif
+                                                        {{ $item->nama_dokumen }}
+                                                    </label>
+                                                </div>
+                                                <div class="md:w-5/12 w-full">
+                                                    <input type="url" name="links[{{ $item->id }}]" value="{{ $item->link_drive }}" placeholder="Paste Link Google Drive..." class="w-full border-slate-200 rounded-xl shadow-inner focus:border-[#58896a] focus:ring focus:ring-[#58896a] focus:ring-opacity-20 text-xs bg-slate-50 focus:bg-white transition-all py-2 px-3">
+                                                </div>
+                                                <div class="md:w-2/12 w-full flex justify-end gap-1 border-t md:border-t-0 pt-2 md:pt-0 border-slate-100">
+                                                    <button type="button" @click="openEdit({{ json_encode($item) }})" class="text-blue-500 hover:text-blue-700 p-2 rounded-xl hover:bg-blue-50 transition-colors" title="Edit Indikator">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    </button>
+                                                    <button type="button" onclick="konfirmasiHapusIndikator('{{ $item->id }}')" class="text-red-500 hover:text-red-700 p-2 rounded-xl hover:bg-red-50 transition-colors" title="Hapus Indikator">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
                     @empty
-                        <p class="text-xs text-slate-400 italic px-4">Belum ada indikator untuk kategori ini.</p>
+                        <div class="bg-white border border-slate-100 rounded-[2rem] p-8 text-center shadow-sm mb-6">
+                            <p class="text-xs text-slate-400 italic font-bold uppercase tracking-widest">Belum ada indikator untuk kategori ini.</p>
+                        </div>
                     @endforelse
                     @endforeach
                     
@@ -85,13 +117,15 @@
                 </div>
             </form>
 
-            <!-- FORM HAPUS TERSEMBUNYI -->
+            {{-- STRUKTUR BARU (SUDAH DISESUAIKAN DENGAN MULTI-LEVEL GROUP) --}}
             @foreach(['tatalaksana', 'pengawasan', 'pelayanan', 'partisipasi', 'kearifan'] as $kat)
-                @foreach($data[$kat] ?? [] as $items)
+                @foreach($data[$kat] ?? [] as $grup => $items)
                     @foreach($items as $item)
-                    <form id="delete-form-{{ $item->id }}" action="{{ route('desa.antikorupsi.destroy', $item->id) }}" method="POST" class="hidden">
-                        @csrf @method('DELETE')
-                    </form>
+                        @if(is_object($item))
+                        <form id="delete-form-{{ $item->id }}" action="{{ route('desa.antikorupsi.destroy', $item->id) }}" method="POST" class="hidden">
+                            @csrf @method('DELETE')
+                        </form>
+                        @endif
                     @endforeach
                 @endforeach
             @endforeach
@@ -128,19 +162,37 @@
                                         </template>
                                     </select>
                                 </div>
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Sub Judul Indikator (Opsional)</label>
+                                    <input type="text" name="sub_judul" placeholder="Contoh: 1. Musyawarah Pemangku Kepentingan..." class="w-full border-slate-200 rounded-xl text-xs">
+                                    <small class="text-[10px] text-slate-400 italic mt-1 block">*Isi jika ingin membuat sub-kelompok judul baru di dalam grup ini.</small>
+                                </div>
                                 <div class="flex gap-4">
                                     <div class="w-1/2">
-                                        <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">No Urut (Opsional)</label>
-                                        <input type="text" name="no_urut" placeholder="1, 2..." class="w-full border-slate-300 rounded-xl text-xs focus:ring-[#58896a]">
+                                        <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">No Urut</label>
+                                        <input type="text" name="no_urut" x-model="editNoUrut" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
                                     </div>
                                     <div class="w-1/2">
-                                        <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Sub (Opsional)</label>
-                                        <input type="text" name="sub" placeholder="a, b..." class="w-full border-slate-300 rounded-xl text-xs focus:ring-[#58896a]">
+                                        <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Sub</label>
+                                        <input type="text" name="sub" x-model="editSub" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
                                     </div>
                                 </div>
                                 <div>
+                                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">
+                                        Sub Judul Indikator
+                                    </label>
+                                    <input type="text"
+                                        name="sub_judul"
+                                        x-model="editSubJudul"
+                                        placeholder="Contoh: Isi Maklumat Pelayanan Memuat Minimal:"
+                                        class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
+                                    <small class="text-[10px] text-slate-400 italic mt-1 block">
+                                        Kosongkan jika ini bukan baris sub judul.
+                                    </small>
+                                </div>
+                                <div>
                                     <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Nama Dokumen</label>
-                                    <input type="text" name="nama_dokumen" required placeholder="Contoh: RKPDes" class="w-full border-slate-300 rounded-xl text-xs focus:ring-[#58896a]">
+                                    <input type="text" name="nama_dokumen" placeholder="Contoh: RKPDes" class="w-full border-slate-300 rounded-xl text-xs focus:ring-[#58896a]">
                                 </div>
                             </div>
                         </div>
@@ -200,7 +252,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Nama Dokumen</label>
-                                    <input type="text" name="nama_dokumen" x-model="editNama" required class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
+                                    <input type="text" name="nama_dokumen" x-model="editNama" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Link Drive</label>
@@ -242,6 +294,7 @@
                 editGrup: '',
                 editNoUrut: '',
                 editSub: '',
+                editSubJudul: '',
                 editNama: '',
                 editLink: '',
 
@@ -255,11 +308,38 @@
                     this.editGrup = item.grup_indikator;
                     this.editNoUrut = item.no_urut || '';
                     this.editSub = item.sub || '';
-                    this.editNama = item.nama_dokumen;
+                    this.editSubJudul = item.sub_judul || '';
+                    this.editNama = item.nama_dokumen || '';
                     this.editLink = item.link_drive || '';
                     this.modalEditOpen = true;
                 }
             }
         }
+    </script>
+    <script>
+    function konfirmasiHapusIndikator(idIndikator) {
+        Swal.fire({
+            title: 'HAPUS INDIKATOR?',
+            text: "Komponen indikator dokumen ini beserta tautan di dalamnya akan dihapus permanen dari data Desa!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444', // Red-500 Tailwind
+            cancelButtonColor: '#64748b',  // Slate-500 Tailwind
+            confirmButtonText: 'YA, HAPUS INDIKATOR!',
+            cancelButtonText: 'BATAL',
+            background: '#ffffff',
+            customClass: {
+                title: 'font-black tracking-tighter uppercase italic text-slate-800',
+                popup: 'rounded-[2rem] border border-slate-100 p-6',
+                confirmButton: 'rounded-xl font-black text-xs uppercase tracking-wider px-4 py-2.5',
+                cancelButton: 'rounded-xl font-black text-xs uppercase tracking-wider px-4 py-2.5'
+            }
+        }).then((result) => {
+            // Jika diklik YA, cari form tersembunyi milik ID tersebut lalu submit
+            if (result.isConfirmed) {
+                document.getElementById('delete-form-' + idIndikator).submit();
+            }
+        });
+    }
     </script>
 </x-app-layout>

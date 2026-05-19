@@ -17,6 +17,7 @@ class DokumenAntikorupsi extends Model
         'grup_indikator', 
         'no_urut', 
         'sub', 
+        'sub_judul',
         'nama_dokumen', 
         'link_drive'
     ];

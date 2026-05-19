@@ -30,16 +30,12 @@ class DomainTrackerSeeder extends Seeder
             $clean = explode('.', $domain)[0];
             $search = str_replace('-beltim', '', $clean);
             
-            // Normalisasi: Huruf Besar & Tanpa Spasi
             $searchUpper = strtoupper($search);
             $searchUpper = str_replace(' ', '', $searchUpper);
 
-            // 1. Coba Cari Presisi (Tanpa Spasi)
             $desa = Desa::whereRaw("REPLACE(nama_desa, ' ', '') = ?", [$searchUpper])->first();
 
-            // 2. Kalau Gagal, Coba Cari Pakai LIKE (Untuk kasus Selinsing vs Selingsing)
             if (!$desa) {
-                // Kita ambil 4 huruf depan saja untuk cari kemiripan (Misal: SELI...)
                 $shortSearch = substr($searchUpper, 0, 4);
                 $desa = Desa::where('nama_desa', 'LIKE', $shortSearch . '%')->first();
             }

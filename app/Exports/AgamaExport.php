@@ -20,7 +20,7 @@ class AgamaExport implements FromCollection, WithHeadings, WithMapping, WithEven
         $this->tahun = $tahun;
     }
 
-    // Kita mulai tabel dari baris ke-4, karena baris 1-2 untuk Judul
+    
     public function startCell(): string
     {
         return 'A4';

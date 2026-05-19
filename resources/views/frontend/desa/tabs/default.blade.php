@@ -9,6 +9,8 @@
         selectedItem: 'Semua',
         selectedTahun: '{{ $tahun }}',
         chartMode: 'bar',
+        sortDesc: true,
+
         allYearsData: {
             @foreach($cat->indicators as $ind)
                 '{{ addslashes($ind->name) }}': {
@@ -32,9 +34,33 @@
         },
 
         get itemList() {
-            // Hanya tampilkan yang bukan KK di grafik utama
             return Object.keys(this.allYearsData).filter(n => !this.allYearsData[n][this.selectedTahun]?.is_kk);
         },
+
+        get grandTotalJiwa() {
+            let total = 0;
+            this.itemList.forEach(name => {
+                total += this.allYearsData[name][this.selectedTahun]?.total || 0;
+            });
+            return total;
+        },
+
+        calculatePercentLK(name) {
+            const val = this.allYearsData[name][this.selectedTahun]?.lk || 0;
+            return this.grandTotalJiwa > 0 ? ((val / this.grandTotalJiwa) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercentPR(name) {
+            const val = this.allYearsData[name][this.selectedTahun]?.pr || 0;
+            return this.grandTotalJiwa > 0 ? ((val / this.grandTotalJiwa) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercent(name) {
+            const val = this.allYearsData[name][this.selectedTahun]?.total || 0;
+            return this.grandTotalJiwa > 0 ? ((val / this.grandTotalJiwa) * 100).toFixed(1) : 0;
+        },
+
+        formatNumber(val) { return (val || 0).toLocaleString('id-ID'); },
 
         get currentStats() {
             let lk = 0, pr = 0, total = 0, kk = 0;
@@ -112,30 +138,46 @@
                         01. Rincian Penduduk <span x-show="selectedItem !== 'Semua'" class="text-[10px] text-red-500 animate-pulse">(RESET)</span>
                     </h3>
                 </div>
-                <div class="overflow-hidden rounded-[2rem] border border-slate-200 shadow-sm">
-                    <table class="w-full text-sm">
+                <div class="overflow-hidden rounded-[2rem] border border-slate-200 shadow-sm bg-white">
+                    <table class="w-full text-sm text-left">
                         <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest text-center sticky top-0 z-10">
                             <tr>
                                 <th class="p-4 text-left">Indikator</th>
-                                <th class="p-4 italic">LK</th>
-                                <th class="p-4 italic">PR</th>
-                                <th class="p-4 bg-slate-800">Total</th>
+                                <th class="p-4 italic text-blue-300 border-l border-slate-800">LK</th>
+                                <th class="p-4 bg-blue-800/40 text-blue-200">% (LK)</th>
+                                <th class="p-4 italic text-pink-300 border-l border-slate-800">PR</th>
+                                <th class="p-4 bg-pink-800/40 text-pink-200">% (PR)</th>
+                                <th class="p-4 bg-slate-800 border-l border-slate-800 text-white">Total</th>
+                                <th class="p-4 bg-indigo-900 text-indigo-100">Total %</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase text-center">
-                            @foreach($indikatorPenduduk as $ind)
-                                <tr x-show="selectedItem === 'Semua' || selectedItem === '{{ addslashes($ind->name) }}'" 
-                                    @click="selectedItem = '{{ addslashes($ind->name) }}'; updateView()"
-                                    class="hover:bg-blue-50 cursor-pointer transition-all"
-                                    :class="selectedItem === '{{ addslashes($ind->name) }}' ? 'bg-blue-600 text-white' : ''">
-                                    <td class="p-4 text-left pl-6">{{ $ind->name }}</td>
-                                    <td class="p-4">{{ number_format($ind->statistics->where('year', $tahun)->where('gender', 'Laki-laki')->first()->value ?? 0, 0, ',', '.') }}</td>
-                                    <td class="p-4">{{ number_format($ind->statistics->where('year', $tahun)->where('gender', 'Perempuan')->first()->value ?? 0, 0, ',', '.') }}</td>
-                                    <td class="p-4 font-black" :class="selectedItem === '{{ addslashes($ind->name) }}' ? 'text-white' : 'text-slate-900'">
-                                        {{ number_format($ind->statistics->where('year', $tahun)->sum('value'), 0, ',', '.') }}
-                                    </td>
+                        <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
+                            <template x-for="name in itemList" :key="name">
+                                <tr x-show="selectedItem === 'Semua' || selectedItem === name" 
+                                    @click="selectedItem = name; updateView()"
+                                    class="cursor-pointer transition-all duration-200"
+                                    :class="selectedItem === name ? 'bg-blue-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-blue-50 text-center'">
+                                    
+                                    <td class="p-4 font-black italic text-left pl-6" x-text="name"></td>
+                                    
+                                    <td class="p-4 border-l border-slate-50 text-center" x-text="formatNumber(allYearsData[name][selectedTahun]?.lk)"></td>
+                                    <td class="p-4 bg-blue-50/30 text-blue-600 text-center font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentLK(name) + '%'"></td>
+                                    
+                                    <td class="p-4 border-l border-slate-50 text-center" x-text="formatNumber(allYearsData[name][selectedTahun]?.pr)"></td>
+                                    <td class="p-4 bg-pink-50/30 text-pink-600 text-center font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentPR(name) + '%'"></td> 
+                                    
+                                    <td class="p-4 bg-slate-50/50 border-l border-slate-50 text-slate-900 text-center" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="formatNumber(allYearsData[name][selectedTahun]?.total)"></td>
+                                    <td class="p-4 text-center bg-indigo-50 text-indigo-700 font-black" 
+                                        :class="selectedItem === name ? 'text-white bg-indigo-600' : ''"
+                                        x-text="calculatePercent(name) + '%'"></td>
                                 </tr>
-                            @endforeach
+                            </template>
                         </tbody>
                     </table>
                 </div>

@@ -12,17 +12,11 @@ class Statistic extends Model
 
     protected $fillable = ['desa_id', 'indicator_id', 'gender', 'year', 'value'];
 
-    /**
-     * Relasi ke Indikator
-     */
     public function indicator(): BelongsTo
     {
         return $this->belongsTo(Indicator::class);
     }
 
-    /**
-     * Relasi ke Desa 
-     */
     public function desa(): BelongsTo
     {
         return $this->belongsTo(Desa::class, 'desa_id');

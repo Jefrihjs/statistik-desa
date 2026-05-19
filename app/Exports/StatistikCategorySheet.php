@@ -25,7 +25,6 @@ class StatistikCategorySheet implements FromCollection, WithTitle, WithHeadings,
 
     public function title(): string
     {
-        // Membatasi panjang judul sheet maksimal 31 karakter (aturan Excel)
         return substr($this->category->name, 0, 31);
     }
 
@@ -40,19 +39,14 @@ class StatistikCategorySheet implements FromCollection, WithTitle, WithHeadings,
         ];
     }
 
-    /**
-     * Memetakan data ke kolom dengan logika OTOMATIS
-     */
     public function map($indicator): array
     {
-        // Cek apakah ini indikator Laki-laki/Perempuan di kategori Demografi
         $isOtomatis = ($this->category->slug == 'demografi' && 
                       ($indicator->name == 'Laki-laki' || $indicator->name == 'Perempuan'));
-
         return [
             $indicator->id,
             $indicator->name,
-            $isOtomatis ? 'OTOMATIS (DARI DATA USIA)' : '0', // Jika otomatis, beri teks peringatan
+            $isOtomatis ? 'OTOMATIS (DARI DATA USIA)' : '0', 
             $isOtomatis ? 'OTOMATIS (DARI DATA USIA)' : '0',
             $indicator->unit
         ];

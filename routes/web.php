@@ -74,6 +74,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 // ==========================================
 Route::middleware(['auth', 'role:desa'])->prefix('desa')->name('desa.')->group(function () {
     Route::get('/dashboard', [DesaDashboard::class, 'index'])->name('dashboard');
+    Route::get('/statistik', [DesaDashboard::class, 'statistik'])->name('statistik');
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::patch('/settings', [DesaDashboard::class, 'updateBranding'])->name('settings.update');
 

@@ -25,25 +25,20 @@ class CheckDomainExpiry extends Command
 
             $output = shell_exec("whois " . escapeshellarg($d->domain_name));
 
-            // 1. Ambil Tanggal Kadaluarsa (Registry Expiry Date)
             if (preg_match('/Registry Expiry Date: ([\d-]+)/', $output, $matches)) {
                 $expiry = Carbon::parse($matches[1]);
             }
 
-            // 2. Ambil Tanggal Dibuat (Creation Date) - SESUAI HASIL TERMINAL BAPAK
             $createdDate = null;
             if (preg_match('/Creation Date: ([\d-]+)/', $output, $matches)) {
                 $createdDate = Carbon::parse($matches[1]);
             }
 
-            // 3. Ambil Nama Server (Name Server)
             $nameservers = null;
             if (preg_match_all('/Name Server: (.+)/i', $output, $matches)) {
-                // Kita bersihkan dan gabungkan jadi satu string
                 $nameservers = implode(', ', array_map('trim', $matches[1]));
             }
 
-            // 3. Ambil Name Servers (Tetap sama)
             $nameservers = null;
             if (preg_match_all('/Name Server: (.+)/', $output, $matches)) {
                 $nameservers = implode(', ', array_map('trim', $matches[1]));
@@ -52,12 +47,10 @@ class CheckDomainExpiry extends Command
             if ($expiry) {
                 $daysLeft = (int) now()->diffInDays($expiry, false);
                 
-                // Tentukan Status
                 $status = 'Sehat';
                 if ($daysLeft <= 0) $status = 'Expired';
                 elseif ($daysLeft <= 30) $status = 'Kritis';
 
-                // 4. Update ke Database
                 $d->update([
                     'expiry_date' => $expiry,
                     'created_date' => $createdDate,
@@ -72,7 +65,6 @@ class CheckDomainExpiry extends Command
                 $this->error("Gagal mendapatkan data expiry untuk {$d->domain_name}");
             }
             
-            // Jeda agar tidak diblokir
             sleep(2);
         }
 

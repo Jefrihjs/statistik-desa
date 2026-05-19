@@ -3,7 +3,6 @@
      x-init="init()">
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-10 items-start">
-        {{-- KOLOM KIRI: TABEL & INSIGHT --}}
         <div class="space-y-6">
             <div class="flex justify-between items-center mb-4">
                 <div class="text-left">
@@ -27,39 +26,50 @@
                 </div>
             </div>
 
-            {{-- TABEL DATA --}}
             <div class="overflow-hidden rounded-[2rem] border border-slate-200 shadow-sm bg-white">
                 <div class="max-h-[500px] overflow-y-auto custom-scrollbar">
                     <table id="tabel-{{ $cat->slug }}" class="w-full text-sm text-left">
-                        <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest sticky top-0 z-10">
-                            <tr>
-                                <th class="p-4">Indikator</th>
-                                <th class="p-4 text-center italic text-blue-300">LK</th>
-                                <th class="p-4 text-center italic text-pink-300">PR</th>
-                                <th class="p-4 text-center bg-blue-800">%</th>
-                                <th class="p-4 text-center bg-slate-800">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
-                            <template x-for="name in itemList" :key="name">
-                                <tr x-show="selectedItem === 'Semua' || selectedItem === name"
-                                    @click="selectIndicator(name)"
-                                    class="cursor-pointer transition-all duration-200"
-                                    :class="selectedItem === name ? 'bg-blue-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-blue-50'">
-                                    
-                                    <td class="p-4 font-black italic" x-text="name"></td>
-                                    <td class="p-4 text-center" x-text="formatNumber(allYearsData[name].years[selectedTahun]?.lk)"></td>
-                                    <td class="p-4 text-center" x-text="formatNumber(allYearsData[name].years[selectedTahun]?.pr)"></td>
-                                    <td class="p-4 text-center" x-text="calculatePercent(name) + '%'"></td>
-                                    <td class="p-4 text-center bg-slate-50/10" x-text="formatNumber(allYearsData[name].years[selectedTahun]?.total)"></td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
+    <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest sticky top-0 z-10">
+        <tr>
+            <th class="p-4">Indikator</th>
+            <th class="p-4 text-center italic text-blue-300 border-l border-slate-700">LK</th>
+            <th class="p-4 text-center bg-blue-900/50 text-blue-200">% (LK)</th>
+            <th class="p-4 text-center italic text-pink-300 border-l border-slate-700">PR</th>   
+            <th class="p-4 text-center bg-pink-900/50 text-pink-200">% (PR)</th>                             
+            <th class="p-4 text-center bg-slate-800 border-l border-slate-700">Total</th>
+            <th class="p-4 text-center bg-indigo-900">Total %</th>
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
+        <template x-for="name in itemList" :key="name">
+            <tr x-show="selectedItem === 'Semua' || selectedItem === name"
+                @click="selectIndicator(name)"
+                class="cursor-pointer transition-all duration-200"
+                :class="selectedItem === name ? 'bg-blue-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-blue-50'">
+                
+                <td class="p-4 font-black italic" x-text="name"></td>
+                
+                <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name].years[selectedTahun]?.lk)"></td>
+                <td class="p-4 text-center bg-blue-50/30 text-blue-600" 
+                    :class="selectedItem === name ? 'text-white' : ''"
+                    x-text="calculatePercentLK(name) + '%'"></td>
+                
+                <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name].years[selectedTahun]?.pr)"></td>
+                <td class="p-4 text-center bg-pink-50/30 text-pink-600" 
+                    :class="selectedItem === name ? 'text-white' : ''"
+                    x-text="calculatePercentPR(name) + '%'"></td> 
+                
+                <td class="p-4 text-center bg-slate-50/50 border-l border-slate-50" x-text="formatNumber(allYearsData[name].years[selectedTahun]?.total)"></td>
+                <td class="p-4 text-center bg-indigo-50 text-indigo-700 font-black" 
+                    :class="selectedItem === name ? 'text-white bg-indigo-800' : ''"
+                    x-text="calculatePercent(name) + '%'"></td>
+            </tr>
+        </template>
+    </tbody>
+</table>
                 </div>
             </div>
             
-            {{-- INSIGHT CARD --}}
             <div class="mt-6 bg-blue-50 border border-blue-100 rounded-[2.5rem] p-8 flex items-center gap-6 shadow-sm">
                 <div class="bg-blue-600 min-w-[64px] h-[64px] rounded-3xl shadow-lg flex items-center justify-center animate-bounce">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -78,7 +88,6 @@
             </div>
         </div>
 
-        {{-- KOLOM KANAN: GRAFIK & CARDS --}}
         <div class="lg:sticky lg:top-6 self-start h-fit flex flex-col items-center w-full">
             <div class="flex bg-slate-100 p-1.5 rounded-2xl mb-8 shadow-inner border border-slate-200">
                 <button @click="changeDiagram('piramida')" :class="activeDiagram === 'piramida' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-400'" class="px-8 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all">Piramida</button>
@@ -89,7 +98,6 @@
                 <canvas id="chart-{{ $cat->slug }}"></canvas>
             </div>
 
-            {{-- 3 CARDS STATISTIK BAWAH --}}
             <div class="grid grid-cols-3 gap-4 w-full">
                 <div class="bg-blue-600 p-6 rounded-[2rem] text-white flex flex-col items-center shadow-lg transition-transform hover:scale-105">
                     <span class="text-[9px] font-black uppercase opacity-70 mb-1 italic">Laki-laki</span>
@@ -159,13 +167,31 @@ function piramidaUsiaFull() {
             return { lk, pr, total };
         },
 
-        calculatePercent(name) {
-            const totalItem = this.allYearsData[name].years[this.selectedTahun]?.total || 0;
-            let totalAll = 0;
+       calculatePercentLK(name) {
+            const lkValue = this.allYearsData[name].years[this.selectedTahun]?.lk || 0;
+            let grandTotal = 0;
             Object.keys(this.allYearsData).forEach(k => {
-                totalAll += this.allYearsData[k].years[this.selectedTahun]?.total || 0;
+                grandTotal += this.allYearsData[k].years[this.selectedTahun]?.total || 0;
             });
-            return totalAll > 0 ? ((totalItem / totalAll) * 100).toFixed(1) : 0;
+            return grandTotal > 0 ? ((lkValue / grandTotal) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercentPR(name) {
+            const prValue = this.allYearsData[name].years[this.selectedTahun]?.pr || 0;
+            let grandTotal = 0;
+            Object.keys(this.allYearsData).forEach(k => {
+                grandTotal += this.allYearsData[k].years[this.selectedTahun]?.total || 0;
+            });
+            return grandTotal > 0 ? ((prValue / grandTotal) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercent(name) {
+            const totalRow = this.allYearsData[name].years[this.selectedTahun]?.total || 0;
+            let grandTotal = 0;
+            Object.keys(this.allYearsData).forEach(k => {
+                grandTotal += this.allYearsData[k].years[this.selectedTahun]?.total || 0;
+            });
+            return grandTotal > 0 ? ((totalRow / grandTotal) * 100).toFixed(1) : 0;
         },
 
         formatNumber(val) { return (val || 0).toLocaleString('id-ID'); },
@@ -223,5 +249,70 @@ function piramidaUsiaFull() {
             });
         }
     };
+}
+
+function eksporTabelDinamis(tableID, filename = '') {
+    const table = document.getElementById(tableID);
+    if (!table) return;
+
+    const title = "LAPORAN DATA STATISTIK SEKTORAL - TARSIUS BELITUNG TIMUR";
+    const subTitle = "Kategori: " + (filename || "Statistik Desa");
+    const dateStr = "Dicetak pada: " + new Date().toLocaleString('id-ID');
+
+    const styles = `
+        <style>
+            .title { font-size: 16pt; font-weight: bold; text-align: center; }
+            .subtitle { font-size: 12pt; text-align: center; color: #444; }
+            table { border-collapse: collapse; width: 100%; }
+            th { background-color: #0f172a; color: #ffffff; border: 1pt solid #000000; font-weight: bold; height: 30pt; }
+            td { border: 0.5pt solid #cccccc; padding: 5pt; text-align: center; }
+            .label-column { text-align: left; font-weight: bold; background-color: #f8fafc; }
+            .pct-column { color: #2563eb; font-size: 9pt; }
+            .total-column { background-color: #f1f5f9; font-weight: bold; }
+            /* MSO format agar angka tidak berubah jadi teks */
+            .number { mso-number-format: "#,##0"; }
+            .percent { mso-number-format: "0.0%"; }
+        </style>
+    `;
+
+    const clonedTable = table.cloneNode(true);
+    
+    const rows = clonedTable.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const cells = row.querySelectorAll('th, td');
+        cells.forEach((cell, cellIndex) => {
+            if (index === 0) return; // Header sudah dihandle CSS th
+            if (cellIndex === 0) cell.classList.add('label-column');
+            if ([2, 4, 6].includes(cellIndex)) cell.classList.add('pct-column'); // Kolom %
+            if (cellIndex === 5) cell.classList.add('total-column');
+        });
+    });
+
+    const template = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+            <meta charset="UTF-8">
+            ${styles}
+        </head>
+        <body>
+            <table>
+                <tr><td colspan="${rows[0].cells.length}" class="title">${title}</td></tr>
+                <tr><td colspan="${rows[0].cells.length}" class="subtitle">${subTitle}</td></tr>
+                <tr><td colspan="${rows[0].cells.length}" class="subtitle">${dateStr}</td></tr>
+                <tr><td colspan="${rows[0].cells.length}"></td></tr>
+            </table>
+            ${clonedTable.outerHTML}
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob([template], { type: 'application/vnd.ms-excel' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    a.href = url;
+    a.download = (filename || 'Data_Tarsius') + '_' + new Date().getTime() + '.xls';
+    a.click();
+    window.URL.revokeObjectURL(url);
 }
 </script>

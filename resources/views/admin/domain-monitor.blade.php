@@ -14,7 +14,6 @@
         
         <div class="max-w-5xl mx-auto text-left">
             
-            {{-- HEADER SECTION --}}
             <div class="mb-6 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 gap-4">
                 <div class="text-left">
                     <h2 class="text-3xl font-black text-[#1e3a8a] tracking-tighter uppercase italic leading-none text-left">Radar Domain Desa</h2>
@@ -25,7 +24,6 @@
                 </div>
             </div>
 
-            {{-- SEARCH & FILTER --}}
             <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="text" x-model="search" placeholder="CARI NAMA DESA..." 
                        class="w-full px-6 py-4 bg-white border-none rounded-3xl shadow-sm focus:ring-2 focus:ring-blue-500 font-black italic text-xs uppercase tracking-widest text-slate-700 text-left">
@@ -43,14 +41,12 @@
                 </select>
             </div>
 
-            {{-- LIST ACCORDION --}}
             <div class="space-y-4">
                 @foreach($domains as $d)
                 <div x-show="shouldShow('{{ $d->desa->nama_desa }}', '{{ $d->desa->kecamatan }}')"
                      x-transition.fade
                      class="bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:border-blue-400 transition-all duration-300 overflow-hidden group">
                     
-                    {{-- BARIS UTAMA --}}
                     <div class="p-6 cursor-pointer flex flex-wrap md:flex-nowrap items-center justify-between gap-4" 
                          @click="selected !== {{ $d->id }} ? selected = {{ $d->id }} : selected = null">
                         
@@ -82,7 +78,6 @@
                         </div>
                     </div>
 
-                    {{-- DETAIL PANEL --}}
                     <div x-show="selected === {{ $d->id }}" x-cloak class="px-8 pb-8 pt-2 border-t border-slate-50 bg-[#fafcfe] text-left">
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -107,7 +102,6 @@
                                 <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-left">
                                     <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Pemeriksaan Sistem</p>
                                     <p class="font-bold text-slate-500 text-[10px] italic">
-                                        {{-- Menggunakan last_checked_at untuk status crawler --}}
                                         {{ $d->last_checked_at ? \Carbon\Carbon::parse($d->last_checked_at)->diffForHumans() : '-' }}
                                     </p>
                                 </div>
@@ -129,7 +123,6 @@
                             </div>
                         </div>
 
-                        {{-- AKSI --}}
                         <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
                              <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full {{ $d->status == 'Sehat' ? 'bg-emerald-500' : 'bg-red-500' }}"></span>

@@ -16,6 +16,7 @@ class Desa extends Model
         'layout_type',          
         'welcome_message',     
         'featured_category_id',
+        'is_antikorupsi_active',
     ];
 
     public function statistics()

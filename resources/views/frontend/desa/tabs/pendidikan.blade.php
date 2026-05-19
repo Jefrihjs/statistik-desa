@@ -20,7 +20,6 @@
         },
 
         init() {
-            // Gunakan timeout agar DOM siap
             setTimeout(() => { this.updateChart(); }, 150);
 
             this.$watch('chartMode', () => this.updateChart());
@@ -30,7 +29,31 @@
 
         get itemList() { return Object.keys(this.allYearsData); },
 
-        // FUNGSI YANG TADI HILANG: Untuk handle klik tabel
+        get grandTotalPopulasi() {
+            let total = 0;
+            this.itemList.forEach(name => {
+                total += this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            });
+            return total;
+        },
+
+        calculatePercentLK(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.lk || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercentPR(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.pr || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercent(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        formatNumber(val) { return (val || 0).toLocaleString('id-ID'); },
+
         selectIndicator(name) {
             this.selectedItem = (this.selectedItem === name) ? 'Semua' : name;
         },
@@ -154,30 +177,43 @@
 
             <div class="overflow-hidden rounded-[2.5rem] border border-slate-200 shadow-sm bg-white">
                 <div class="max-h-[750px] overflow-y-auto custom-scrollbar">
-                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm">
+                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm text-left">
                         <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest text-center sticky top-0 z-10">
                             <tr>
                                 <th class="p-4 text-left">Jenjang</th>
-                                <th class="p-4 italic">LK</th>
-                                <th class="p-4 italic">PR</th>
-                                <th class="p-4 bg-emerald-800">%</th>
-                                <th class="p-4 bg-slate-800">Total</th>
+                                <th class="p-4 italic text-emerald-300 border-l border-slate-800">LK</th>
+                                <th class="p-4 bg-emerald-800/40 text-emerald-200">% (LK)</th>
+                                <th class="p-4 italic text-blue-300 border-l border-slate-800">PR</th>
+                                <th class="p-4 bg-blue-800/40 text-blue-200">% (PR)</th>
+                                <th class="p-4 bg-slate-800 border-l border-slate-800 text-white">Total</th>
+                                <th class="p-4 bg-emerald-900 text-emerald-100">Total %</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
                             <template x-for="name in itemList" :key="name">
-                                <tr x-show="(selectedItem === 'Semua' || selectedItem === name)" 
+                                <tr x-show="selectedItem === 'Semua' || selectedItem === name" 
                                     @click="selectIndicator(name)"
                                     class="cursor-pointer transition-all duration-200"
-                                    :class="selectedItem === name ? 'bg-emerald-600 text-white shadow-inner' : 'hover:bg-emerald-50'">
+                                    :class="selectedItem === name ? 'bg-emerald-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-emerald-50'">
                                     
                                     <td class="p-4 font-black italic text-left" x-text="name"></td>
-                                    <td class="p-4 text-center" x-text="allYearsData[name]?.[selectedTahun]?.lk.toLocaleString('id-ID') || 0"></td>
-                                    <td class="p-4 text-center" x-text="allYearsData[name]?.[selectedTahun]?.pr.toLocaleString('id-ID') || 0"></td>
-                                    <td class="p-4 text-center bg-emerald-50/10 font-black"
-                                        x-text="allYearsData[name]?.[selectedTahun] && currentStats.total > 0 ? ((allYearsData[name][selectedTahun].total / currentStats.total) * 100).toFixed(1) + '%' : '0%'">
-                                    </td>
-                                    <td class="p-4 text-center font-black" :class="selectedItem === name ? 'text-white' : 'text-slate-900'" x-text="allYearsData[name]?.[selectedTahun]?.total.toLocaleString('id-ID') || 0"></td>
+                                    
+                                    <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.lk)"></td>
+                                    <td class="p-4 text-center bg-emerald-50/30 text-emerald-600 font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentLK(name) + '%'"></td>
+                                    
+                                    <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.pr)"></td>
+                                    <td class="p-4 text-center bg-blue-50/30 text-blue-600 font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentPR(name) + '%'"></td> 
+                                    
+                                    <td class="p-4 text-center bg-slate-50/50 border-l border-slate-50 text-slate-900" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="formatNumber(allYearsData[name][selectedTahun]?.total)"></td>
+                                    <td class="p-4 text-center bg-emerald-100 text-emerald-700 font-black" 
+                                        :class="selectedItem === name ? 'text-white bg-emerald-700' : ''"
+                                        x-text="calculatePercent(name) + '%'"></td>
                                 </tr>
                             </template>
                         </tbody>

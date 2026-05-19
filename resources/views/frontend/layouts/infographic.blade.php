@@ -1,9 +1,6 @@
-{{-- File: resources/views/frontend/layouts/infographic.blade.php --}}
-
 <div class="space-y-16">
     @foreach($categories as $category)
         <section>
-            <!-- Judul Kategori dengan Garis Aksen -->
             <div class="flex items-center gap-4 mb-8">
                 <div style="background-color: {{ $accentColor }};" class="h-8 w-2 rounded-full"></div>
                 <h2 class="text-3xl font-black text-slate-800 uppercase italic tracking-tighter">
@@ -11,7 +8,6 @@
                 </h2>
             </div>
 
-            <!-- Grid Angka Besar (Highlight) -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 @foreach($category->indicators->take(4) as $indicator)
                     @php $stat = $indicator->statistics->where('year', $tahun)->first(); @endphp
@@ -27,7 +23,6 @@
                 @endforeach
             </div>
 
-            <!-- Grafik Lebar -->
             <div class="bg-white p-8 rounded-[3rem] shadow-2xl shadow-slate-200/60 border border-white">
                 <div class="h-[400px]">
                     <canvas id="chart-{{ $category->id }}"></canvas>

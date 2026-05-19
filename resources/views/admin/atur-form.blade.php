@@ -55,7 +55,6 @@
                                         </span>
                                         
                                         @php
-                                            // LOGIKA INTI: Hanya hitung data yang isinya > 0
                                             $statsReal = $indicator->statistics
                                                 ->where('desa_id', $desa->id)
                                                 ->where('value', '>', 0);

@@ -29,6 +29,32 @@
 
         get itemList() { return Object.keys(this.allYearsData); },
 
+        // Fungsi Hitung Grand Total Populasi (Pembagi Persentase)
+        get grandTotalPopulasi() {
+            let total = 0;
+            this.itemList.forEach(name => {
+                total += this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            });
+            return total;
+        },
+
+        calculatePercentLK(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.lk || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercentPR(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.pr || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercent(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        formatNumber(val) { return (val || 0).toLocaleString('id-ID'); },
+
         isSelected(item) {
             return this.selectedItems.length === 0 || this.selectedItems.includes(item);
         },
@@ -82,7 +108,6 @@
             const self = this;
             const isPie = this.chartMode === 'doughnut';
 
-            // Filter labels berdasarkan yang dipilih
             let labels = this.itemList.filter(n => self.isSelected(n));
             if (labels.length === 0) labels = this.itemList;
 
@@ -137,7 +162,7 @@
     x-init="init()">
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-10 items-start">
-        <div class="space-y-6">
+        <div class="space-y-6 text-left">
             <div class="flex justify-between items-center bg-slate-50 p-4 rounded-[2rem] border border-slate-100 shadow-sm">
                 <button type="button" 
                         onclick="eksporTabelDinamis('tabel-{{ $cat->slug }}', '{{ $cat->name }}')"
@@ -155,30 +180,39 @@
                 <span class="px-4 py-2 bg-slate-900 text-white text-[10px] font-black rounded-xl uppercase italic tracking-widest">STATISTIK AKTIF</span>
             </div>
 
-            <div class="overflow-hidden rounded-[2.5rem] border border-slate-200 shadow-sm bg-white">
+            <div class="overflow-hidden rounded-[2.5rem] border border-slate-200 shadow-sm bg-white text-center">
                 <div class="max-h-[600px] overflow-y-auto custom-scrollbar">
-                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm">
+                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm text-left">
                         <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest text-center sticky top-0 z-10">
                             <tr>
                                 <th class="p-4 text-left">Suku / Etnis</th>
-                                <th class="p-4 italic">LK</th>
-                                <th class="p-4 italic">PR</th>
-                                <th class="p-4 bg-blue-800">%</th>
-                                <th class="p-4 bg-slate-800">Total</th>
+                                <th class="p-4 italic text-blue-300 border-l border-slate-800">LK</th>
+                                <th class="p-4 bg-blue-800/40 text-blue-200">% (LK)</th>
+                                <th class="p-4 italic text-pink-300 border-l border-slate-800">PR</th>
+                                <th class="p-4 bg-pink-800/40 text-pink-200">% (PR)</th>
+                                <th class="p-4 bg-slate-800 border-l border-slate-800 text-white">Total</th>
+                                <th class="p-4 bg-indigo-900 text-indigo-100">Total %</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase text-center">
+                        <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
                             <template x-for="name in itemList" :key="name">
                                 <tr @click="toggleItem(name)"
-                                    class="cursor-pointer transition-all duration-200"
-                                    :class="selectedItems.includes(name) ? 'bg-blue-600 text-white shadow-inner' : 'hover:bg-blue-50'">
+                                    class="cursor-pointer transition-all duration-200 text-center"
+                                    :class="selectedItems.includes(name) ? 'bg-blue-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-blue-50'">
+                                    
                                     <td class="p-4 font-black italic text-left" x-text="name"></td>
-                                    <td class="p-4" x-text="allYearsData[name]?.[selectedTahun]?.lk.toLocaleString('id-ID') || 0"></td>
-                                    <td class="p-4" x-text="allYearsData[name]?.[selectedTahun]?.pr.toLocaleString('id-ID') || 0"></td>
-                                    <td class="p-4 font-black" :class="selectedItems.includes(name) ? 'text-white' : 'text-blue-700'"
-                                        x-text="allYearsData[name]?.[selectedTahun] && currentStats.total > 0 ? ((allYearsData[name][selectedTahun].total / currentStats.total) * 100).toFixed(1) + '%' : '0%'">
-                                    </td>
-                                    <td class="p-4 font-black" :class="selectedItems.includes(name) ? 'text-white' : 'text-slate-900'" x-text="allYearsData[name]?.[selectedTahun]?.total.toLocaleString('id-ID') || 0"></td>
+                                    
+                                    {{-- Kolom LK --}}
+                                    <td class="p-4 border-l border-slate-50" x-text="formatNumber(allYearsData[name]?.[selectedTahun]?.lk)"></td>
+                                    <td class="p-4 bg-blue-50/30 text-blue-600" :class="selectedItems.includes(name) ? 'text-white' : ''" x-text="calculatePercentLK(name) + '%'"></td>
+                                    
+                                    {{-- Kolom PR --}}
+                                    <td class="p-4 border-l border-slate-50" x-text="formatNumber(allYearsData[name]?.[selectedTahun]?.pr)"></td>
+                                    <td class="p-4 bg-pink-50/30 text-pink-600" :class="selectedItems.includes(name) ? 'text-white' : ''" x-text="calculatePercentPR(name) + '%'"></td>
+                                    
+                                    {{-- Kolom Total --}}
+                                    <td class="p-4 bg-slate-50/50 border-l border-slate-50 text-slate-900" :class="selectedItems.includes(name) ? 'text-white' : ''" x-text="formatNumber(allYearsData[name]?.[selectedTahun]?.total)"></td>
+                                    <td class="p-4 bg-indigo-50 text-indigo-700 font-black" :class="selectedItems.includes(name) ? 'text-white bg-indigo-600' : ''" x-text="calculatePercent(name) + '%'"></td>
                                 </tr>
                             </template>
                         </tbody>
@@ -190,10 +224,10 @@
                 <div class="bg-amber-600 p-4 rounded-3xl animate-pulse shadow-lg">
                     <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 </div>
-                <div>
+                <div class="text-left">
                     <p class="text-[10px] font-black uppercase text-amber-400 italic tracking-widest mb-1">Etnis Mayoritas</p>
                     <h4 class="text-base font-bold italic mb-1 uppercase tracking-tight">Suku Terbanyak: <span class="text-amber-400 underline decoration-2" x-text="topEtnis.nama"></span></h4>
-                    <p class="text-2xl font-black italic tracking-tighter text-amber-400">Total: <span x-text="topEtnis.jumlah.toLocaleString('id-ID')"></span> Jiwa</p>
+                    <p class="text-2xl font-black italic tracking-tighter text-amber-400">Total: <span x-text="formatNumber(topEtnis.jumlah)"></span> Jiwa</p>
                 </div>
             </div>
         </div>
@@ -212,17 +246,17 @@
                 <div class="p-6 rounded-[2.5rem] text-white flex flex-col items-center shadow-lg transition-all" 
                      :class="selectedItems.length > 0 ? 'bg-amber-600 ring-4 ring-amber-300' : 'bg-blue-600'">
                     <span class="text-[9px] font-black uppercase opacity-70 mb-1 italic">LK</span>
-                    <span class="text-2xl font-black italic" x-text="currentStats.lk.toLocaleString('id-ID')"></span>
+                    <span class="text-2xl font-black italic" x-text="formatNumber(currentStats.lk)"></span>
                 </div>
                 <div class="p-6 rounded-[2.5rem] text-white flex flex-col items-center shadow-lg transition-all" 
                      :class="selectedItems.length > 0 ? 'bg-amber-600 ring-4 ring-amber-300' : 'bg-pink-500'">
                     <span class="text-[9px] font-black uppercase opacity-70 mb-1 italic">PR</span>
-                    <span class="text-2xl font-black italic" x-text="currentStats.pr.toLocaleString('id-ID')"></span>
+                    <span class="text-2xl font-black italic" x-text="formatNumber(currentStats.pr)"></span>
                 </div>
                 <div class="p-6 rounded-[2.5rem] text-white flex flex-col items-center shadow-lg transition-all" 
                      :class="selectedItems.length > 0 ? 'bg-amber-600 ring-4 ring-amber-300' : 'bg-slate-800'">
                     <span class="text-[9px] font-black uppercase opacity-70 mb-1 italic">TOTAL</span>
-                    <span class="text-2xl font-black italic" x-text="currentStats.total.toLocaleString('id-ID')"></span>
+                    <span class="text-2xl font-black italic" x-text="formatNumber(currentStats.total)"></span>
                 </div>
             </div>
         </div>

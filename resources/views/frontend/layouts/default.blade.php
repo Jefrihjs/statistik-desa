@@ -1,5 +1,3 @@
-{{-- File: resources/views/frontend/layouts/default.blade.php --}}
-
 <div class="space-y-12">
     @foreach($categories as $category)
         <section class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
@@ -10,7 +8,6 @@
             </div>
 
             <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Sisi Kiri: Daftar Angka -->
                 <div class="space-y-4">
                     @foreach($category->indicators as $indicator)
                         @php
@@ -28,7 +25,6 @@
                     @endforeach
                 </div>
 
-                <!-- Sisi Kanan: Grafik -->
                 <div class="bg-slate-50 rounded-2xl p-4 flex items-center justify-center min-h-[300px]">
                      <canvas id="chart-{{ $category->id }}"></canvas>
                 </div>

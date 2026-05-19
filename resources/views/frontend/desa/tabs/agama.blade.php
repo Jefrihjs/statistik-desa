@@ -30,7 +30,33 @@
 
         get itemList() { return Object.keys(this.allYearsData); },
 
-        // FUNGSI YANG TADI HILANG: Untuk handle klik tabel
+
+        get grandTotalPopulasi() {
+            let total = 0;
+            this.itemList.forEach(name => {
+                total += this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            });
+            return total;
+        },
+
+        calculatePercentLK(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.lk || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercentPR(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.pr || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        calculatePercent(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        formatNumber(val) {
+            return (val || 0).toLocaleString('id-ID');
+        },
         selectIndicator(name) {
             this.selectedItem = (this.selectedItem === name) ? 'Semua' : name;
         },
@@ -135,7 +161,6 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-10 items-start text-left">
         <div class="space-y-6">
-            {{-- TOMBOL EXPORT --}}
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <button type="button" 
                         onclick="eksporTabelDinamis('tabel-{{ $cat->slug }}', '{{ $cat->name }}')"
@@ -154,33 +179,45 @@
                 <span class="px-4 py-2 bg-slate-900 text-white text-[10px] font-black rounded-xl uppercase italic tracking-widest">STATISTIK AKTIF</span>
             </div>
 
-            {{-- TABEL --}}
             <div class="overflow-hidden rounded-[2.5rem] border border-slate-200 shadow-sm bg-white">
                 <div class="max-h-[500px] overflow-y-auto custom-scrollbar">
-                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm">
+                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm text-left">
                         <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest text-center sticky top-0 z-10">
                             <tr>
                                 <th class="p-4 text-left">Agama</th>
-                                <th class="p-4 italic text-blue-300">LK</th>
-                                <th class="p-4 italic text-pink-300">PR</th>
-                                <th class="p-4 bg-indigo-800">%</th>
-                                <th class="p-4 bg-slate-800">Total</th>
+                                <th class="p-4 italic text-blue-300 border-l border-slate-800">LK</th>
+                                <th class="p-4 bg-blue-800/40 text-blue-200">% (LK)</th>
+                                <th class="p-4 italic text-pink-300 border-l border-slate-800">PR</th>
+                                <th class="p-4 bg-pink-800/40 text-pink-200">% (PR)</th>
+                                <th class="p-4 bg-slate-800 border-l border-slate-800 text-white">Total</th>
+                                <th class="p-4 bg-indigo-900 text-indigo-100">Total %</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
                             <template x-for="name in itemList" :key="name">
-                                <tr x-show="(selectedItem === 'Semua' || selectedItem === name) && allYearsData[name][selectedTahun]" 
+                                <tr x-show="selectedItem === 'Semua' || selectedItem === name" 
                                     @click="selectIndicator(name)"
                                     class="cursor-pointer transition-all duration-200"
                                     :class="selectedItem === name ? 'bg-indigo-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-indigo-50'">
                                     
                                     <td class="p-4 font-black italic text-left" x-text="name"></td>
-                                    <td class="p-4 text-center" x-text="allYearsData[name][selectedTahun]?.lk.toLocaleString('id-ID')"></td>
-                                    <td class="p-4 text-center" x-text="allYearsData[name][selectedTahun]?.pr.toLocaleString('id-ID')"></td>
-                                    <td class="p-4 text-center bg-indigo-50/10 font-black"
-                                        x-text="allYearsData[name][selectedTahun] && currentStats.total > 0 ? ((allYearsData[name][selectedTahun].total / currentStats.total) * 100).toFixed(1) + '%' : '0%'">
-                                    </td>
-                                    <td class="p-4 text-center font-black" :class="selectedItem === name ? 'text-white' : 'text-slate-900'" x-text="allYearsData[name][selectedTahun]?.total.toLocaleString('id-ID')"></td>
+                                    
+                                    <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.lk)"></td>
+                                    <td class="p-4 text-center bg-blue-50/30 text-blue-600 font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentLK(name) + '%'"></td>
+                                    
+                                    <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.pr)"></td>
+                                    <td class="p-4 text-center bg-pink-50/30 text-pink-600 font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentPR(name) + '%'"></td> 
+                                    
+                                    <td class="p-4 text-center bg-slate-50/50 border-l border-slate-50 text-slate-900" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="formatNumber(allYearsData[name][selectedTahun]?.total)"></td>
+                                    <td class="p-4 text-center bg-indigo-50 text-indigo-700 font-black" 
+                                        :class="selectedItem === name ? 'text-white bg-indigo-600' : ''"
+                                        x-text="calculatePercent(name) + '%'"></td>
                                 </tr>
                             </template>
                         </tbody>
@@ -188,7 +225,6 @@
                 </div>
             </div>
 
-            {{-- INSIGHT BOX --}}
             <div class="bg-slate-900 rounded-[2.5rem] p-8 flex items-center gap-6 shadow-xl text-white border-b-8 border-indigo-600">
                 <div class="bg-indigo-600 p-4 rounded-3xl animate-pulse shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,7 +243,6 @@
             </div>
         </div>
 
-        {{-- KOLOM KANAN --}}
         <div class="lg:sticky lg:top-6 self-start h-fit flex flex-col items-center w-full">
             <div class="flex bg-slate-100 p-1.5 rounded-2xl mb-6 shadow-inner border border-slate-200">
                 <button @click="chartMode = 'doughnut'" :class="chartMode === 'doughnut' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'" class="px-8 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all">Lingkaran</button>
@@ -218,7 +253,6 @@
                 <canvas id="chart-{{ $cat->slug }}"></canvas>
             </div>
 
-            {{-- 3 CARDS STATS --}}
             <div class="grid grid-cols-3 gap-4 w-full font-black italic">
                 <div class="bg-indigo-600 p-6 rounded-[2.5rem] text-white flex flex-col items-center shadow-lg transition-transform hover:scale-105">
                     <span class="text-[9px] uppercase opacity-70 mb-1">LK</span>

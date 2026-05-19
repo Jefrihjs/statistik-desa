@@ -12,20 +12,19 @@
 <body class="bg-slate-100 p-4" x-data="statistikApp()">
 
     <div class="max-w-5xl mx-auto border-none rounded-3xl shadow-xl overflow-hidden bg-white">
-        {{-- HEADER --}}
+
         <div class="bg-blue-600 p-6 text-white flex justify-between items-center">
             <div>
                 <h1 class="text-xl font-black uppercase tracking-tighter italic">Grafik Statistik Desa {{ $desa->nama_desa }}</h1>
                 <p class="text-[10px] font-bold opacity-80 uppercase tracking-[0.2em]">Data Sektoral • Tahun 2026</p>
             </div>
-            {{-- TOMBOL EXPORT --}}
+
             <button @click="eksporData()" class="bg-white/20 hover:bg-white/40 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all flex items-center gap-2 border border-white/30">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Export Excel
             </button>
         </div>
 
-        {{-- TABS --}}
         <div class="flex overflow-x-auto bg-slate-50 border-b custom-scrollbar">
             @foreach($categories as $cat)
             <button 
@@ -38,12 +37,11 @@
         </div>
 
         <div class="p-8">
-            {{-- AREA GRAFIK --}}
+
             <div class="relative w-full bg-slate-50 rounded-[2rem] p-6 border border-slate-100" style="min-height: 450px;">
                 <canvas id="canvasStatistik"></canvas>
             </div>
             
-            {{-- KETERANGAN PIRAMIDA --}}
             <template x-if="activeTab === 'kelompok-usia'">
                 <div class="mt-6 flex justify-center space-x-8 text-[10px] font-black uppercase italic tracking-widest">
                     <span class="flex items-center gap-2"><span class="w-4 h-4 bg-blue-500 rounded-lg shadow-sm"></span> Laki-laki (Kiri)</span>
@@ -51,7 +49,6 @@
                 </div>
             </template>
 
-            {{-- TABEL HIDDEN --}}
             <div class="hidden">
                 <table id="tabelExport">
                     <thead>
@@ -128,7 +125,7 @@
                         return s ? s.value : 0;
                     });
 
-                    // JIKA KELOMPOK USIA (PIRAMIDA)
+
                     if (this.activeTab === 'kelompok-usia') {
                         config = {
                             type: 'bar',
@@ -154,7 +151,7 @@
                             }
                         };
                     } 
-                    // JIKA UMUM (BAR)
+
                     else {
                         config = {
                             type: 'bar',

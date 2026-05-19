@@ -17,6 +17,7 @@ class User extends Authenticatable
         'password',
         'desa_id', 
         'role',
+        'is_antikorupsi_active',
     ];
 
     protected $hidden = [
@@ -32,18 +33,11 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Relasi ke model Desa
-     * User (Operator) dimiliki oleh satu Desa
-     */
     public function desa(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Desa::class);
     }
 
-    /**
-     * Helper untuk cek role
-     */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

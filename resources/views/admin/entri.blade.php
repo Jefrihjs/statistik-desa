@@ -1,6 +1,9 @@
 <x-app-layout>
     @php
         $currentTab = request('tab', $categories->first()->slug ?? '');
+
+        $headerColor = $desa->header_color ?? '#2563eb';
+        $accentColor = $desa->accent_color ?? '#10b981';
     @endphp
 
     <div class="py-12 px-4 bg-slate-50 min-h-screen" x-data="{ 
@@ -25,22 +28,42 @@
     }">
         <div class="max-w-7xl mx-auto">
             
-            <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 mb-6 overflow-hidden">
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 mb-6"
+                style="background: linear-gradient(135deg, {{ $headerColor }}, {{ $accentColor }});
+                        border-radius: 2.5rem;
+                        padding: 35px;
+                        color: white;
+                        margin-bottom: 2rem;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                        position: relative;
+                        overflow: visible;">
+                <div style="position: absolute; right: -50px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
                 <div class="p-8 flex flex-col lg:flex-row justify-between items-center gap-6">
+                    
                     <div>
-                        <h2 class="text-3xl font-black text-blue-900 uppercase italic tracking-tighter leading-none">
+                        <h2 class="text-3xl font-black text-White-900 uppercase italic tracking-tighter leading-none">
                             Desa {{ $desa->nama_desa }}
                         </h2>
+                        
                         <div class="flex items-center gap-3 mt-3">
-                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Tahun Data:</span>
-                            <form action="{{ url()->current() }}" method="GET" class="m-0">
-                                <input type="hidden" name="tab" value="{{ $currentTab }}">
-                                <select name="tahun" onchange="this.form.submit()" class="border-2 border-blue-600 rounded-xl px-4 py-1 font-black text-blue-600 text-sm bg-white focus:ring-0">
-                                    @foreach($daftarTahun as $y)
-                                        <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
-                                    @endforeach
-                                </select>
-                            </form>
+                            <span class="text-[10px] font-black text-White-400 uppercase tracking-widest italic">Tahun Data:</span>
+                            
+                            <div class="flex items-center gap-2">
+                                <form action="{{ url()->current() }}" method="GET" class="m-0">
+                                    <input type="hidden" name="tab" value="{{ $currentTab }}">
+                                    <select name="tahun" onchange="this.form.submit()" 
+                                            class="border-2 rounded-full px-4 py-1.5 font-black text-sm bg-white hover:bg-slate-50 focus:outline-none cursor-pointer transition-all shadow-sm"
+                                            style="border-color: {{ $headerColor ?? '#2563eb' }}; color: {{ $headerColor ?? '#2563eb' }};">
+                                        @php
+                                            // Tetap menggunakan logika ini agar tahun berjalan/terpilih tidak hilang
+                                            $koleksiTahun = collect($daftarTahun)->push((int)$tahun)->unique()->sortDesc();
+                                        @endphp
+                                        @foreach($koleksiTahun as $y)
+                                            <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
@@ -50,7 +73,7 @@
                             <span class="text-[9px] font-black uppercase text-slate-600" x-text="status"></span>
                         </div>
 
-                        <a href="{{ route('admin.download-template') }}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase shadow-lg transition-all flex items-center gap-2 transform active:scale-95">
+                        <a href="{{ route('admin.download-template') }}?tahun={{ $tahun }}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3 rounded-2xl text-[10px] font-black uppercase shadow-lg transition-all flex items-center gap-2 transform active:scale-95">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             Download
                         </a>
@@ -67,38 +90,59 @@
                         </form>
 
                         <button type="button" onclick="document.getElementById('main-form').submit()" 
-                                class="bg-slate-900 hover:bg-black text-white px-7 py-3 rounded-2xl font-black shadow-lg transition-all uppercase text-[10px] tracking-widest border-b-4 border-slate-700 active:border-b-0 transform active:translate-y-1">
+                                class="bg-slate-900 hover:bg-slate-800 text-white px-7 py-3 rounded-2xl font-black transition-all uppercase text-[10px] tracking-widest">
                             Simpan Manual
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 border-t border-slate-100 shadow-inner">
-                    <div class="flex overflow-x-auto no-scrollbar items-stretch justify-start md:justify-center">
+                
+                    <div class="flex flex-wrap items-center justify-center gap-4 md:gap-6 overflow-visible">
+                        
+                        @php
+                            // Fungsi pintar untuk menentukan ikon SVG berdasarkan nama kategori
+                            $getIcon = function($slug) {
+                                if (str_contains($slug, 'demografi')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>'; // Ikon Orang (User Group)
+                                if (str_contains($slug, 'penduduk')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>'; // Ikon Grafik Batang (Bar Chart)
+                                if (str_contains($slug, 'umur')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>'; // Ikon Diagram Lingkaran (Pie Chart)
+                                if (str_contains($slug, 'mata-pencaharian')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'; // Ikon Uang Dolar (Koin)
+                                if (str_contains($slug, 'pendidikan')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>'; // Ikon Toga Akademik
+                                if (str_contains($slug, 'agama')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>'; // Ikon Bintang (Sparkles)
+                                if (str_contains($slug, 'tenaga-kerja')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>'; // Ikon Tas Kerja (Briefcase)
+                                if (str_contains($slug, 'etnis') || str_contains($slug, 'suku')) return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'; // Ikon Bola Dunia (Globe)
+                                
+                                // Ikon Default (Jika ada kategori baru yang tidak terdaftar di atas)
+                                return '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>'; 
+                            };
+                        @endphp
+
                         @foreach($categories as $cat)
                             <a href="?tahun={{ $tahun }}&tab={{ $cat->slug }}" 
-                               class="flex-shrink-0 w-24 md:w-28 py-4 flex flex-col items-center justify-center gap-1.5 border-b-4 transition-all {{ $currentTab == $cat->slug ? 'border-blue-600 bg-white shadow-sm' : 'border-transparent text-slate-400 hover:bg-white/50' }}">
+                                class="group relative flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full transition-all duration-300 hover:z-[100] {{ $currentTab == $cat->slug ? 'text-white shadow-lg scale-110 z-30' : 'bg-slate-50 text-slate-400 z-10' }}">
                                 
-                                <div class="relative">
-                                    <svg class="w-5 h-5 {{ $currentTab == $cat->slug ? 'text-blue-600' : 'text-slate-300' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
+                                <svg class="w-5 h-5 md:w-6 md:h-6 relative z-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    {!! $getIcon($cat->slug) !!}
+                                </svg>
 
-                                    @if(in_array($cat->id, $categoriesWithData))
-                                        <span class="absolute -top-1 -right-1 flex h-2 w-2">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                        </span>
-                                    @endif
+                                @if(in_array($cat->id, $categoriesWithData))
+                                    <span class="absolute -top-1 -right-1 flex h-3 w-3 z-20">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+                                    </span>
+                                @endif
+
+                                <div class="absolute bottom-full z-[9999] mb-3 left-1/2 -translate-x-1/2 origin-bottom px-4 py-2 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap shadow-2xl transform group-hover:-translate-y-1 pointer-events-none"
+                                    style="background-color: {{ $headerColor ?? '#2563eb' }};">
+                                    {{ $cat->name }}
+                                    
+                                    <div class="absolute top-full left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 rounded-sm -mt-1.5"
+                                        style="background-color: {{ $headerColor ?? '#2563eb' }};"></div>
                                 </div>
-
-                                <span class="text-[8px] font-black uppercase tracking-tighter text-center leading-[1.1] px-1 {{ $currentTab == $cat->slug ? 'text-blue-700' : 'text-slate-500' }}">
-                                    {!! str_replace(' ', '<br>', $cat->name) !!}
-                                </span>
                             </a>
                         @endforeach
+
                     </div>
-                </div>
+
             </div>
 
             <form id="main-form" action="{{ route('admin.simpan') }}" method="POST">

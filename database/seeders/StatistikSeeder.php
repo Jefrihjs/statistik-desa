@@ -93,5 +93,5 @@ class StatistikSeeder extends Seeder
             Indicator::updateOrCreate(['category_id' => $catEtnis->id, 'name' => $et], ['unit' => 'Jiwa']);
         }
 
-    } // Akhir fungsi run
-} // Akhir class
+    } 
+} 

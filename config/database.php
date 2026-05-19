@@ -46,11 +46,11 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => 'mysql', // Ubah ini Pak
-            'port' => '3306',
-            'database' => 'statistik_desa',
-            'username' => 'sail',
-            'password' => 'password',
+            'host' => env('DB_HOST', 'mysql'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'statistik_desa'),
+            'username' => env('DB_USERNAME', 'sail'),
+            'password' => env('DB_PASSWORD', 'password'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),

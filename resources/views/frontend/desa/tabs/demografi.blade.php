@@ -1,5 +1,5 @@
 @php
-    // 1. FILTER: Pisahkan indikator (Penduduk vs KK)
+
     $indikatorPenduduk = $cat->indicators->filter(function($i) {
         $nama = strtolower($i->name);
         return !str_contains($nama, 'kk') && !str_contains($nama, 'kepala keluarga');
@@ -10,7 +10,6 @@
         return str_contains($nama, 'kk') || str_contains($nama, 'kepala keluarga');
     });
 
-    // 2. TOTALS
     $totalLK_P = $indikatorPenduduk->flatMap->statistics->where('year', $tahun)->where('gender', 'Laki-laki')->sum('value');
     $totalPR_P = $indikatorPenduduk->flatMap->statistics->where('year', $tahun)->where('gender', 'Perempuan')->sum('value');
     $totalP = $totalLK_P + $totalPR_P;

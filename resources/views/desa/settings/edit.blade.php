@@ -1,4 +1,8 @@
 <x-app-layout>
+    @php
+        $headerColor = $desa->header_color ?? '#2563eb';
+        $accentColor = $desa->accent_color ?? '#10b981';
+    @endphp
     <div class="py-10 px-4 bg-slate-50 min-h-screen">
         <div class="max-w-3xl mx-auto">
             <div class="mb-8">
@@ -37,7 +41,7 @@
 
                     <div class="pt-6 border-t border-slate-100 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {{-- Pilihan Layout --}}
+
                             <div>
                                 <label class="block text-[11px] font-black uppercase text-slate-500 mb-2">Template Tampilan</label>
                                 <select name="layout_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-blue-600">
@@ -46,7 +50,6 @@
                                 </select>
                             </div>
 
-                            {{-- Kategori Unggulan --}}
                             <div>
                                 <label class="block text-[11px] font-black uppercase text-slate-500 mb-2">Fokus Data Unggulan</label>
                                 <select name="featured_category_id" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-blue-600">
@@ -60,7 +63,6 @@
                             </div>
                         </div>
 
-                        {{-- Narasi Kepala Desa --}}
                         <div>
                             <label class="block text-[11px] font-black uppercase text-slate-500 mb-2">Narasi / Pesan Kepala Desa</label>
                             <textarea name="welcome_message" rows="4" 

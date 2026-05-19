@@ -20,9 +20,7 @@
         },
 
         init() {
-            // Gunakan jeda agar DOM benar-benar siap sebelum menggambar
             setTimeout(() => { this.updateChart(); }, 150);
-
             this.$watch('chartMode', () => this.updateChart());
             this.$watch('selectedItem', () => this.updateChart());
             this.$watch('selectedTahun', () => this.updateChart());
@@ -30,30 +28,45 @@
 
         get itemList() { return Object.keys(this.allYearsData); },
 
-        // Fungsi klik baris tabel
+        // HITUNG GRAND TOTAL (Pembagi Persentase)
+        get grandTotalPopulasi() {
+            let total = 0;
+            this.itemList.forEach(name => {
+                total += this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            });
+            return total;
+        },
+
+        // FUNGSI PERSENTASE
+        calculatePercentLK(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.lk || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+        calculatePercentPR(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.pr || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+        calculatePercent(name) {
+            const val = this.allYearsData[name]?.[this.selectedTahun]?.total || 0;
+            return this.grandTotalPopulasi > 0 ? ((val / this.grandTotalPopulasi) * 100).toFixed(1) : 0;
+        },
+
+        formatNumber(val) { return (val || 0).toLocaleString('id-ID'); },
+
         selectIndicator(name) {
             this.selectedItem = (this.selectedItem === name) ? 'Semua' : name;
         },
 
-        // PENGAMAN CARD & TAHUN 2026
         get currentStats() {
             let lk = 0, pr = 0, total = 0;
             if (this.selectedItem === 'Semua') {
                 this.itemList.forEach(nama => {
                     const dataYear = this.allYearsData[nama]?.[this.selectedTahun];
-                    if (dataYear) {
-                        lk += dataYear.lk || 0;
-                        pr += dataYear.pr || 0;
-                        total += dataYear.total || 0;
-                    }
+                    if (dataYear) { lk += dataYear.lk; pr += dataYear.pr; total += dataYear.total; }
                 });
             } else {
                 const dataYear = this.allYearsData[this.selectedItem]?.[this.selectedTahun];
-                if (dataYear) {
-                    lk = dataYear.lk || 0;
-                    pr = dataYear.pr || 0;
-                    total = dataYear.total || 0;
-                }
+                if (dataYear) { lk = dataYear.lk; pr = dataYear.pr; total = dataYear.total; }
             }
             return { lk, pr, total };
         },
@@ -62,10 +75,7 @@
             let maxTotal = 0; let namaTenaga = '-';
             this.itemList.forEach(nama => {
                 const data = this.allYearsData[nama]?.[this.selectedTahun];
-                if (data && data.total > maxTotal) {
-                    maxTotal = data.total;
-                    namaTenaga = nama;
-                }
+                if (data && data.total > maxTotal) { maxTotal = data.total; namaTenaga = nama; }
             });
             return { nama: namaTenaga, jumlah: maxTotal };
         },
@@ -73,9 +83,7 @@
         updateChart() {
             const canvasId = 'chart-{{ $cat->slug }}';
             const globalChart = Chart.getChart(canvasId);
-            if (globalChart) {
-                globalChart.destroy();
-            }
+            if (globalChart) globalChart.destroy();
             this.initChart();
         },
 
@@ -83,25 +91,20 @@
             const canvasId = 'chart-{{ $cat->slug }}';
             const ctx = document.getElementById(canvasId);
             if (!ctx) return;
-
             const isPie = this.chartMode === 'doughnut';
-            let labels = [];
-            let dataValues = [];
-            let bgColors = [];
+            let labels = []; let dataValues = []; let bgColors = [];
 
             if (this.selectedItem !== 'Semua') {
-                // JIKA DIFILTER: Belah LK & PR
                 labels = ['Laki-laki', 'Perempuan'];
                 dataValues = [this.currentStats.lk, this.currentStats.pr];
                 bgColors = ['#2563eb', '#db2777'];
             } else {
-                // JIKA SEMUA: Tampilkan semua kategori tenaga kerja
                 labels = this.itemList;
                 dataValues = labels.map(n => this.allYearsData[n]?.[this.selectedTahun]?.total || 0);
                 bgColors = ['#1e3a8a', '#2563eb', '#3b82f6', '#60a5fa', '#059669', '#10b981', '#fbbf24', '#f59e0b', '#ec4899'];
             }
 
-            this.chart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: this.chartMode,
                 data: {
                     labels: labels,
@@ -121,20 +124,14 @@
                     onClick: (e, el) => {
                         if (el.length > 0) {
                             const clickedLabel = labels[el[0].index];
-                            if (this.selectedItem === 'Semua') {
-                                this.selectIndicator(clickedLabel);
-                            } else {
-                                this.selectedItem = 'Semua';
-                            }
+                            this.selectedItem = (this.selectedItem === 'Semua') ? clickedLabel : 'Semua';
                         }
                     },
-                    plugins: {
-                        legend: { display: true, position: 'bottom' }
-                    }
+                    plugins: { legend: { display: true, position: 'bottom' } }
                 }
             });
         }
-     }"
+    }"
      x-init="init()">
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-10 items-start">
@@ -157,30 +154,46 @@
 
             <div class="overflow-hidden rounded-[2.5rem] border border-slate-200 shadow-sm bg-white">
                 <div class="max-h-[750px] overflow-y-auto custom-scrollbar">
-                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm">
+                    <table id="tabel-{{ $cat->slug }}" class="w-full text-sm text-left">
                         <thead class="bg-slate-900 text-white text-[10px] uppercase font-black tracking-widest text-center sticky top-0 z-10">
                             <tr>
                                 <th class="p-4 text-left">Indikator</th>
-                                <th class="p-4 italic">LK</th>
-                                <th class="p-4 italic">PR</th>
-                                <th class="p-4 bg-blue-800">%</th>
-                                <th class="p-4 bg-slate-800">Total</th>
+                                <th class="p-4 italic text-blue-300 border-l border-slate-800">LK</th>
+                                <th class="p-4 bg-blue-800/40 text-blue-200">% (LK)</th>
+                                <th class="p-4 italic text-pink-300 border-l border-slate-800">PR</th>
+                                <th class="p-4 bg-pink-800/40 text-pink-200">% (PR)</th>
+                                <th class="p-4 bg-slate-800 border-l border-slate-800 text-white">Total</th>
+                                <th class="p-4 bg-indigo-900 text-indigo-100">Total %</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-bold text-[11px] uppercase">
                             <template x-for="name in itemList" :key="name">
-                                <tr x-show="(selectedItem === 'Semua' || selectedItem === name)" 
+                                <tr x-show="selectedItem === 'Semua' || selectedItem === name" 
                                     @click="selectIndicator(name)"
                                     class="cursor-pointer transition-all duration-200"
-                                    :class="selectedItem === name ? 'bg-blue-600 text-white shadow-inner' : 'hover:bg-blue-50'">
+                                    :class="selectedItem === name ? 'bg-blue-600 text-white shadow-inner scale-[1.01]' : 'hover:bg-blue-50'">
                                     
                                     <td class="p-4 font-black italic text-left" x-text="name"></td>
-                                    <td class="p-4 text-center" x-text="allYearsData[name]?.[selectedTahun]?.lk.toLocaleString('id-ID') || 0"></td>
-                                    <td class="p-4 text-center" x-text="allYearsData[name]?.[selectedTahun]?.pr.toLocaleString('id-ID') || 0"></td>
-                                    <td class="p-4 text-center bg-blue-50/10 font-black"
-                                        x-text="allYearsData[name]?.[selectedTahun] && currentStats.total > 0 ? ((allYearsData[name][selectedTahun].total / currentStats.total) * 100).toFixed(1) + '%' : '0%'">
-                                    </td>
-                                    <td class="p-4 text-center font-black" :class="selectedItem === name ? 'text-white' : 'text-slate-900'" x-text="allYearsData[name]?.[selectedTahun]?.total.toLocaleString('id-ID') || 0"></td>
+                                    
+                                    <!-- Kolom LK -->
+                                    <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.lk)"></td>
+                                    <td class="p-4 text-center bg-blue-50/30 text-blue-600 font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentLK(name) + '%'"></td>
+                                    
+                                    <!-- Kolom PR -->
+                                    <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.pr)"></td>
+                                    <td class="p-4 text-center bg-pink-50/30 text-pink-600 font-black" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="calculatePercentPR(name) + '%'"></td> 
+                                    
+                                    <!-- Kolom Total -->
+                                    <td class="p-4 text-center bg-slate-50/50 border-l border-slate-50 text-slate-900" 
+                                        :class="selectedItem === name ? 'text-white' : ''"
+                                        x-text="formatNumber(allYearsData[name][selectedTahun]?.total)"></td>
+                                    <td class="p-4 text-center bg-indigo-50 text-indigo-700 font-black" 
+                                        :class="selectedItem === name ? 'text-white bg-indigo-600' : ''"
+                                        x-text="calculatePercent(name) + '%'"></td>
                                 </tr>
                             </template>
                         </tbody>

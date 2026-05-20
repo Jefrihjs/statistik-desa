@@ -1,4 +1,6 @@
 <x-app-layout>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight uppercase italic tracking-widest text-[15px]">
             {{ __('Master Grup Indikator Antikorupsi') }}
@@ -30,18 +32,20 @@
                             <th class="px-6 py-4 font-black uppercase text-[10px] tracking-widest text-[#1e3a8a] text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="text-xs font-bold text-slate-700 divide-y divide-slate-50">
                         @forelse($masterGrup as $master)
-                        <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
-                            <td class="px-6 py-4 font-bold uppercase text-[11px]">{{ $master->kategori }}</td>
-                            <td class="px-6 py-4 font-medium">{{ $master->nama_grup }}</td>
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 uppercase text-[11px] text-slate-800">{{ $master->kategori }}</td>
+                            <td class="px-6 py-4 font-medium text-slate-600">{{ $master->nama_grup }}</td>
                             <td class="px-6 py-4 flex justify-end gap-2">
                                 <button @click="editId = '{{ $master->id }}'; editKategori = '{{ $master->kategori }}'; editNamaGrup = '{{ addslashes($master->nama_grup) }}'; modalEditOpen = true" class="text-blue-500 hover:bg-blue-50 p-2 rounded-lg transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 </button>
-                                <form action="{{ route('desa.master-grup-antikorupsi.destroy', $master->id) }}" method="POST" onsubmit="return confirm('Hapus master grup ini?');">
+                                
+                                {{-- FORM HAPUS MODERN SWEETALERT --}}
+                                <form action="{{ route('desa.master-grup-antikorupsi.destroy', $master->id) }}" method="POST" class="form-hapus-master inline-block">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
+                                    <button type="button" onclick="pemicuHapusMaster(this)" class="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
                                 </form>
@@ -57,7 +61,6 @@
             </div>
         </div>
 
-        <!-- MODAL TAMBAH MASTER -->
         <div x-show="modalAddOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="flex items-center justify-center min-h-screen px-4">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="modalAddOpen = false"></div>
@@ -92,12 +95,13 @@
             </div>
         </div>
 
-        <!-- MODAL EDIT MASTER -->
         <div x-show="modalEditOpen" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
             <div class="flex items-center justify-center min-h-screen px-4">
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="modalEditOpen = false"></div>
                 <div class="bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all sm:max-w-lg w-full z-10 border border-slate-100">
-                    <form :action="'{{ url('admin/master-grup-antikorupsi') }}/' + editId" method="POST">
+                    
+                    {{-- FIX ROUTE EDIT AGAR TIDAK BENTROK 404 --}}
+                    <form :action="'/desa/master-grup-antikorupsi/' + editId" method="POST">
                         @csrf @method('PUT')
                         <div class="p-6">
                             <h3 class="text-lg font-black uppercase italic tracking-widest text-[#1e3a8a] mb-5 border-b pb-3">Edit Master Grup</h3>
@@ -127,4 +131,33 @@
             </div>
         </div>
     </div>
+
+    {{-- JAVASCRIPT LOGIKA SWEETALERT2 --}}
+    <script>
+    function pemicuHapusMaster(button) {
+        const form = button.closest('.form-hapus-master');
+
+        Swal.fire({
+            title: 'HAPUS MASTER GRUP?',
+            text: "Data komponen indikator ini akan dihapus permanen dari sistem TARSIUS Kabupaten!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444', // Red-500 Tailwind
+            cancelButtonColor: '#64748b',  // Slate-500 Tailwind
+            confirmButtonText: 'YA, HAPUS!',
+            cancelButtonText: 'BATAL',
+            background: '#ffffff',
+            customClass: {
+                title: 'font-black tracking-tighter uppercase italic text-slate-800',
+                popup: 'rounded-[2rem] border border-slate-100 p-6',
+                confirmButton: 'rounded-xl font-black text-xs uppercase tracking-wider px-4 py-2.5',
+                cancelButton: 'rounded-xl font-black text-xs uppercase tracking-wider px-4 py-2.5'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+    </script>
 </x-app-layout>

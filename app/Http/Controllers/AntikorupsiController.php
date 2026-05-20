@@ -9,18 +9,39 @@ class AntikorupsiController extends Controller
 {
     public function index()
     {
-        // Ambil semua dokumen
-        // Jika sistemnya per desa: $dokumen = DokumenAntikorupsi::where('desa_id', $id)->get();
-        $dokumen = DokumenAntikorupsi::all();
+        $dokumen = DokumenAntikorupsi::orderBy('urutan_tampil', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
-        // Kelompokkan data berdasarkan kategori agar mudah dilooping di Blade
-        $data = [
-            'tatalaksana' => $dokumen->where('kategori', 'tatalaksana')->groupBy('grup_indikator'),
-            'pengawasan' => $dokumen->where('kategori', 'pengawasan')->groupBy('grup_indikator'),
-            'pelayanan' => $dokumen->where('kategori', 'pelayanan')->groupBy('grup_indikator'),
-            'partisipasi' => $dokumen->where('kategori', 'partisipasi')->groupBy('grup_indikator'),
-            'kearifan' => $dokumen->where('kategori', 'kearifan')->groupBy('grup_indikator'),
-        ];
+        $masterGrupList = \App\Models\MasterGrupAntikorupsi::orderBy('kategori', 'asc')
+            ->orderBy('urutan_grup', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $kategoriKeys = ['tatalaksana', 'pengawasan', 'pelayanan', 'partisipasi', 'kearifan'];
+
+        $data = [];
+
+        foreach ($kategoriKeys as $kategori) {
+            $data[$kategori] = collect();
+
+            $grupKategori = $masterGrupList->where('kategori', $kategori);
+
+            foreach ($grupKategori as $grup) {
+                $items = $dokumen
+                    ->where('kategori', $kategori)
+                    ->where('grup_indikator', $grup->nama_grup)
+                    ->sortBy([
+                        ['urutan_tampil', 'asc'],
+                        ['id', 'asc'],
+                    ])
+                    ->values();
+
+                if ($items->isNotEmpty()) {
+                    $data[$kategori]->put($grup->nama_grup, $items);
+                }
+            }
+        }
 
         return view('antikorupsi.index', compact('data'));
     }

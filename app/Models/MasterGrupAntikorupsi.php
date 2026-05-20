@@ -13,6 +13,7 @@ class MasterGrupAntikorupsi extends Model
 
     protected $fillable = [
         'kategori',
+        'urutan_grup',
         'nama_grup'
     ];
 }

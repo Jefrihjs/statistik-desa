@@ -15,4 +15,14 @@ class DomainMonitorController extends Controller
 
         return view('admin.domain-monitor', compact('domains'));
     }
+
+    public function sslMonitor()
+    {
+        // Mengambil data dengan urutan SSL yang paling kritis (sisa hari paling sedikit) di atas
+        $domains = DomainTracker::with('desa')
+            ->orderBy('days_left', 'asc')
+            ->get();
+
+        return view('admin.ssl-monitor', compact('domains'));
+    }
 }

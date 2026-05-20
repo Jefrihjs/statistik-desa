@@ -15,6 +15,7 @@ class DokumenAntikorupsi extends Model
         'user_id',
         'kategori', 
         'grup_indikator', 
+        'urutan_tampil',
         'no_urut', 
         'sub', 
         'sub_judul',

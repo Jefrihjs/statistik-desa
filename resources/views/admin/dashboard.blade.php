@@ -25,11 +25,11 @@
     <div class="py-12 px-4 bg-slate-50 min-h-screen text-left">
         <div class="max-w-7xl mx-auto">
             
-            {{-- HEADER --}}
+            {{-- HEADER PANELS --}}
             <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
                 <div>
-                    <h2 class="text-3xl font-black text-slate-800 tracking-tighter uppercase italic text-left">Statistik Kabupaten</h2>
-                    <p class="text-slate-500 font-bold text-sm tracking-widest uppercase text-left">Monitoring Sektoral Belitung Timur</p>
+                    <h2 class="text-3xl font-black text-slate-800 tracking-tighter uppercase italic text-left">TARSIUS KABUPATEN</h2>
+                    <p class="text-slate-500 font-bold text-sm tracking-widest uppercase text-left">Pusat Kendali Administrasi, Regulasi, Statistik, & Informasi Belitung Timur</p>
                 </div>
                 
                 <div class="flex items-center gap-4">
@@ -44,6 +44,62 @@
                             @endforeach
                         </select>
                     </form>
+                </div>
+            </div>
+
+            {{-- 4 CARD KPI MONITORING UTAMA (ONE STOP HUB) --}}
+            @php
+                // Logika Kalkulasi Indikator Global Kabupaten
+                $totalDesa = count($desas) > 0 ? count($desas) : 1;
+                
+                // 1. Data Tracker Domain & SSL
+                $trackers = \DB::table('domain_trackers')->get();
+                $domainSehat = $trackers->where('status', 'Sehat')->count();
+                $domainKritis = $trackers->where('status', 'Kritis')->count();
+                $sslAman = $trackers->where('days_left', '>', 30)->count();
+                $sslKritis = $trackers->where('days_left', '<=', 30)->count();
+
+                // 2. Data Dokumen Antikorupsi (Asumsi total target item default per desa adalah 11 dokumen)
+                $totalTargetDokumen = $totalDesa * 11;
+                $totalDokumenTerisi = \DB::table('dokumen_antikorupsi')->whereNotNull('link_drive')->count(); // <--- Hapus huruf 's' di sini
+                $persenAntikorupsi = $totalTargetDokumen > 0 ? round(($totalDokumenTerisi / $totalTargetDokumen) * 100) : 0;
+            @endphp
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Statistik Sektoral</p>
+                        <h3 class="text-2xl font-black text-slate-800 mt-1">{{ $totalDesa }} Wilayah</h3>
+                        <p class="text-[10px] text-blue-600 font-bold mt-1">Selesai Sinkronisasi 2026</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-xl">📊</div>
+                </div>
+
+                <a href="{{ route('admin.domain.monitor') }}" class="group block bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-amber-500 hover:shadow-md transition-all duration-200">
+                    <div>
+                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Masa Aktif Domain</p>
+                        <h3 class="text-2xl font-black text-slate-800 mt-1 group-hover:text-amber-600 transition-colors">{{ $domainSehat }} Sehat</h3>
+                        <p class="text-[10px] text-rose-600 font-bold mt-1">⚠️ {{ $domainKritis }} Desa Kritis</p>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform">🌐</div>
+                </a>
+
+                <a href="{{ route('admin.ssl.monitor') }}" class="group block bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-rose-500 hover:shadow-md transition-all duration-200">
+                    <div>
+                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Enkripsi SSL (HTTPS)</p>
+                        <h3 class="text-2xl font-black text-slate-800 mt-1 group-hover:text-rose-600 transition-colors">{{ $sslAman }} Secured</h3>
+                        <p class="text-[10px] text-rose-500 font-bold mt-1">🚨 {{ $sslKritis }} Butuh Pembaruan</p>
+                    </div>
+                    <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform">🔒</div>
+                </a>
+
+                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Kepatuhan Antikorupsi</p>
+                        <h3 class="text-2xl font-black text-slate-800 mt-1">{{ $persenAntikorupsi }}%</h3>
+                        <p class="text-[10px] text-emerald-600 font-bold mt-1">Berkas Terunggah Sistem</p>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-xl">🛡️</div>
                 </div>
             </div>
 
@@ -187,21 +243,19 @@
             mainSvg.call(mainZoom);
 
             d3.select("#btnResetPeta").on("click", function() {
-
                 mainSvg.transition()
                     .duration(750)
                     .call(mainZoom.transform, d3.zoomIdentity);
 
                 mainG.selectAll("path")
                     .transition().duration(750)
-                    .attr("fill-opacity", 1)       
+                    .attr("fill-opacity", 1)      
                     .attr("stroke", "#ffffff")   
                     .attr("stroke-width", 1)     
                     .style("filter", "none")    
                     .style("transform", "scale(1)"); 
 
                 window.resetKeKabupaten();
-                
                 d3.select(".d3-tooltip").style("opacity", 0);
             });
 
@@ -234,7 +288,6 @@
                         d3.select(this).transition().duration(200).attr("stroke", "#ffffff").attr("stroke-width", 1).style("filter", "none").style("transform", "scale(1)");
                     })
                     .on("click", function(event, d) {
-
                         const container = d3.select("#petaVektor");
                         const w = container.node().getBoundingClientRect().width;
                         const h = container.node().getBoundingClientRect().height;

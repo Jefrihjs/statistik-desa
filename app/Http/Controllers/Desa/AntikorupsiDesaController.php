@@ -14,18 +14,40 @@ class AntikorupsiDesaController extends Controller
         abort_if(!$desaId, 404, 'Akun Anda belum terikat dengan entitas Desa manapun.');
 
         $dokumen = DokumenAntikorupsi::where('desa_id', $desaId)
+            ->orderBy('kategori', 'asc')
+            ->orderBy('urutan_tampil', 'asc')
             ->orderBy('id', 'asc')
             ->get();
 
-        $data = [
-            'tatalaksana' => $dokumen->where('kategori', 'tatalaksana')->groupBy('grup_indikator'),
-            'pengawasan'  => $dokumen->where('kategori', 'pengawasan')->groupBy('grup_indikator'),
-            'pelayanan'   => $dokumen->where('kategori', 'pelayanan')->groupBy('grup_indikator'),
-            'partisipasi' => $dokumen->where('kategori', 'partisipasi')->groupBy('grup_indikator'),
-            'kearifan'    => $dokumen->where('kategori', 'kearifan')->groupBy('grup_indikator'),
-        ];
+        $masterGrupList = \App\Models\MasterGrupAntikorupsi::orderBy('kategori', 'asc')
+            ->orderBy('urutan_grup', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
 
-        $masterGrupList = \App\Models\MasterGrupAntikorupsi::all();
+        $kategoriKeys = ['tatalaksana', 'pengawasan', 'pelayanan', 'partisipasi', 'kearifan'];
+
+        $data = [];
+
+        foreach ($kategoriKeys as $kategori) {
+            $data[$kategori] = collect();
+
+            $grupKategori = $masterGrupList->where('kategori', $kategori);
+
+            foreach ($grupKategori as $grup) {
+                $items = $dokumen
+                    ->where('kategori', $kategori)
+                    ->where('grup_indikator', $grup->nama_grup)
+                    ->sortBy([
+                        ['urutan_tampil', 'asc'],
+                        ['id', 'asc'],
+                    ])
+                    ->values();
+
+                if ($items->isNotEmpty()) {
+                    $data[$kategori]->put($grup->nama_grup, $items);
+                }
+            }
+        }
 
         return view('desa.antikorupsi.index', compact('data', 'masterGrupList'));
     }
@@ -56,6 +78,7 @@ class AntikorupsiDesaController extends Controller
         $request->validate([
             'kategori' => 'required',
             'grup_indikator' => 'required',
+            'urutan_tampil' => 'nullable|integer',
             'sub_judul' => 'nullable|string|max:255',
             'no_urut' => 'nullable|string|max:20',
             'sub' => 'nullable|string|max:20',
@@ -67,6 +90,7 @@ class AntikorupsiDesaController extends Controller
             'desa_id'        => auth()->user()->desa_id, 
             'kategori'       => $request->kategori,
             'grup_indikator' => $request->grup_indikator,
+            'urutan_tampil' => $request->urutan_tampil,
             'sub_judul'      => $request->sub_judul,
             'no_urut'        => $request->no_urut,
             'sub'            => $request->sub,
@@ -94,14 +118,15 @@ class AntikorupsiDesaController extends Controller
     public function editData(Request $request, $id)
     {
         $request->validate([
-            'kategori' => 'required',
-            'grup_indikator' => 'required',
-            'sub_judul' => 'nullable|string|max:255',
-            'no_urut' => 'nullable|string|max:20',
-            'sub' => 'nullable|string|max:20',
-            'nama_dokumen' => 'nullable|string|max:255',
-            'link_drive' => 'nullable|url',
-        ]);
+        'kategori' => 'required',
+        'grup_indikator' => 'required',
+        'urutan_tampil' => 'nullable|integer',
+        'sub_judul' => 'nullable|string|max:255',
+        'no_urut' => 'nullable|string|max:20',
+        'sub' => 'nullable|string|max:20',
+        'nama_dokumen' => 'nullable|string|max:255',
+        'link_drive' => 'nullable|url',
+    ]);
 
         $dokumen = DokumenAntikorupsi::where('id', $id)
             ->where('desa_id', auth()->user()->desa_id)
@@ -110,6 +135,7 @@ class AntikorupsiDesaController extends Controller
         $dokumen->update([
             'kategori'       => $request->kategori,
             'grup_indikator' => $request->grup_indikator,
+            'urutan_tampil'  => $request->urutan_tampil,
             'sub_judul'      => $request->sub_judul,
             'no_urut'        => $request->no_urut,
             'sub'            => $request->sub,

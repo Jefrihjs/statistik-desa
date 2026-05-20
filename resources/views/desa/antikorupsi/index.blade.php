@@ -1,4 +1,23 @@
 <x-app-layout>
+    <style>
+        .custom-scroll-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scroll-area::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 999px;
+        }
+
+        .custom-scroll-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        .custom-scroll-area::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight uppercase italic tracking-widest text-[15px]">
@@ -44,9 +63,23 @@
                     @endphp
 
                     @foreach($kategoriList as $keyKategori => $judulKategori)
-                    <h3 class="text-lg font-black uppercase italic tracking-widest border-b pb-2 mt-8 mb-4 text-[#1e3a8a]">{{ $judulKategori }}</h3>
-                    
-                    @forelse($data[$keyKategori] ?? [] as $grup => $items)
+                        <div x-data="{ openKategori: false }" class="mb-5 border border-slate-100 rounded-[1.5rem] overflow-hidden shadow-sm bg-white">
+
+                            <button type="button"
+                                    @click="openKategori = !openKategori"
+                                    class="w-full flex justify-between items-center px-6 py-4 bg-slate-50 hover:bg-slate-100 transition-all border-b border-slate-100">
+                                <span class="text-lg font-black uppercase italic tracking-widest text-[#1e3a8a]">
+                                    {{ $judulKategori }}
+                                </span>
+
+                                <span class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[#1e3a8a] font-black">
+                                    <span x-show="!openKategori">+</span>
+                                    <span x-show="openKategori" style="display:none;">−</span>
+                                </span>
+                            </button>
+
+                            <div x-show="openKategori" x-transition class="p-6" style="display:none;">
+                                @forelse($data[$keyKategori] ?? [] as $grup => $items)
                         <div class="mb-6 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-md overflow-hidden">
                             
                             {{-- HEADER GRUP UTAMA --}}
@@ -57,7 +90,7 @@
                                 </h4>
                             </div>
                             
-                            <div class="flex flex-col gap-3">
+                            <div class="pr-2 space-y-2 custom-scroll-area" style="max-height: 360px; overflow-y: auto;">
                                 @foreach($items as $item)
                                     {{-- PROTEKSI OBJEK --}}
                                     @if(is_object($item))
@@ -65,36 +98,84 @@
                                         @if(!empty($item->sub_judul) && empty($item->nama_dokumen))
                                             {{-- BARIS PEMBATAS SUB JUDUL --}}
                                             <div class="flex justify-between items-center bg-slate-100/80 p-3 rounded-xl border border-slate-200 mt-2 mb-1">
-                                                <span class="font-black text-[#1e3a8a] text-[11px] uppercase tracking-wider">📂 {{ $item->sub_judul }}</span>
-                                                <button type="button" onclick="konfirmasiHapusIndikator('{{ $item->id }}')" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors" title="Hapus Sub Judul">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                </button>
+                                                <span class="font-black text-[#1e3a8a] text-[11px] uppercase tracking-wider">
+                                                    📂 {{ $item->sub_judul }}
+                                                </span>
+
+                                                <div class="flex items-center gap-1">
+                                                    <button type="button"
+                                                            @click="openEdit({{ json_encode($item) }})"
+                                                            class="text-blue-500 hover:text-blue-700 p-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+                                                            title="Edit Sub Judul">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+
+                                                    <button type="button"
+                                                            onclick="konfirmasiHapusIndikator('{{ $item->id }}')"
+                                                            class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                                                            title="Hapus Sub Judul">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         @else
                                             {{-- BARIS INPUT DOKUMEN NORMAL --}}
-                                            <div class="flex flex-col md:flex-row md:items-center gap-4 bg-white p-3 rounded-xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
-                                                <div class="md:w-5/12 flex items-start gap-2">
+                                            <div class="bg-white px-3 py-2 rounded-xl border border-slate-100 shadow-sm transition-all hover:shadow-md">
+
+                                                <div class="flex items-start gap-2 mb-2">
                                                     <span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-black text-[10px] tracking-tight mt-0.5 shrink-0">
                                                         {{ $item->no_urut ?? '' }}{{ !empty($item->sub) ? '.'.$item->sub : '' }}
                                                     </span>
+
                                                     <label class="text-xs text-slate-700 font-bold uppercase tracking-wide leading-relaxed">
                                                         @if(!empty($item->sub_judul))
                                                             <span class="text-blue-600 font-black block text-[9px] mb-0.5">{{ $item->sub_judul }}</span>
                                                         @endif
+
                                                         {{ $item->nama_dokumen }}
                                                     </label>
                                                 </div>
-                                                <div class="md:w-5/12 w-full">
-                                                    <input type="url" name="links[{{ $item->id }}]" value="{{ $item->link_drive }}" placeholder="Paste Link Google Drive..." class="w-full border-slate-200 rounded-xl shadow-inner focus:border-[#58896a] focus:ring focus:ring-[#58896a] focus:ring-opacity-20 text-xs bg-slate-50 focus:bg-white transition-all py-2 px-3">
+
+                                                <div class="flex items-center gap-2">
+                                                    <input type="url"
+                                                        name="links[{{ $item->id }}]"
+                                                        value="{{ $item->link_drive }}"
+                                                        placeholder="Paste Link Google Drive..."
+                                                        class="w-full border-slate-200 rounded-lg shadow-inner focus:border-[#58896a] focus:ring focus:ring-[#58896a] focus:ring-opacity-20 text-xs bg-slate-50 focus:bg-white transition-all py-1.5 px-3">
+
+                                                    <div class="flex justify-end gap-1 shrink-0">
+                                                        <button type="button"
+                                                                @click="openEdit({{ json_encode($item) }})"
+                                                                class="text-blue-500 hover:text-blue-700 p-2 rounded-xl hover:bg-blue-50 transition-colors"
+                                                                title="Edit Indikator">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
+
+                                                        <button type="button"
+                                                                onclick="konfirmasiHapusIndikator('{{ $item->id }}')"
+                                                                class="text-red-500 hover:text-red-700 p-2 rounded-xl hover:bg-red-50 transition-colors"
+                                                                title="Hapus Indikator">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                                </path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div class="md:w-2/12 w-full flex justify-end gap-1 border-t md:border-t-0 pt-2 md:pt-0 border-slate-100">
-                                                    <button type="button" @click="openEdit({{ json_encode($item) }})" class="text-blue-500 hover:text-blue-700 p-2 rounded-xl hover:bg-blue-50 transition-colors" title="Edit Indikator">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                                    </button>
-                                                    <button type="button" onclick="konfirmasiHapusIndikator('{{ $item->id }}')" class="text-red-500 hover:text-red-700 p-2 rounded-xl hover:bg-red-50 transition-colors" title="Hapus Indikator">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                                    </button>
-                                                </div>
+
                                             </div>
                                         @endif
                                         
@@ -106,7 +187,9 @@
                         <div class="bg-white border border-slate-100 rounded-[2rem] p-8 text-center shadow-sm mb-6">
                             <p class="text-xs text-slate-400 italic font-bold uppercase tracking-widest">Belum ada indikator untuk kategori ini.</p>
                         </div>
-                    @endforelse
+                     @endforelse
+                        </div>
+                    </div>
                     @endforeach
                     
                     <div class="mt-12 border-t border-slate-200 pt-8">
@@ -162,6 +245,18 @@
                                         </template>
                                     </select>
                                 </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">
+                                        Urutan Tampil
+                                    </label>
+                                    <input type="number"
+                                        name="urutan_tampil"
+                                        placeholder="Contoh: 10, 20, 30"
+                                        class="w-full border-slate-300 rounded-xl text-xs focus:ring-[#58896a]">
+                                    <small class="text-[10px] text-slate-400 italic mt-1 block">
+                                        Gunakan angka loncat agar mudah menyisipkan data baru.
+                                    </small>
+                                </div>
                                 <div class="mb-4">
                                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Sub Judul Indikator (Opsional)</label>
                                     <input type="text" name="sub_judul" placeholder="Contoh: 1. Musyawarah Pemangku Kepentingan..." class="w-full border-slate-200 rounded-xl text-xs">
@@ -170,25 +265,12 @@
                                 <div class="flex gap-4">
                                     <div class="w-1/2">
                                         <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">No Urut</label>
-                                        <input type="text" name="no_urut" x-model="editNoUrut" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
+                                        <input type="text" name="no_urut" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
                                     </div>
                                     <div class="w-1/2">
                                         <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Sub</label>
-                                        <input type="text" name="sub" x-model="editSub" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
+                                        <input type="text" name="sub" class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
                                     </div>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">
-                                        Sub Judul Indikator
-                                    </label>
-                                    <input type="text"
-                                        name="sub_judul"
-                                        x-model="editSubJudul"
-                                        placeholder="Contoh: Isi Maklumat Pelayanan Memuat Minimal:"
-                                        class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
-                                    <small class="text-[10px] text-slate-400 italic mt-1 block">
-                                        Kosongkan jika ini bukan baris sub judul.
-                                    </small>
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">Nama Dokumen</label>
@@ -239,6 +321,28 @@
                                             <option :value="grup.nama_grup" x-text="grup.nama_grup" :selected="grup.nama_grup === editGrup"></option>
                                         </template>
                                     </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-1">
+                                        Urutan Tampil
+                                    </label>
+                                    <input type="number"
+                                        name="urutan_tampil"
+                                        x-model="editUrutanTampil"
+                                        class="w-full border-slate-300 rounded-xl text-xs focus:ring-blue-500">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                                        Sub Judul Indikator (Opsional)
+                                    </label>
+                                    <input type="text"
+                                        name="sub_judul"
+                                        x-model="editSubJudul"
+                                        placeholder="Contoh: 1. Musyawarah Pemangku Kepentingan..."
+                                        class="w-full border-slate-200 rounded-xl text-xs">
+                                    <small class="text-[10px] text-slate-400 italic mt-1 block">
+                                        *Isi jika ini adalah baris sub-kelompok judul.
+                                    </small>
                                 </div>
                                 <div class="flex gap-4">
                                     <div class="w-1/2">
@@ -293,6 +397,7 @@
                 editKategori: 'tatalaksana',
                 editGrup: '',
                 editNoUrut: '',
+                editUrutanTampil: '',
                 editSub: '',
                 editSubJudul: '',
                 editNama: '',
@@ -306,6 +411,7 @@
                     this.editId = item.id;
                     this.editKategori = item.kategori;
                     this.editGrup = item.grup_indikator;
+                    this.editUrutanTampil = item.urutan_tampil || '';
                     this.editNoUrut = item.no_urut || '';
                     this.editSub = item.sub || '';
                     this.editSubJudul = item.sub_judul || '';

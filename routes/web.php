@@ -67,6 +67,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // --- FITUR ANTIKORUPSI ADMIN (SUDAH BERSIH DAN SERAGAM) ---
     Route::get('/antikorupsi-setting', [AntikorupsiSettingController::class, 'index'])->name('antikorupsi.setting');
     Route::post('/antikorupsi-setting/toggle/{id}', [AntikorupsiSettingController::class, 'toggleStatus'])->name('antikorupsi.toggle');
+
+    // Rute untuk monitoring detail SSL Desa se-Kabupaten
+    Route::get('/ssl-monitor', [App\Http\Controllers\Admin\DomainMonitorController::class, 'sslMonitor'])->name('admin.ssl.monitor');
 });
 
 // ==========================================

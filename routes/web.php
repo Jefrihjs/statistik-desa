@@ -89,6 +89,21 @@ Route::middleware(['auth', 'role:desa'])->prefix('desa')->name('desa.')->group(f
     Route::delete('/antikorupsi/{id}', [AntikorupsiDesaController::class, 'destroy'])->name('antikorupsi.destroy');
     Route::put('/antikorupsi/edit/{id}', [AntikorupsiDesaController::class, 'editData'])->name('antikorupsi.edit');
     Route::resource('master-grup-antikorupsi', \App\Http\Controllers\Desa\MasterGrupAntikorupsiController::class)->except(['create', 'show', 'edit']);
+
+    // --- FITUR PPID (INPUT DESA) ---
+    Route::get('/ppid', [\App\Http\Controllers\Desa\PpidDesaController::class, 'index'])
+    ->name('ppid.index');
+    Route::get('/ppid/dip', [\App\Http\Controllers\Desa\PpidDipController::class, 'index'])
+    ->name('ppid.dip.index');
+
+    Route::post('/ppid/dip', [\App\Http\Controllers\Desa\PpidDipController::class, 'store'])
+        ->name('ppid.dip.store');
+
+    Route::put('/ppid/dip/{id}', [\App\Http\Controllers\Desa\PpidDipController::class, 'update'])
+        ->name('ppid.dip.update');
+
+    Route::delete('/ppid/dip/{id}', [\App\Http\Controllers\Desa\PpidDipController::class, 'destroy'])
+        ->name('ppid.dip.destroy');
 });
 
 // ==========================================
@@ -107,4 +122,7 @@ Route::get('/desa/{slug}', [FrontendDesa::class, 'profilDesa'])->name('desa.prof
 
 // Halaman Publik Desa Antikorupsi
 Route::get('/desa-antikorupsi', [AntikorupsiController::class, 'index'])->name('antikorupsi.index');
+
+Route::get('/embed/ppid/{slug}/{kategori}', [\App\Http\Controllers\Embed\PpidEmbedController::class, 'dip'])
+    ->name('embed.ppid.dip');
 require __DIR__.'/auth.php';

@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-20 items-center">
             
-            <!-- BAGIAN KIRI: Logo & Judul Aplikasi -->
+            
             <div class="flex items-center">
                 <a href="{{ route('dashboard') }}" class="transition transform hover:scale-105 flex items-center gap-3">
                     <img src="{{ asset('img/logo-tarsius-beltim.png') }}" alt="Logo tarsius" class="block h-12 w-auto object-contain drop-shadow-sm">
@@ -14,7 +14,7 @@
                 </a>
             </div>
 
-            <!-- BAGIAN KANAN: Profil & Logout (Desktop) -->
+            
             <div class="hidden sm:flex sm:items-center">
                 <div class="flex items-center bg-slate-50/80 rounded-2xl p-1.5 border border-slate-100 shadow-sm hover:bg-white transition-all">
                     <x-dropdown align="right" width="48">
@@ -37,7 +37,7 @@
 
                         <x-slot name="content">
                             <div class="p-1">
-                                <!-- Link Profil -->
+                                
                                 <x-dropdown-link :href="route('profile.edit')" class="rounded-lg font-black uppercase text-[10px] tracking-widest flex items-center gap-3 hover:bg-slate-50 transition-all py-3">
                                     <div class="p-1.5 bg-blue-50 rounded-md text-[#1e3a8a]">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,7 +49,7 @@
 
                                 <div class="border-t border-slate-100 my-1"></div>
 
-                                <!-- Tombol Logout -->
+                                
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <x-dropdown-link :href="route('logout')"
@@ -69,7 +69,7 @@
                 </div>
             </div>
 
-            <!-- Hamburger Button (Hanya tampil di HP) -->
+            
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-600 focus:outline-none transition-all duration-300">
                     <svg class="h-7 w-7" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -81,8 +81,8 @@
         </div>
     </div>
 
-    <!-- BAGIAN MOBILE: Profil & Logout -->
-    <!-- Menu lain TIDAK ADA di sini, karena sudah dicover oleh Sidebar/Bottom Nav -->
+    
+    
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-slate-50 border-t border-slate-200 shadow-inner">
         
         <div class="px-6 py-5 flex items-center gap-4">

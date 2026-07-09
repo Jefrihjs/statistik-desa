@@ -1,126 +1,166 @@
 <x-app-layout>
     @php
-        $headerColor = $desa->header_color ?? '#2563eb';
-        $accentColor = $desa->accent_color ?? '#10b981';
-        
-        // Perhitungan Statistik Real-time
+        $desaAktif = $desa ?? auth()->user()->desa ?? \App\Models\Desa::find(auth()->user()->desa_id);
+        $headerColor = $desaAktif->header_color ?? '#2563eb';
+        $accentColor = $desaAktif->accent_color ?? '#0f766e';
+
         $totalTerisi = $statusPengisian->sum('terisi');
         $totalIndikator = $statusPengisian->sum('total_indikator');
         $persen = $totalIndikator > 0 ? round(($totalTerisi / $totalIndikator) * 100) : 0;
+
+        $statistikUrl = url('/desa/' . $desaAktif->slug);
+        $entriUrl = url('/admin/entri/' . auth()->user()->desa_id . '?tahun=' . $tahunAktif);
+        $templateUrl = route('admin.download-template') . '?tahun=' . $tahunAktif;
     @endphp
 
-    <div class="py-10 px-4 bg-slate-50 min-h-screen">
-        <div class="max-w-5xl mx-auto">
-            
+    <div class="py-12 bg-slate-50 min-h-screen">
+        <div class="max-w-6xl mx-auto px-4">
+
             <div class="mb-4">
-                <a href="{{ route('desa.dashboard') }}" class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <a href="{{ route('desa.dashboard') }}"
+                   class="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Kembali ke Hub Utama TARSIUS
                 </a>
             </div>
 
-            <div style="background: linear-gradient(135deg, {{ $headerColor }}, {{ $accentColor }}); border-radius: 2.5rem; padding: 35px; color: white; margin-bottom: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
-                <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10;">
+            {{-- HEADER --}}
+            <div class="relative overflow-hidden rounded-[2.5rem] text-white p-8 lg:p-10 mb-8 shadow-sm"
+                 style="background: linear-gradient(135deg, {{ $headerColor }}, {{ $accentColor }});">
+                <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-white/10"></div>
+                <div class="absolute right-20 bottom-0 w-32 h-32 rounded-full bg-white/10"></div>
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div>
-                        <p style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 2px; opacity: 0.9;">TARSIUS &bull; Sub-Layanan Statistik</p>
-                        <h1 style="font-size: 26px; font-weight: 900; text-transform: uppercase; font-style: italic; line-height: 1;">
+                        <p style="font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.2em; margin-bottom:2px; opacity:0.9;">
+                            TARSIUS &bull; Sub-Layanan Statistik
+                        </p>
+                        <h1 style="font-size:26px; font-weight:900; text-transform:uppercase; font-style:italic; line-height:1;">
                             PANEL STATISTIK SEKTORAL
                         </h1>
+                        <p style="font-size:12px; margin-top:12px; opacity:.9; max-width:720px;">
+                            Kelola data statistik sektoral desa, pantau tren perkembangan, dan sajikan informasi berbasis data secara transparan.
+                        </p>
                     </div>
-                    <span style="font-size: 24px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 1rem;">📊</span>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <a href="{{ $statistikUrl }}" target="_blank"
+                           class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/15 border border-white/20 px-5 py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/25 shadow-lg transition-colors">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            Lihat Statistik
+                        </a>
+                        <a href="{{ $entriUrl }}"
+                           class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/15 border border-white/20 px-5 py-3.5 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/25 shadow-lg transition-colors">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Input Data
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 2rem;">
-                
-                <a href="/admin/entri/{{ auth()->user()->desa_id }}?tahun={{ $tahunAktif }}" style="text-decoration: none;">
-                    <div style="background: white; padding: 30px; border-radius: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; transition: all 0.3s; height: 100%; display: flex; align-items: center; gap: 20px;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='{{ $headerColor }}'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#f1f5f9'">
-                        <div style="width: 60px; height: 60px; background: {{ $headerColor }}20; color: {{ $headerColor }}; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg style="width: 30px; height: 30px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        </div>
-                        <div>
-                            <h3 style="font-size: 16px; font-weight: 900; color: #1e293b; margin: 0;">INPUT DATA DI SINI</h3>
-                            <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Entri statistik sektoral tahun <b style="color: {{ $headerColor }}">{{ $tahunAktif }}</b></p>
-                        </div>
-                    </div>
-                </a>
+            @if(session('success'))
+                <div class="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 px-5 py-4 text-emerald-700 font-bold text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                <a href="{{ route('admin.download-template') }}?tahun={{ $tahunAktif }}" style="text-decoration: none;">
-                    <div style="background: white; padding: 30px; border-radius: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; transition: all 0.3s; height: 100%; display: flex; align-items: center; gap: 20px;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='{{ $accentColor }}'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='#f1f5f9'">
-                        <div style="width: 60px; height: 60px; background: {{ $accentColor }}20; color: {{ $accentColor }}; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg style="width: 30px; height: 30px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
-                        <div>
-                            <h3 style="font-size: 16px; font-weight: 900; color: #1e293b; margin: 0;">TEMPLATE EXCEL</h3>
-                            <p style="font-size: 11px; color: #64748b; margin-top: 4px;">Unduh format impor data {{ $tahunAktif }}</p>
-                        </div>
+            {{-- LINK & EMBED STATISTIK --}}
+            <div class="bg-white rounded-[2rem] border border-slate-200 p-7 shadow-sm mb-8">
+                <div class="flex items-start gap-4 mb-5">
+                    <div class="shrink-0 w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                        <svg width="18" height="18" fill="none" stroke="#2563eb" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </div>
-                </a>
-            </div>
-
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 2rem;">
-                <div style="flex: 1; min-width: 200px; padding: 25px; background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
                     <div>
-                        <p style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">Pilih Tahun Data</p>
-                        <form method="GET" action="" style="margin: 0; padding: 0;">
-                            <select name="tahunAktif" onchange="this.form.submit()" 
-                                    style="font-size: 20px; font-weight: 900; color: #1e293b; background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 10px 16px; width: 100%; cursor: pointer; outline: none; transition: 0.2s ease-in-out; box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);"
-                                    onmouseover="this.style.borderColor='#94a3b8'; this.style.backgroundColor='#f1f5f9';" 
-                                    onmouseout="this.style.borderColor='#e2e8f0'; this.style.backgroundColor='#f8fafc';">
-                                @for($y = date('Y'); $y >= 2020; $y--)
-                                    <option value="{{ $y }}" {{ $tahunAktif == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
-                                @endfor
-                            </select>
-                        </form>
+                        <h2 class="text-sm font-black text-slate-900 uppercase italic">Statistik Desa Publik</h2>
+                        <p class="text-[10px] text-slate-400 font-bold">Embed halaman statistik ke website desa.</p>
                     </div>
-                    <span style="background: #f1f5f9; padding: 8px; border-radius: 0.75rem; font-size: 20px;">📅</span>
                 </div>
 
-                <div style="flex: 1; min-width: 200px; padding: 25px; background: white; border-radius: 1.5rem; border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                    <div>
-                        <p style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em;">Status Sinkronisasi</p>
-                        <p style="font-size: 24px; font-weight: 900; color: {{ $headerColor }};">AKTIF</p>
+                <div class="mb-4">
+                    <label class="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Link Langsung</label>
+                    <div class="flex items-stretch gap-2">
+                        <div class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-600 truncate select-all" id="statUrlText">{{ $statistikUrl }}</div>
+                        <button type="button" onclick="copyText('statUrlText', this)" class="shrink-0 rounded-xl bg-slate-900 px-3.5 text-[9px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-colors flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            <span>Salin</span>
+                        </button>
+                        <a href="{{ $statistikUrl }}" target="_blank" class="shrink-0 rounded-xl bg-blue-600 px-3.5 text-[9px] font-black uppercase tracking-widest text-white hover:bg-blue-700 transition-colors flex items-center">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
                     </div>
-                    <span style="background: {{ $headerColor }}10; padding: 8px; border-radius: 0.75rem; font-size: 20px;">✅</span>
+                </div>
+
+                <div>
+                    <label class="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Kode Embed (iframe)</label>
+                    <div class="flex items-stretch gap-2">
+                        <pre class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-[10px] font-mono text-slate-600 overflow-x-auto whitespace-pre-wrap break-all select-all" id="statEmbedText">&lt;iframe src="{{ $statistikUrl }}" width="100%" height="1200" frameborder="0" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;</pre>
+                        <button type="button" onclick="copyText('statEmbedText', this)" class="shrink-0 rounded-xl bg-slate-900 px-3.5 text-[9px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-colors flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            <span>Salin</span>
+                        </button>
+                    </div>
+                    <p class="text-[8px] text-slate-300 mt-1.5">Height 1200px agar seluruh konten statistik tampil utuh.</p>
                 </div>
             </div>
 
-            <div style="background: white; border-radius: 2.5rem; padding: 35px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+            {{-- TAHUN & STATUS --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-[2rem] border border-slate-200 p-7 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-4">Pilih Tahun Data</p>
+                    <form method="GET" action="" style="margin:0;">
+                        <select name="tahunAktif" onchange="this.form.submit()"
+                                class="w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-lg font-black text-slate-900 cursor-pointer outline-none focus:border-slate-400 transition-colors appearance-none">
+                            @for($y = date('Y'); $y >= 2020; $y--)
+                                <option value="{{ $y }}" {{ $tahunAktif == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                            @endfor
+                        </select>
+                    </form>
+                </div>
+                <div class="bg-white rounded-[2rem] border border-slate-200 p-7 shadow-sm flex items-center justify-between">
                     <div>
-                        <p style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 5px;">Progress Data Tahun {{ $tahunAktif }}</p>
-                        <h2 style="font-size: 32px; font-weight: 900; color: #1e3a8a; line-height: 1;">{{ $persen }}% <span style="font-size: 12px; color: #94a3b8; font-style: italic; font-weight: 700;">Selesai</span></h2>
+                        <p class="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400 mb-2">Status Sinkronisasi</p>
+                        <p class="text-2xl font-black" style="color: {{ $headerColor }};">AKTIF</p>
                     </div>
-                    <div style="text-align: right;">
-                        <span style="font-size: 10px; font-weight: 800; color: {{ $headerColor }}; background: {{ $headerColor }}10; padding: 5px 12px; border-radius: 2rem;">
-                            {{ $totalTerisi }} / {{ $totalIndikator }} Indikator
-                        </span>
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" style="background: {{ $headerColor }}10;">✅</div>
+                </div>
+            </div>
+
+            {{-- PROGRESS DATA --}}
+            <div class="bg-white rounded-[2rem] border border-slate-200 p-8 shadow-sm mb-8">
+                <div class="flex items-end justify-between mb-5">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Progress Data Tahun {{ $tahunAktif }}</p>
+                        <h2 class="text-3xl font-black text-slate-900">
+                            {{ $persen }}%
+                            <span class="text-xs text-slate-400 font-bold italic ml-1">Selesai</span>
+                        </h2>
                     </div>
+                    <span class="text-[10px] font-black px-3 py-1.5 rounded-full" style="color: {{ $headerColor }}; background: {{ $headerColor }}10;">
+                        {{ $totalTerisi }} / {{ $totalIndikator }} Indikator
+                    </span>
                 </div>
 
-                <div style="width: 100%; height: 12px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin-bottom: 30px;">
-                    <div style="height: 100%; background: linear-gradient(90deg, {{ $headerColor }}, {{ $accentColor }}); border-radius: 10px; width: {{ $persen }}%; transition: width 0.5s ease-in-out;"></div>
+                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-8">
+                    <div class="h-full rounded-full transition-all duration-500" style="width: {{ $persen }}%; background: linear-gradient(90deg, {{ $headerColor }}, {{ $accentColor }});"></div>
                 </div>
 
-                <div style="border: 1px solid #f8fafc; border-radius: 1.5rem; overflow: hidden;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <div class="rounded-2xl border border-slate-100 overflow-hidden">
+                    <table class="w-full text-xs">
                         <thead>
-                            <tr style="background: #f8fafc; text-align: left;">
-                                <th style="padding: 12px 20px; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em;">Kategori Indikator</th>
-                                <th style="padding: 12px 20px; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; text-align: center;">Status</th>
+                            <tr class="bg-slate-50 text-left">
+                                <th class="px-6 py-3 text-[9px] font-black uppercase tracking-widest text-slate-400">Kategori Indikator</th>
+                                <th class="px-6 py-3 text-[9px] font-black uppercase tracking-widest text-slate-400 text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($statusPengisian as $stat)
-                            <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 15px 20px; font-weight: 800; color: #334155; text-transform: uppercase;">{{ $stat->name }}</td>
-                                <td style="padding: 15px 20px; text-align: center;">
+                            <tr class="border-t border-slate-50">
+                                <td class="px-6 py-4 font-black text-slate-800 uppercase">{{ $stat->name }}</td>
+                                <td class="px-6 py-4 text-center">
                                     @if($stat->terisi == $stat->total_indikator)
-                                        <span style="color: #10b981; font-weight: 900; background: #ecfdf5; padding: 4px 10px; border-radius: 2rem; font-size: 9px;">✓ LENGKAP</span>
+                                        <span class="inline-block rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-[9px] font-black text-emerald-600">✓ LENGKAP</span>
                                     @elseif($stat->terisi > 0)
-                                        <span style="color: #3b82f6; font-weight: 900; background: #eff6ff; padding: 4px 10px; border-radius: 2rem; font-size: 9px;">⚡ {{ $stat->terisi }}/{{ $stat->total_indikator }}</span>
+                                        <span class="inline-block rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-[9px] font-black text-blue-600">⚡ {{ $stat->terisi }}/{{ $stat->total_indikator }}</span>
                                     @else
-                                        <span style="color: #94a3b8; font-weight: 900; background: #f8fafc; padding: 4px 10px; border-radius: 2rem; font-size: 9px;">○ KOSONG</span>
+                                        <span class="inline-block rounded-full bg-slate-50 border border-slate-200 px-3 py-1 text-[9px] font-black text-slate-400">○ KOSONG</span>
                                     @endif
                                 </td>
                             </tr>
@@ -130,10 +170,29 @@
                 </div>
             </div>
 
-            <p style="margin-top: 40px; text-align: center; color: #cbd5e1; font-weight: 800; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4em;">
+            <p class="text-center text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 mb-8">
                 Diskominfo Belitung Timur &bull; {{ date('Y') }}
             </p>
 
         </div>
     </div>
+
+    <script>
+        function copyText(elementId, btn) {
+            var el = document.getElementById(elementId);
+            var text = el.textContent || el.innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                var span = btn.querySelector('span');
+                var original = span.textContent;
+                span.textContent = 'Tersalin!';
+                btn.classList.remove('bg-slate-900');
+                btn.classList.add('bg-emerald-600');
+                setTimeout(function() {
+                    span.textContent = original;
+                    btn.classList.remove('bg-emerald-600');
+                    btn.classList.add('bg-slate-900');
+                }, 1500);
+            });
+        }
+    </script>
 </x-app-layout>

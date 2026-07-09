@@ -1,0 +1,14 @@
+[90m= [39m[34;4mApp\Models\SkmRekomendasi[39;24m {#8689
+    [34mid[39m: [35m2[39m,
+    [34mdesa_id[39m: [35m15[39m,
+    [34mkode_survey[39m: [32m"[39m[32mSKR2512125740[39m[32m"[39m,
+    [34mnomor_rekom[39m: [32m"[39m[32mV-25.1906.004[39m[32m"[39m,
+    [34mversi[39m: [36mnull[39m,
+    [34mtahun[39m: [32m"[39m[32m2025[39m[32m"[39m,
+    [34mtanggal_mulai[39m: [36mnull[39m,
+    [34mtanggal_selesai[39m: [36mnull[39m,
+    [34mis_active[39m: [35m1[39m,
+    [34mcatatan[39m: [36mnull[39m,
+    [34mcreated_at[39m: [32m"[39m[32m2026-07-06 16:28:09[39m[32m"[39m,
+    [34mupdated_at[39m: [32m"[39m[32m2026-07-06 16:48:13[39m[32m"[39m,
+  }

@@ -1,146 +1,293 @@
 <x-app-layout>
-    <div class="py-12 px-4 md:px-6 bg-[#f8fafc] min-h-screen" 
-         x-data="{ 
-            selected: null, 
-            search: '', 
-            kecamatan: 'SEMUA',
-            shouldShow(namaDesa, namaKecamatan) {
-                const matchSearch = (namaDesa || '').toLowerCase().includes(this.search.toLowerCase());
-                const dataKec = (namaKecamatan || '').toUpperCase();
-                const matchKecamatan = this.kecamatan === 'SEMUA' || dataKec.includes(this.kecamatan.toUpperCase());
-                return matchSearch && matchKecamatan;
-            }
-         }">
-        
-        <div class="max-w-5xl mx-auto text-left">
-            
-            <div class="mb-6 flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100 gap-4">
-                <div class="text-left">
-                    <h2 class="text-3xl font-black text-[#1e3a8a] tracking-tighter uppercase italic leading-none text-left">Radar Domain Desa</h2>
-                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] mt-2 italic text-left text-left">Kabupaten Belitung Timur • Monitoring Infrastruktur</p>
-                </div>
-                <div class="bg-blue-50 px-4 py-2 rounded-2xl border border-blue-100">
-                    <span class="text-[10px] font-black text-blue-600 uppercase italic">{{ $domains->count() }} TOTAL DOMAIN</span>
-                </div>
-            </div>
+    <div class="py-12 min-h-screen bg-slate-50 theme-bg-main">
+        <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
 
-            <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" x-model="search" placeholder="CARI NAMA DESA..." 
-                       class="w-full px-6 py-4 bg-white border-none rounded-3xl shadow-sm focus:ring-2 focus:ring-blue-500 font-black italic text-xs uppercase tracking-widest text-slate-700 text-left">
+            {{-- HEADER --}}
+            <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 text-white p-8 lg:p-10 mb-8 shadow-sm">
+                <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-blue-500/10"></div>
+                <div class="absolute right-20 bottom-0 w-32 h-32 rounded-full bg-amber-400/10"></div>
 
-                <select x-model="kecamatan" 
-                        class="w-full px-6 py-4 bg-white border-none rounded-3xl shadow-sm focus:ring-2 focus:ring-blue-500 font-black italic text-xs uppercase tracking-widest text-slate-700 cursor-pointer text-left">
-                    <option value="SEMUA">-- SEMUA KECAMATAN --</option>
-                    <option value="MANGGAR">MANGGAR</option>
-                    <option value="GANTUNG">GANTUNG</option>
-                    <option value="KELAPA KAMPIT">KELAPA KAMPIT</option>
-                    <option value="DAMAR">DAMAR</option>
-                    <option value="DENDANG">DENDANG</option>
-                    <option value="SIMPANG PESAK">SIMPANG PESAK</option>
-                    <option value="SIMPANG RENGGIANG">SIMPANG RENGGIANG</option>
-                </select>
-            </div>
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300 mb-3">
+                            Kabupaten Belitung Timur • Monitoring Infrastruktur
+                        </p>
 
-            <div class="space-y-4">
-                @foreach($domains as $d)
-                <div x-show="shouldShow('{{ $d->desa->nama_desa }}', '{{ $d->desa->kecamatan }}')"
-                     x-transition.fade
-                     class="bg-white border border-slate-100 rounded-[2rem] shadow-sm hover:border-blue-400 transition-all duration-300 overflow-hidden group">
-                    
-                    <div class="p-6 cursor-pointer flex flex-wrap md:flex-nowrap items-center justify-between gap-4" 
-                         @click="selected !== {{ $d->id }} ? selected = {{ $d->id }} : selected = null">
-                        
-                        <div class="flex items-center gap-5 flex-1 min-w-[250px] text-left">
-                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-black italic text-white shadow-lg text-xl {{ $d->status == 'Sehat' ? 'bg-emerald-500' : ($d->status == 'Expired' ? 'bg-red-600' : 'bg-amber-500 animate-pulse') }}">
-                                {{ substr($d->desa->nama_desa, 0, 1) }}
-                            </div>
-                            
-                            <div class="text-left">
-                                <h3 class="font-black text-slate-800 uppercase italic tracking-tight text-lg group-hover:text-blue-600 transition-colors">
-                                    {{ $d->domain_name }}
-                                </h3>
-                                <p class="text-[9px] font-black text-slate-400 uppercase italic tracking-widest">
-                                    Desa {{ $d->desa->nama_desa }} • {{ $d->desa->kecamatan }}
-                                </p>
-                            </div>
-                        </div>
+                        <h1 class="text-3xl font-black uppercase italic tracking-tight">
+                            Radar Domain Desa
+                        </h1>
 
-                        <div class="flex items-center gap-4 md:gap-8">
-                            <div class="text-right">
-                                <p class="text-[8px] font-black text-slate-300 uppercase leading-none mb-1 text-right">Sisa Hari</p>
-                                <p class="text-2xl font-black tracking-tighter {{ $d->status == 'Kritis' ? 'text-amber-500' : ($d->status == 'Expired' ? 'text-red-600' : 'text-[#1e3a8a]') }} leading-none">
-                                    {{ $d->days_left }}
-                                </p>
-                            </div>
-                            <div :class="selected === {{ $d->id }} ? 'rotate-180' : ''" class="text-slate-300 transition-transform duration-300">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                            </div>
-                        </div>
+                        <p class="mt-3 text-sm text-slate-300 max-w-2xl leading-relaxed">
+                            Pantau masa aktif nama domain website desa, status kedaluwarsa, dan prioritas perpanjangan domain.
+                        </p>
                     </div>
 
-                    <div x-show="selected === {{ $d->id }}" x-cloak class="px-8 pb-8 pt-2 border-t border-slate-50 bg-[#fafcfe] text-left">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div class="space-y-3">
-                                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1 text-left">Dibuat (Created)</p>
-                                    <p class="font-bold text-slate-700 text-xs italic">{{ $d->created_date ? \Carbon\Carbon::parse($d->created_date)->translatedFormat('d F Y, H:i') : '-' }}</p>
-                                </div>
-                                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1 text-left">Tanggal Kadaluarsa</p>
-                                    <p class="font-bold text-red-600 text-xs italic">{{ \Carbon\Carbon::parse($d->expiry_date)->translatedFormat('d F Y') }}</p>
-                                </div>
-                            </div>
+                    <div class="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/10 px-6 py-4">
+                        <div class="text-right">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-300">
+                                Total Domain
+                            </p>
+                            <p class="text-2xl font-black text-amber-400">
+                                {{ $domains->count() }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="space-y-3">
-                                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-left">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">IP Address / Provider</p>
-                                    <p class="font-bold text-blue-800 text-xs italic">
-                                        {{ $d->ip_address ?? '103.xxx.xxx.xxx' }}
-                                    </p>
-                                </div>
-                                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm text-left">
-                                    <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Pemeriksaan Sistem</p>
-                                    <p class="font-bold text-slate-500 text-[10px] italic">
-                                        {{ $d->last_checked_at ? \Carbon\Carbon::parse($d->last_checked_at)->diffForHumans() : '-' }}
-                                    </p>
-                                </div>
-                            </div>
+            {{-- SUMMARY --}}
+            @php
+                $totalDomain = $domains->count();
+                $domainSehat = $domains->where('status', 'Sehat')->count();
+                $domainKritis = $domains->where('status', 'Kritis')->count();
+                $domainExpired = $domains->where('status', 'Expired')->count();
+            @endphp
 
-                            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                                <p class="text-[8px] font-black text-slate-400 uppercase mb-2 text-left">Nama Server (NS)</p>
-                                <div class="space-y-2">
-                                    @php $nsservers = explode("\n", $d->nameservers); @endphp
-                                    @foreach($nsservers as $ns)
-                                        @if(trim($ns))
-                                        <div class="flex items-center gap-2 text-[10px] font-bold text-slate-700 italic bg-slate-50 p-2 rounded-lg border border-slate-100">
-                                            <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                            {{ trim($ns) }}
-                                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                        Total Domain
+                    </p>
+                    <p class="text-3xl font-black text-slate-900 theme-text-main">
+                        {{ $totalDomain }}
+                    </p>
+                </div>
+
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-2">
+                        Sehat
+                    </p>
+                    <p class="text-3xl font-black text-emerald-600">
+                        {{ $domainSehat }}
+                    </p>
+                </div>
+
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-amber-500 mb-2">
+                        Kritis
+                    </p>
+                    <p class="text-3xl font-black text-amber-500">
+                        {{ $domainKritis }}
+                    </p>
+                </div>
+
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-red-500 mb-2">
+                        Expired
+                    </p>
+                    <p class="text-3xl font-black text-red-600">
+                        {{ $domainExpired }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- FILTER --}}
+            <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 mb-8 shadow-sm">
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Cari Nama Desa / Domain
+                        </label>
+
+                        <input type="text"
+                               id="filterKeywordDomain"
+                               placeholder="Ketik nama desa atau domain..."
+                               class="w-full rounded-2xl border-slate-200 theme-border bg-slate-50 theme-bg-main px-5 py-4 text-sm font-bold text-slate-700 theme-text-main focus:ring-blue-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Status Domain
+                        </label>
+
+                        <select id="filterStatusDomain"
+                                class="w-full rounded-2xl border-slate-200 theme-border bg-slate-50 theme-bg-main px-5 py-4 text-sm font-bold text-slate-700 theme-text-main focus:ring-blue-600">
+                            <option value="semua">Semua Status</option>
+                            <option value="sehat">Sehat</option>
+                            <option value="kritis">Kritis</option>
+                            <option value="expired">Expired</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {{-- LIST DOMAIN --}}
+            <div class="space-y-5" id="domainList">
+                @forelse($domains as $domain)
+                    @php
+                        $status = $domain->status ?? 'Tidak Diketahui';
+
+                        $statusClass = match($status) {
+                            'Sehat' => 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+                            'Kritis' => 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+                            'Expired' => 'bg-red-500/10 text-red-600 border-red-500/20',
+                            default => 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+                        };
+
+                        $initial = strtoupper(substr($domain->desa->nama_desa ?? $domain->domain_name ?? 'D', 0, 1));
+
+                        $searchText = strtolower(
+                            ($domain->desa->nama_desa ?? '') . ' ' .
+                            ($domain->domain_name ?? '') . ' ' .
+                            ($domain->desa->kecamatan ?? '')
+                        );
+                    @endphp
+
+                    <div class="domain-row rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border shadow-sm overflow-hidden"
+                         data-status="{{ strtolower($status) }}"
+                         data-search="{{ $searchText }}">
+
+                        <button type="button"
+                                onclick="this.nextElementSibling.classList.toggle('hidden')"
+                                class="w-full p-6 lg:p-7 flex items-center justify-between gap-5 text-left hover:bg-slate-50 transition theme-bg-card">
+
+                            <div class="flex items-center gap-5 min-w-0">
+                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg shrink-0
+                                    {{ $status === 'Sehat' ? 'bg-emerald-500 text-white' : ($status === 'Kritis' ? 'bg-amber-500 text-white' : 'bg-red-500 text-white') }}">
+                                    {{ $initial }}
+                                </div>
+
+                                <div class="min-w-0">
+                                    <h2 class="text-lg lg:text-xl font-black uppercase italic text-slate-900 theme-text-main truncate">
+                                        {{ $domain->domain_name }}
+                                    </h2>
+
+                                    <p class="mt-1 text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub truncate">
+                                        Desa {{ $domain->desa->nama_desa ?? '-' }}
+                                        @if($domain->desa->kecamatan ?? false)
+                                            • Kecamatan {{ $domain->desa->kecamatan }}
                                         @endif
-                                    @endforeach
+                                    </p>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
-                             <div class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full {{ $d->status == 'Sehat' ? 'bg-emerald-500' : 'bg-red-500' }}"></span>
-                                <p class="text-[10px] font-black uppercase italic text-slate-500">Status: {{ $d->status }}</p>
-                             </div>
-                             
-                            <a href="https://api.whatsapp.com/send?text={{ rawurlencode("Halo Admin Desa " . $d->desa->nama_desa . ",\n\nDomain *" . $d->domain_name . "* berstatus *" . $d->status . "* (" . $d->days_left . " hari lagi).\n\nMohon segera dicek kembali.\nTerima kasih.") }}" target="_blank" class="bg-[#25D366] text-white px-6 py-3 rounded-2xl font-black uppercase italic text-[10px] shadow-lg hover:-translate-y-1 transition-all flex items-center gap-2">
-                                Kirim Pengingat WA
-                            </a>
+                            <div class="flex items-center gap-5 shrink-0">
+                                <div class="hidden sm:block text-right">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub">
+                                        Sisa Hari
+                                    </p>
+
+                                    <p class="text-2xl font-black {{ $status === 'Sehat' ? 'text-emerald-600' : ($status === 'Kritis' ? 'text-amber-500' : 'text-red-600') }}">
+                                        {{ $domain->days_left ?? '-' }}
+                                    </p>
+                                </div>
+
+                                <span class="hidden md:inline-flex rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-widest {{ $statusClass }}">
+                                    {{ $status }}
+                                </span>
+
+                                <svg class="w-5 h-5 text-slate-400 theme-text-sub" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </button>
+
+                        <div class="hidden border-t border-slate-100 theme-border p-6 lg:p-7 bg-slate-50 theme-bg-main">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div class="rounded-2xl bg-white theme-bg-card border border-slate-200 theme-border p-5">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                                        Nama Desa
+                                    </p>
+                                    <p class="text-sm font-black text-slate-800 theme-text-main">
+                                        {{ $domain->desa->nama_desa ?? '-' }}
+                                    </p>
+                                </div>
+
+                                <div class="rounded-2xl bg-white theme-bg-card border border-slate-200 theme-border p-5">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                                        Domain
+                                    </p>
+                                    <p class="text-sm font-black text-slate-800 theme-text-main">
+                                        {{ $domain->domain_name ?? '-' }}
+                                    </p>
+                                </div>
+
+                                <div class="rounded-2xl bg-white theme-bg-card border border-slate-200 theme-border p-5">
+                                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                                        Masa Berlaku
+                                    </p>
+                                    <p class="text-sm font-black text-slate-800 theme-text-main">
+                                        @if($domain->expiry_date)
+                                            {{ \Carbon\Carbon::parse($domain->expiry_date)->translatedFormat('d F Y') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 flex flex-col sm:flex-row gap-3">
+                                @if($domain->domain_name)
+                                    <a href="https://{{ $domain->domain_name }}"
+                                       target="_blank"
+                                       class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-blue-700">
+                                        Buka Website
+                                    </a>
+
+                                    <a href="https://who.is/whois/{{ $domain->domain_name }}"
+                                       target="_blank"
+                                       class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800">
+                                        Cek Whois
+                                    </a>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                </div>
-                @endforeach
+                @empty
+                    <div class="rounded-[2rem] bg-white theme-bg-card border border-dashed border-slate-200 theme-border p-12 text-center">
+                        <p class="text-xs font-black uppercase tracking-widest text-slate-400 theme-text-sub">
+                            Data domain belum tersedia.
+                        </p>
+                    </div>
+                @endforelse
             </div>
 
-            <div class="mt-10 text-center text-slate-400 text-[9px] font-bold uppercase tracking-[0.4em] italic">
-                TARSIUS v1.0 • Kabupaten Belitung Timur
+            <div id="emptyDomainFilter"
+                 class="hidden mt-8 rounded-[2rem] bg-white theme-bg-card border border-dashed border-slate-200 theme-border p-12 text-center">
+                <p class="text-xs font-black uppercase tracking-widest text-slate-400 theme-text-sub">
+                    Data domain tidak ditemukan berdasarkan filter.
+                </p>
             </div>
+
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const keywordInput = document.getElementById('filterKeywordDomain');
+                const statusInput = document.getElementById('filterStatusDomain');
+                const rows = document.querySelectorAll('.domain-row');
+                const emptyMessage = document.getElementById('emptyDomainFilter');
+
+                function applyDomainFilter() {
+                    const keyword = (keywordInput.value || '').toLowerCase().trim();
+                    const status = statusInput.value;
+                    let visibleCount = 0;
+
+                    rows.forEach(row => {
+                        const rowSearch = row.dataset.search || '';
+                        const rowStatus = row.dataset.status || '';
+
+                        const matchKeyword = keyword === '' || rowSearch.includes(keyword);
+                        const matchStatus = status === 'semua' || rowStatus === status;
+
+                        if (matchKeyword && matchStatus) {
+                            row.classList.remove('hidden');
+                            visibleCount++;
+                        } else {
+                            row.classList.add('hidden');
+                        }
+                    });
+
+                    if (emptyMessage) {
+                        emptyMessage.classList.toggle('hidden', visibleCount > 0);
+                    }
+                }
+
+                keywordInput.addEventListener('input', applyDomainFilter);
+                statusInput.addEventListener('change', applyDomainFilter);
+            });
+        </script>
+    @endpush
 </x-app-layout>

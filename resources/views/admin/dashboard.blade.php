@@ -22,129 +22,343 @@
         }
     </style>
 
-    <div class="py-12 px-4 bg-slate-50 min-h-screen text-left">
-        <div class="max-w-7xl mx-auto">
-            
-            {{-- HEADER PANELS --}}
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+    <div class="py-12 min-h-screen bg-slate-50 theme-bg-main text-left">
+    <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
+
+        {{-- HEADER --}}
+        <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 text-white p-8 lg:p-10 mb-8 shadow-sm">
+            <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-blue-500/10"></div>
+            <div class="absolute right-20 bottom-0 w-32 h-32 rounded-full bg-amber-400/10"></div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
-                    <h2 class="text-3xl font-black text-slate-800 tracking-tighter uppercase italic text-left">TARSIUS KABUPATEN</h2>
-                    <p class="text-slate-500 font-bold text-sm tracking-widest uppercase text-left">Pusat Kendali Administrasi, Regulasi, Statistik, & Informasi Belitung Timur</p>
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300 mb-3">
+                        Kabupaten Belitung Timur • Pusat Kendali TARSIUS
+                    </p>
+
+                    <h1 class="text-3xl font-black uppercase italic tracking-tight">
+                        Dashboard Kabupaten
+                    </h1>
+
+                    <p class="mt-3 text-sm text-slate-300 max-w-3xl leading-relaxed">
+                        Pusat kendali administrasi, regulasi, statistik, informasi, keamanan website, dan layanan desa terintegrasi.
+                    </p>
                 </div>
-                
-                <div class="flex items-center gap-4">
-                    <button onclick="window.resetKeKabupaten()" class="bg-white border border-slate-200 px-4 py-2 rounded-xl text-[10px] font-black uppercase text-blue-600 shadow-sm hover:bg-blue-50 transition-all">
-                        Reset Data Kabupaten
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="window.resetKeKabupaten()"
+                            class="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/10 px-6 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-white/20">
+                        Reset Kabupaten
                     </button>
-                    <form action="{{ route('admin.dashboard') }}" method="GET" class="flex items-center gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-2 italic text-left">Tahun:</label>
-                        <select name="tahun" onchange="this.form.submit()" class="bg-slate-50 border-none rounded-xl text-xs font-black uppercase focus:ring-blue-600 cursor-pointer">
+
+                    <form action="{{ route('admin.dashboard') }}"
+                          method="GET"
+                          class="inline-flex items-center gap-3 rounded-2xl bg-white/10 border border-white/10 px-5 py-3">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-300">
+                            Tahun
+                        </label>
+
+                        <select name="tahun"
+                                onchange="this.form.submit()"
+                                class="rounded-xl border-white/10 bg-white/10 text-white text-xs font-black uppercase focus:ring-blue-400">
                             @foreach($daftarTahun as $y)
-                                <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>
+                                    {{ $y }}
+                                </option>
                             @endforeach
                         </select>
                     </form>
                 </div>
             </div>
+        </div>
 
-            {{-- 4 CARD KPI MONITORING UTAMA (ONE STOP HUB) --}}
-            @php
-                // Logika Kalkulasi Indikator Global Kabupaten
-                $totalDesa = count($desas) > 0 ? count($desas) : 1;
-                
-                // 1. Data Tracker Domain & SSL
-                $trackers = \DB::table('domain_trackers')->get();
-                $domainSehat = $trackers->where('status', 'Sehat')->count();
-                $domainKritis = $trackers->where('status', 'Kritis')->count();
-                $sslAman = $trackers->where('days_left', '>', 30)->count();
-                $sslKritis = $trackers->where('days_left', '<=', 30)->count();
+        {{-- KPI --}}
+        @php
+            $totalDesa = count($desas) > 0 ? count($desas) : 1;
 
-                // 2. Data Dokumen Antikorupsi (Asumsi total target item default per desa adalah 11 dokumen)
-                $totalTargetDokumen = $totalDesa * 11;
-                $totalDokumenTerisi = \DB::table('dokumen_antikorupsi')->whereNotNull('link_drive')->count(); // <--- Hapus huruf 's' di sini
-                $persenAntikorupsi = $totalTargetDokumen > 0 ? round(($totalDokumenTerisi / $totalTargetDokumen) * 100) : 0;
-            @endphp
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+            $trackers = \App\Models\DomainTracker::with('desa')->get();
+
+            $domainSehat = $trackers->where('status', 'Sehat')->count();
+            $domainKritis = $trackers->whereIn('status', ['Kritis', 'Expired'])->count();
+
+            $sslChecker = app(\App\Services\SslCertificateService::class);
+
+            $sslResults = $trackers->map(function ($tracker) use ($sslChecker) {
+                return $sslChecker->check($tracker->domain_name);
+            });
+
+            $sslAman = $sslResults
+                ->filter(function ($ssl) {
+                    return $ssl['status'] === 'active'
+                        && $ssl['days_left'] !== null
+                        && $ssl['days_left'] > 30;
+                })
+                ->count();
+
+            $sslKritis = $sslResults
+                ->filter(function ($ssl) {
+                    return in_array($ssl['status'], ['inactive', 'expired', 'unknown'])
+                        || (
+                            $ssl['status'] === 'active'
+                            && $ssl['days_left'] !== null
+                            && $ssl['days_left'] <= 30
+                        );
+                })
+                ->count();
+
+            $totalTargetDokumen = $totalDesa * 11;
+            $totalDokumenTerisi = \DB::table('dokumen_antikorupsi')->whereNotNull('link_drive')->count();
+            $persenAntikorupsi = $totalTargetDokumen > 0 ? round(($totalDokumenTerisi / $totalTargetDokumen) * 100) : 0;
+
+            $skmTotalResponden = \Illuminate\Support\Facades\Schema::hasTable('skm_responses')
+                ? \DB::table('skm_responses')->count()
+                : 0;
+
+            $skmDesaAktif = \Illuminate\Support\Facades\Schema::hasTable('skm_responses')
+                ? \DB::table('skm_responses')->distinct('desa_id')->count('desa_id')
+                : 0;
+
+            $ppidTotalPermohonan = \Illuminate\Support\Facades\Schema::hasTable('ppid_permohonans')
+                ? \DB::table('ppid_permohonans')->count()
+                : 0;
+
+            $ppidPending = \Illuminate\Support\Facades\Schema::hasTable('ppid_permohonans')
+                ? \DB::table('ppid_permohonans')->where('status', 'pending')->count()
+                : 0;
+
+            $ppidKeberatan = \Illuminate\Support\Facades\Schema::hasTable('ppid_keberatans')
+                ? \DB::table('ppid_keberatans')->count()
+                : 0;
+        @endphp
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-5 mb-8">
+            <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Statistik Sektoral</p>
-                        <h3 class="text-2xl font-black text-slate-800 mt-1">{{ $totalDesa }} Wilayah</h3>
-                        <p class="text-[10px] text-blue-600 font-bold mt-1">Selesai Sinkronisasi 2026</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center font-bold text-xl">📊</div>
-                </div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Statistik Sektoral
+                        </p>
 
-                <a href="{{ route('admin.domain.monitor') }}" class="group block bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-amber-500 hover:shadow-md transition-all duration-200">
-                    <div>
-                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Masa Aktif Domain</p>
-                        <h3 class="text-2xl font-black text-slate-800 mt-1 group-hover:text-amber-600 transition-colors">{{ $domainSehat }} Sehat</h3>
-                        <p class="text-[10px] text-rose-600 font-bold mt-1">⚠️ {{ $domainKritis }} Desa Kritis</p>
-                    </div>
-                    <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform">🌐</div>
-                </a>
+                        <p class="text-3xl font-black text-slate-900 theme-text-main">
+                            {{ $totalDesa }}
+                        </p>
 
-                <a href="{{ route('admin.ssl.monitor') }}" class="group block bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between hover:border-rose-500 hover:shadow-md transition-all duration-200">
-                    <div>
-                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Enkripsi SSL (HTTPS)</p>
-                        <h3 class="text-2xl font-black text-slate-800 mt-1 group-hover:text-rose-600 transition-colors">{{ $sslAman }} Secured</h3>
-                        <p class="text-[10px] text-rose-500 font-bold mt-1">🚨 {{ $sslKritis }} Butuh Pembaruan</p>
+                        <p class="mt-2 text-[10px] font-bold text-blue-600 uppercase tracking-widest">
+                            Wilayah Desa
+                        </p>
                     </div>
-                    <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform">🔒</div>
-                </a>
 
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-[9px] font-black tracking-widest text-slate-400 uppercase">Kepatuhan Antikorupsi</p>
-                        <h3 class="text-2xl font-black text-slate-800 mt-1">{{ $persenAntikorupsi }}%</h3>
-                        <p class="text-[10px] text-emerald-600 font-bold mt-1">Berkas Terunggah Sistem</p>
-                    </div>
-                    <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center font-bold text-xl">🛡️</div>
-                </div>
-            </div>
-
-            {{-- MAP SECTION --}}
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 mb-8 overflow-hidden relative text-left">
-                <div class="flex items-center gap-3 mb-6 relative z-20 text-left">
-                    <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
-                    <div>
-                        <h3 class="text-sm font-black text-slate-800 uppercase italic tracking-tighter text-left">Radar Visualisasi Wilayah</h3>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest italic text-left">Klik area desa untuk memfilter statistik di bawah</p>
-                    </div>
-                </div>
-                <div class="h-[500px] w-full flex items-center justify-center bg-[#f8fafc] rounded-[2rem] border border-slate-100 overflow-hidden relative">
-                    <div id="petaVektor" class="w-full h-full cursor-move"></div>
-                    
-                    {{-- TOMBOL RESET MAP --}}
-                    <button id="btnResetPeta" title="Reset Posisi Peta" class="absolute bottom-6 right-6 z-50 bg-white hover:bg-blue-600 hover:text-white p-4 rounded-2xl shadow-lg border border-slate-100 text-slate-600 transition-all active:scale-90">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 20V10m7 10V4m7 16v-7"/>
                         </svg>
-                    </button>
+                    </div>
                 </div>
             </div>
 
-            {{-- CHARTS SECTION --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-left">
-                @foreach($categories as $category)
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 relative text-left">
-                    <div class="flex items-center gap-3 mb-6 text-left">
-                        <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
-                        <h3 class="text-sm font-black text-slate-800 uppercase italic tracking-tighter chart-title-{{ $category->id }} text-left">
-                            TOTAL {{ $category->name }} (KABUPATEN)
-                        </h3>
+            <a href="{{ route('admin.domain.monitor') }}"
+               class="group rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm hover:border-amber-500 transition">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Masa Aktif Domain
+                        </p>
+
+                        <p class="text-3xl font-black text-slate-900 theme-text-main group-hover:text-amber-600">
+                            {{ $domainSehat }}
+                        </p>
+
+                        <p class="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-widest">
+                            {{ $domainKritis }} Desa Kritis
+                        </p>
                     </div>
+
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center group-hover:scale-105 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9M12 3c-2.5-2.5-4-5.5-4-9s1.5-6.5 4-9"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ route('admin.ssl.monitor') }}"
+               class="group rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm hover:border-rose-500 transition">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Enkripsi SSL
+                        </p>
+
+                        <p class="text-3xl font-black text-slate-900 theme-text-main group-hover:text-rose-600">
+                            {{ $sslAman }}
+                        </p>
+
+                        <p class="mt-2 text-[10px] font-bold text-rose-600 uppercase tracking-widest">
+                            {{ $sslKritis }} Butuh Pembaruan
+                        </p>
+                    </div>
+
+                    <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center group-hover:scale-105 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 118 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"/>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+
+            <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Kepatuhan Antikorupsi
+                        </p>
+
+                        <p class="text-3xl font-black text-slate-900 theme-text-main">
+                            {{ $persenAntikorupsi }}%
+                        </p>
+
+                        <p class="mt-2 text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
+                            Berkas Terunggah
+                        </p>
+                    </div>
+
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 3v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-3z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{ route('admin.skm.monitor') }}"
+                class="group rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm hover:border-indigo-500 transition">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                                Survei Kepuasan
+                            </p>
+
+                            <p class="text-3xl font-black text-slate-900 theme-text-main group-hover:text-indigo-600">
+                                {{ $skmTotalResponden }}
+                            </p>
+
+                            <p class="mt-2 text-[10px] font-bold text-indigo-600 uppercase tracking-widest">
+                                {{ $skmDesaAktif }} Desa Mengisi SKM
+                            </p>
+                        </div>
+
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M9 12l2 2 4-4M7 4h10a2 2 0 012 2v14l-4-2-3 2-3-2-4 2V6a2 2 0 012-2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('admin.ppid.monitor') }}"
+                class="group rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm hover:border-sky-500 transition">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                                Layanan PPID
+                            </p>
+
+                            <p class="text-3xl font-black text-slate-900 theme-text-main group-hover:text-sky-600">
+                                {{ $ppidTotalPermohonan }}
+                            </p>
+
+                            <p class="mt-2 text-[10px] font-bold text-sky-600 uppercase tracking-widest">
+                                {{ $ppidPending }} Pending • {{ $ppidKeberatan }} Keberatan
+                            </p>
+                        </div>
+
+                        <div class="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-600 flex items-center justify-center group-hover:scale-105 transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M7 7h10M7 11h10M7 15h6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </a>
+        </div>
+
+        {{-- MAP SECTION --}}
+        <div class="rounded-[2.5rem] bg-white theme-bg-card border border-slate-200 theme-border shadow-sm p-6 lg:p-8 mb-8 overflow-hidden relative text-left">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 relative z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-8 bg-blue-600 rounded-full"></div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 theme-text-main uppercase italic tracking-tight">
+                            Radar Visualisasi Wilayah
+                        </h3>
+                        <p class="text-[10px] text-slate-400 theme-text-sub font-black uppercase tracking-widest">
+                            Klik area desa untuk memfilter statistik di bawah
+                        </p>
+                    </div>
+                </div>
+
+                <button onclick="window.resetKeKabupaten()"
+                        class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800">
+                    Reset Data
+                </button>
+            </div>
+
+            <div class="h-[500px] w-full flex items-center justify-center bg-slate-50 theme-bg-main rounded-[2rem] border border-slate-200 theme-border overflow-hidden relative">
+                <div id="petaVektor" class="w-full h-full cursor-move"></div>
+
+                <button id="btnResetPeta"
+                        title="Reset Posisi Peta"
+                        class="absolute bottom-6 right-6 z-50 bg-white theme-bg-card hover:bg-blue-600 hover:text-white p-4 rounded-2xl shadow-lg border border-slate-200 theme-border text-slate-600 theme-text-main transition-all active:scale-90">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2.5"
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- CHARTS SECTION --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-left">
+            @foreach($categories as $category)
+                <div class="rounded-[2.5rem] bg-white theme-bg-card border border-slate-200 theme-border shadow-sm p-6 lg:p-8 relative text-left">
+                    <div class="flex items-center gap-3 mb-6 text-left">
+                        <div class="w-1.5 h-8 bg-blue-600 rounded-full"></div>
+
+                        <div>
+                            <h3 class="text-sm font-black text-slate-900 theme-text-main uppercase italic tracking-tight chart-title-{{ $category->id }}">
+                                TOTAL {{ $category->name }} (KABUPATEN)
+                            </h3>
+
+                            <p class="text-[10px] text-slate-400 theme-text-sub font-black uppercase tracking-widest">
+                                Tahun {{ $tahun }}
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="relative h-[300px]">
                         <canvas id="chart-{{ $category->id }}"></canvas>
-                        <div id="empty-{{ $category->id }}" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-10 rounded-2xl text-center">
-                            <p class="text-slate-400 font-black italic uppercase text-[10px] tracking-widest text-center">Data Belum Diinput Desa</p>
+
+                        <div id="empty-{{ $category->id }}"
+                             class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/90 theme-bg-card z-10 rounded-2xl text-center">
+                            <p class="text-slate-400 theme-text-sub font-black italic uppercase text-[10px] tracking-widest text-center">
+                                Data Belum Diinput Desa
+                            </p>
                         </div>
                     </div>
                 </div>
-                @endforeach
-            </div>
+            @endforeach
         </div>
     </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>

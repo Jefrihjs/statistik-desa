@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+}
+
+@layer components {
+  .border-draw-card {
+    position: relative;
+    border-radius: 2rem;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(16,185,129,0.95), rgba(168,85,247,0.95), rgba(236,72,153,0.95));
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+
+  .border-draw-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 28px 70px rgba(15,23,42,0.14);
+  }
+
+  .border-draw-inner {
+    position: relative;
+    z-index: 1;
+    border-radius: calc(2rem - 1px);
+    background: #ffffff;
+    min-height: 100%;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+  }
+}

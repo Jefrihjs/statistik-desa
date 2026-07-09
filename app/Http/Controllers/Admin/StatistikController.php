@@ -98,6 +98,16 @@ class StatistikController extends Controller
 
         $this->syncDemografi($request->desa_id, $request->tahun);
 
+        \App\Services\ActivityLogger::log(
+            'Statistik',
+            'Simpan Data Statistik',
+            'User menyimpan data statistik sektoral.',
+            [
+                'tahun' => $request->tahun ?? null,
+                'desa_id' => $request->desa_id ?? auth()->user()->desa_id,
+            ]
+        );
+        
         return back()->with('success', 'Data berhasil disimpan dan disinkronkan!');
     }
 
@@ -122,6 +132,16 @@ class StatistikController extends Controller
             );
 
             $this->syncDemografi($desa_id, $request->tahun);
+
+            \App\Services\ActivityLogger::log(
+                'Statistik',
+                'Import Data Statistik',
+                'User mengimpor data statistik melalui Excel.',
+                [
+                    'tahun' => $request->tahun ?? null,
+                ]
+            );
+            
             return back()->with('success', "Data Statistik Tahun {$request->tahun} Berhasil Diimport!");
 
         } catch (\Exception $e) {

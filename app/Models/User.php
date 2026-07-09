@@ -15,9 +15,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'desa_id', 
+        'desa_id',
         'role',
+        'is_active',
+
+        // Akses modul desa
+        'is_statistik_active',
+        'is_ppid_active',
         'is_antikorupsi_active',
+        'is_skm_active',
+        'is_aduan_active',
     ];
 
     protected $hidden = [
@@ -30,6 +37,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+
+            // Cast boolean akses modul
+            'is_active' => 'boolean',
+            'is_statistik_active' => 'boolean',
+            'is_ppid_active' => 'boolean',
+            'is_antikorupsi_active' => 'boolean',
+            'is_skm_active' => 'boolean',
+            'is_aduan_active' => 'boolean',
         ];
     }
 

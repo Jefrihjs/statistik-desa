@@ -1,135 +1,211 @@
 <x-app-layout>
-    <div x-data="{ 
-        search: '', 
-        kecamatan: '', 
-        tahun: '{{ date('Y') }}' 
-    }" class="py-12 px-6 bg-slate-50 min-h-screen">
-        <div class="max-w-7xl mx-auto">
-            
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-10 gap-6">
-                <div>
-                    <h2 class="text-4xl font-black text-[#1e3a8a] tracking-tighter uppercase italic leading-none">Monitoring Statistik</h2>
-                    <p class="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] mt-3 flex items-center gap-2">
-                        <span class="w-8 h-[2px] bg-[#f59e0b]"></span>
-                        Kabupaten Belitung Timur
+    @php
+        $totalDesa = count($desas);
+        $totalTerisi = collect($desas)->filter(fn ($desa) => ($desa->total_input ?? 0) > 0)->count();
+        $totalBelumInput = $totalDesa - $totalTerisi;
+    @endphp
+
+    <div x-data="{
+            search: '',
+            kecamatan: '',
+            tahun: '{{ date('Y') }}'
+        }"
+        class="py-12 min-h-screen bg-slate-50 theme-bg-main">
+
+        <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
+
+            {{-- HEADER --}}
+            <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 text-white p-8 lg:p-10 mb-8 shadow-sm">
+                <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-blue-500/10"></div>
+                <div class="absolute right-20 bottom-0 w-32 h-32 rounded-full bg-amber-400/10"></div>
+
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-300 mb-3">
+                            Kabupaten Belitung Timur • Monitoring Statistik
+                        </p>
+
+                        <h1 class="text-3xl font-black uppercase italic tracking-tight">
+                            Status Laporan Desa
+                        </h1>
+
+                        <p class="mt-3 text-sm text-slate-300 max-w-2xl leading-relaxed">
+                            Pantau progres input data statistik sektoral setiap desa berdasarkan tahun laporan.
+                        </p>
+                    </div>
+
+                    <div class="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/10 px-6 py-4">
+                        <div class="text-right">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-300">
+                                Total Wilayah
+                            </p>
+                            <p class="text-2xl font-black text-blue-300">
+                                {{ $totalDesa }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- SUMMARY --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                        Total Desa
+                    </p>
+                    <p class="text-3xl font-black text-slate-900 theme-text-main">
+                        {{ $totalDesa }}
                     </p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-                    <div class="relative flex-1 md:flex-none md:w-56 group">
-                        <select x-model="kecamatan" 
-                                class="appearance-none block w-full pl-5 pr-10 py-3 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-[#f59e0b] font-black text-[10px] uppercase tracking-widest italic text-[#1e3a8a] cursor-pointer transition-all">
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-2">
+                        Sudah Input
+                    </p>
+                    <p class="text-3xl font-black text-emerald-600">
+                        {{ $totalTerisi }}
+                    </p>
+                </div>
+
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-2">
+                        Belum Input
+                    </p>
+                    <p class="text-3xl font-black text-orange-500">
+                        {{ $totalBelumInput }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- FILTER --}}
+            <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-6 mb-8 shadow-sm">
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px_220px] gap-4">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Cari Desa
+                        </label>
+
+                        <input type="text"
+                               x-model="search"
+                               placeholder="Ketik nama desa..."
+                               class="w-full rounded-2xl border-slate-200 theme-border bg-slate-50 theme-bg-main px-5 py-4 text-sm font-bold text-slate-700 theme-text-main focus:ring-blue-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Kecamatan
+                        </label>
+
+                        <select x-model="kecamatan"
+                                class="w-full rounded-2xl border-slate-200 theme-border bg-slate-50 theme-bg-main px-5 py-4 text-sm font-bold text-slate-700 theme-text-main focus:ring-blue-600">
                             <option value="">Semua Kecamatan</option>
                             @foreach($mapping as $kec => $daftarNamaDesa)
                                 <option value="{{ $kec }}">{{ str_replace('KECAMATAN ', '', $kec) }}</option>
                             @endforeach
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#f59e0b]">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
-                        </div>
                     </div>
 
-                    <div class="relative flex-1 md:flex-none md:w-40">
-                        <select x-model="tahun" 
-                                class="appearance-none block w-full px-5 py-3 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-blue-600 font-black text-[10px] uppercase tracking-widest italic text-blue-600 cursor-pointer transition-all">
+                    <div>
+                        <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">
+                            Tahun
+                        </label>
+
+                        <select x-model="tahun"
+                                class="w-full rounded-2xl border-slate-200 theme-border bg-slate-50 theme-bg-main px-5 py-4 text-sm font-bold text-slate-700 theme-text-main focus:ring-blue-600">
                             @foreach($listTahun as $th)
-                                <option value="{{ $th }}">TAHUN {{ $th }}</option>
+                                <option value="{{ $th }}">Tahun {{ $th }}</option>
                             @endforeach
                         </select>
                     </div>
+                </div>
+            </div>
 
-                    <div class="relative w-full md:w-64">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </span>
-                        <input type="text" x-model="search" 
-                               placeholder="Cari desa..." 
-                               class="block w-full pl-10 pr-4 py-3 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-[#1e3a8a] font-bold text-xs transition-all italic">
+            {{-- LIST DESA --}}
+            <div class="space-y-5">
+                @foreach($desas as $index => $desa)
+                    @php
+                        $isTerisi = ($desa->total_input ?? 0) > 0;
+                        $initial = strtoupper(substr($desa->nama_desa ?? 'D', 0, 1));
+                    @endphp
+
+                    <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border shadow-sm overflow-hidden"
+                         x-show="(search === '' || '{{ strtoupper($desa->nama_desa) }}'.includes(search.toUpperCase())) &&
+                                 (kecamatan === '' || '{{ strtoupper($desa->kecamatan) }}'.includes(kecamatan.toUpperCase()))"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0">
+
+                        <div class="p-6 lg:p-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                            <div class="flex items-center gap-5 min-w-0">
+                                <div class="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg text-white shrink-0
+                                    {{ $isTerisi ? 'bg-emerald-500' : 'bg-orange-500' }}">
+                                    {{ $initial }}
+                                </div>
+
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-3 mb-1">
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub">
+                                            {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
+                                        </span>
+
+                                        <span class="hidden sm:inline-flex w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+
+                                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub truncate">
+                                            {{ $desa->kecamatan ?? 'Kabupaten Belitung Timur' }}
+                                        </span>
+                                    </div>
+
+                                    <h2 class="text-lg lg:text-xl font-black uppercase italic text-slate-900 theme-text-main truncate">
+                                        {{ $desa->nama_desa }}
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3 lg:justify-end">
+                                @if($isTerisi)
+                                    <span class="inline-flex items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-600">
+                                        Terisi {{ $desa->total_input }} Data
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center justify-center rounded-2xl border border-orange-500/20 bg-orange-500/10 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-orange-500">
+                                        Belum Input
+                                    </span>
+                                @endif
+
+                                <a href="{{ route('admin.atur-form', $desa->id) }}"
+                                   class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-slate-800">
+                                    Atur Form
+                                </a>
+
+                                <a :href="'{{ url('/admin/entri') }}/' + '{{ $desa->id }}' + '?tahun=' + tahun"
+                                   class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white hover:bg-blue-700 shadow-lg shadow-blue-900/20">
+                                    Entri Data
+                                </a>
+                            </div>
+                        </div>
                     </div>
+                @endforeach
+            </div>
+
+            {{-- FOOTER INFO --}}
+            <div class="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-2">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 theme-text-sub">
+                    Total {{ $totalDesa }} wilayah desa
+                </p>
+
+                <div class="flex flex-wrap gap-4">
+                    <span class="inline-flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                        <span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                        Data Terisi
+                    </span>
+
+                    <span class="inline-flex items-center gap-2 text-[10px] font-black text-orange-500 uppercase tracking-widest">
+                        <span class="w-2 h-2 bg-orange-400 rounded-full"></span>
+                        Belum Input
+                    </span>
                 </div>
             </div>
 
-            <div class="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100 shadow-blue-900/5">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.2em]">
-                            <th class="px-8 py-6 text-center w-16">No.</th>
-                            <th class="px-8 py-6">Nama Wilayah</th>
-                            <th class="px-8 py-6 text-center">Status Laporan <span x-text="tahun"></span></th>
-                            <th class="px-8 py-6 text-right pr-12">Aksi Manajemen</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50 font-bold">
-                        @foreach($desas as $index => $desa)
-                            <tr class="hover:bg-blue-50/50 transition-all duration-300"
-                                x-show="(search === '' || '{{ strtoupper($desa->nama_desa) }}'.includes(search.toUpperCase())) && 
-                                        (kecamatan === '' || '{{ strtoupper($desa->kecamatan) }}'.includes(kecamatan.toUpperCase()))"
-                                x-transition:enter="transition ease-out duration-300"
-                                x-transition:enter-start="opacity-0 transform scale-95"
-                                x-transition:enter-end="opacity-100 transform scale-100">
-                                
-                                <td class="px-6 py-5 text-center text-xs font-bold text-slate-300">
-                                    {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                                </td>
-
-                                <td class="px-6 py-5">
-                                    <div class="flex flex-col">
-                                        <span class="text-sm font-black text-blue-900 uppercase italic leading-none tracking-tight">
-                                            {{ $desa->nama_desa }}
-                                        </span>
-                                        <span class="text-[9px] text-slate-400 font-bold uppercase mt-1.5 tracking-tighter">
-                                            {{ $desa->kecamatan ?? 'KABUPATEN BELITUNG TIMUR' }}
-                                        </span>
-                                    </div>
-                                </td>
-
-                                <td class="px-6 py-5 text-center">
-                                    <div class="inline-block">
-                                        {{-- Kita cek variabel total_input yang dikirim dari Controller --}}
-                                        @if($desa->total_input > 0)
-                                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 uppercase italic ring-4 ring-emerald-50">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                                                Terisi ({{ $desa->total_input }} Data)
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[9px] font-black bg-orange-50 text-orange-500 uppercase italic ring-4 ring-orange-100/30">
-                                                ○ Belum Input
-                                            </span>
-                                        @endif
-                                    </div>
-                                </td>
-
-                                <td class="px-6 py-5 text-right pr-12">
-                                    <div class="flex justify-end gap-2">
-                                        <a href="{{ route('admin.atur-form', $desa->id) }}" 
-                                        class="px-4 py-2.5 bg-slate-100 hover:bg-[#f59e0b] hover:text-white text-slate-500 text-[9px] font-black rounded-xl transition-all uppercase italic shadow-sm">
-                                            Atur
-                                        </a>
-                                        {{-- Link Entri otomatis mengikuti tahun yang sedang dipilih --}}
-                                        <a :href="'{{ url('/admin/entri') }}/' + '{{ $desa->id }}' + '?tahun=' + tahun" 
-                                        class="px-6 py-2.5 bg-[#1e3a8a] hover:bg-blue-700 text-white text-[9px] font-black rounded-xl shadow-lg shadow-blue-900/20 transition-all uppercase italic transform hover:scale-105 active:scale-95">
-                                            Entri Data
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-8 flex justify-between items-center px-8">
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Total {{ count($desas) }} Wilayah Desa</p>
-                <div class="flex gap-4">
-                     <span class="flex items-center gap-2 text-[9px] font-black text-emerald-600 uppercase italic"><span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Data Aman</span>
-                     <span class="flex items-center gap-2 text-[9px] font-black text-orange-500 uppercase italic"><span class="w-2 h-2 bg-orange-400 rounded-full"></span> Perlu Update</span>
-                </div>
-            </div>
         </div>
     </div>
-
-    <style>
-        [x-cloak] { display: none !important; }
-        select { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
-    </style>
 </x-app-layout>

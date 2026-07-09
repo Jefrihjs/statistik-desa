@@ -8,7 +8,7 @@
         <title>{{ config('app.name', 'LAYANAN TARSIUS - Terintegrasi Administrasi, Regulasi, Statistik, Informasi, dan Urusan Desa') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -31,15 +31,78 @@
                 background-image: none !important;
             }
 
+            /* Mobile optimizations */
+            @media (max-width: 1024px) {
+                body {
+                    font-size: 14px;
+                }
+            }
+
+            .sidebar-nav-item {
+                min-height: 64px;
+            }
+
+            .sidebar-icon-shell,
+            .sidebar-icon-glyph {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                line-height: 1 !important;
+            }
+
+            .sidebar-icon-glyph svg {
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+                flex-shrink: 0 !important;
+            }
+
+            @media (min-width: 1024px) {
+                .is-sidebar-collapsed nav {
+                    padding-left: 12px !important;
+                    padding-right: 12px !important;
+                }
+
+                .is-sidebar-collapsed .sidebar-nav-item {
+                    justify-content: center !important;
+                    padding-left: 8px !important;
+                    padding-right: 8px !important;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .is-sidebar-collapsed nav {
+                    padding-left: 12px !important;
+                    padding-right: 12px !important;
+                }
+
+                .is-sidebar-collapsed .sidebar-nav-item {
+                    justify-content: center !important;
+                    padding-left: 8px !important;
+                    padding-right: 8px !important;
+                }
+            }
+
+            /* Prevent layout shift on mobile */
+            body {
+                font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                overflow-x: hidden;
+            }
+
+            /* Improve touch targets */
+            button, a {
+                min-height: 44px;
+            }
+
             /* ================================================================= */
             /* KUNCI DARK MODE TANPA DEPENDENSI NPM BUILD (UNTUK CPANEL SHARED) */
             /* ================================================================= */
             :root {
-                --bg-main: #f1f5f9;       /* Latar Belakang Terang */
+                --bg-main: #f8fafc;       /* Latar Belakang Terang (bg-gray-50) */
                 --bg-card: #ffffff;       /* Card Terang */
                 --text-main: #1e293b;     /* Teks Utama Terang */
                 --text-sub: #64748b;      /* Teks Sub Terang */
-                --border-color: #f1f5f9;  /* Border Terang */
+                --border-color: #f8fafc;  /* Border Terang */
             }
 
             .dark-mode-active {
@@ -61,220 +124,622 @@
             body, div, header, main, h1, h2, h3, h4, p, span, table, tr, td {
                 transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
             }
+
+            .sidebar-nav-item {
+                min-height: 64px;
+            }
+
+            .sidebar-icon-shell {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sidebar-icon-glyph {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .sidebar-icon-glyph svg {
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+
+            .dark-mode-active {
+                background-color: #0f172a !important;
+                color: #f8fafc !important;
+            }
+
+            /* area halaman */
+            .dark-mode-active .bg-slate-50,
+            .dark-mode-active .bg-gray-50,
+            .dark-mode-active .bg-gray-100 {
+                background-color: #0f172a !important;
+            }
+
+            /* card putih */
+            .dark-mode-active .bg-white {
+                background-color: #1e293b !important;
+            }
+
+            /* card abu terang */
+            .dark-mode-active .bg-slate-100,
+            .dark-mode-active .bg-slate-200,
+            .dark-mode-active .bg-gray-100,
+            .dark-mode-active .bg-gray-200 {
+                background-color: #334155 !important;
+            }
+
+            /* teks utama */
+            .dark-mode-active .text-slate-900,
+            .dark-mode-active .text-slate-800,
+            .dark-mode-active .text-gray-900,
+            .dark-mode-active .text-gray-800 {
+                color: #f8fafc !important;
+            }
+
+            /* teks sekunder */
+            .dark-mode-active .text-slate-700,
+            .dark-mode-active .text-slate-600,
+            .dark-mode-active .text-slate-500,
+            .dark-mode-active .text-gray-700,
+            .dark-mode-active .text-gray-600,
+            .dark-mode-active .text-gray-500 {
+                color: #cbd5e1 !important;
+            }
+
+            /* teks muted */
+            .dark-mode-active .text-slate-400,
+            .dark-mode-active .text-gray-400 {
+                color: #94a3b8 !important;
+            }
+
+            /* border */
+            .dark-mode-active .border-slate-50,
+            .dark-mode-active .border-slate-100,
+            .dark-mode-active .border-slate-200,
+            .dark-mode-active .border-gray-100,
+            .dark-mode-active .border-gray-200 {
+                border-color: #334155 !important;
+            }
+
+            /* input, select, textarea */
+            .dark-mode-active input,
+            .dark-mode-active select,
+            .dark-mode-active textarea {
+                background-color: #0f172a !important;
+                color: #f8fafc !important;
+                border-color: #334155 !important;
+            }
+
+            .dark-mode-active input::placeholder,
+            .dark-mode-active textarea::placeholder {
+                color: #64748b !important;
+            }
+
+            /* tabel */
+            .dark-mode-active table {
+                color: #f8fafc !important;
+            }
+
+            .dark-mode-active tbody tr {
+                border-color: #334155 !important;
+            }
+
+            .dark-mode-active tbody tr:hover {
+                background-color: #334155 !important;
+            }
+
+            /* chart/map wrapper yang putih */
+            .dark-mode-active canvas,
+            .dark-mode-active #petaVektor {
+                background-color: transparent !important;
+            }
+
+            /* overlay empty chart */
+            .dark-mode-active [id^="empty-"] {
+                background-color: rgba(15, 23, 42, 0.9) !important;
+            }
+
+            /* dropdown topbar */
+            .dark-mode-active .shadow-sm,
+            .dark-mode-active .shadow-md,
+            .dark-mode-active .shadow-xl,
+            .dark-mode-active .shadow-2xl {
+                box-shadow: none !important;
+            }
         </style>
     </head>
-    <body class="font-sans antialiased font-medium" 
-          x-data="{ 
-            layout: localStorage.getItem('tarsius_layout') || 'navbar',
-            darkMode: localStorage.getItem('tarsius_dark') === 'true',
-            toggleLayout() {
-                this.layout = this.layout === 'navbar' ? 'sidebar' : 'navbar';
-                localStorage.setItem('tarsius_layout', this.layout);
-            },
-            toggleDark() {
-                this.darkMode = !this.darkMode;
-                localStorage.setItem('tarsius_dark', this.darkMode);
-            }
-          }" 
-          :class="{ 'dark-mode-active': darkMode }" 
-          x-cloak>
+    <body class="font-sans antialiased font-medium bg-gray-50"
+      x-data="{
+        sidebarCollapsed: localStorage.getItem('tarsius_sidebar_collapsed') === 'true',
+        sidebarHover: false,
+        mobileSidebarOpen: false,
+        darkMode: localStorage.getItem('tarsius_dark') === 'true',
+        toggleSidebar() {
+            this.sidebarCollapsed = !this.sidebarCollapsed;
+            localStorage.setItem('tarsius_sidebar_collapsed', this.sidebarCollapsed);
+        },
+        toggleDark() {
+            this.darkMode = !this.darkMode;
+            localStorage.setItem('tarsius_dark', this.darkMode);
+        }
+      }"
+      :class="{ 'dark-mode-active': darkMode }"
+      x-cloak>
 
-        <div class="min-h-screen flex theme-bg-main" :class="layout === 'navbar' ? 'flex-col' : 'flex-row'">
-            
-            <aside x-show="layout === 'sidebar'" 
-                   class="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-[#16205a] via-[#1e3a8a] to-[#0f172a] border-r border-white/10 z-50 transition-all duration-300 shadow-2xl overflow-hidden flex flex-col">
-                
-                <div class="flex items-center justify-center h-24 border-b border-white/10 px-6 mb-6">
-                    <div class="bg-white p-2 rounded-3xl shadow-xl shadow-slate-900/25 transform -rotate-3 hover:rotate-0 transition-transform duration-500">
-                        <img src="{{ asset('img/logo-tarsius-beltim.png') }}" alt="Logo tarsius" class="h-10 w-auto object-contain">
+    @php
+        $user = auth()->user();
+        $desaId = $user->desa_id ?? null;
+
+        $jumlahPermohonanBaru = 0;
+        $jumlahKeberatanBaru = 0;
+
+        if ($user->role === 'desa' && $desaId) {
+            $jumlahPermohonanBaru = class_exists(\App\Models\PpidPermohonan::class)
+                ? \App\Models\PpidPermohonan::where('desa_id', $desaId)->where('status', 'pending')->count()
+                : 0;
+
+            $jumlahKeberatanBaru = class_exists(\App\Models\PpidKeberatan::class)
+                ? \App\Models\PpidKeberatan::where('desa_id', $desaId)->where('status', 'diajukan')->count()
+                : 0;
+        }
+
+        $totalAlert = $jumlahPermohonanBaru + $jumlahKeberatanBaru;
+
+        $menuDesa = [
+            [
+                'label' => 'Dashboard',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 11.5L12 4l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-8.5z"/></svg>',
+                'route' => 'desa.dashboard',
+                'active' => request()->routeIs('desa.dashboard'),
+            ],
+            [
+                'label' => 'Monitoring Website',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9M12 3c-2.5 2.5-4 5.5-4 9s1.5 6.5 4 9"/></svg>',
+                'active' => request()->routeIs('desa.domain*') || request()->routeIs('desa.ssl*'),
+                'children' => [
+                    ['label' => 'Domain Desa', 'route' => 'desa.domain.index'],
+                    ['label' => 'SSL Desa', 'route' => 'desa.ssl.index'],
+                ],
+            ],
+            [
+                'label' => 'Branding Desa',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
+                'route' => 'desa.settings.edit',
+                'active' => request()->routeIs('desa.settings*'),
+            ],
+        ];
+
+        if ((bool) ($user->is_statistik_active ?? false)) {
+            $menuDesa[] = [
+                'label' => 'Statistik Desa',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 20V10m7 10V4m7 16v-7"/></svg>',
+                'route' => 'desa.statistik',
+                'active' => request()->routeIs('desa.statistik*'),
+            ];
+        }
+
+        if ((bool) ($user->is_ppid_active ?? false)) {
+            $menuDesa[] = [
+                'label' => 'PPID Desa',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10M7 15h6M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>',
+                'active' => request()->routeIs('desa.ppid*'),
+                'children' => [
+                    ['label' => 'Beranda PPID', 'route' => 'desa.ppid.index'],
+                    ['label' => 'Daftar Informasi Publik', 'route' => 'desa.ppid.dip.index'],
+                    ['label' => 'Permohonan Informasi', 'route' => 'desa.ppid.permohonan.index'],
+                    ['label' => 'Keberatan Informasi', 'route' => 'desa.ppid.keberatan.index'],
+                    ['label' => 'Laporan PPID', 'route' => 'desa.ppid.laporan.index'],
+                    ['label' => 'Pengaturan PPID', 'route' => 'desa.ppid.pengaturan.edit'],
+                ],
+            ];
+        }
+
+        if ((bool) ($user->is_antikorupsi_active ?? false)) {
+            $menuDesa[] = [
+                'label' => 'Desa Antikorupsi',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 3v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-3z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>',
+                'active' => request()->routeIs('desa.antikorupsi*') || request()->routeIs('desa.master-grup-antikorupsi*'),
+                'children' => [
+                    ['label' => 'Input Antikorupsi', 'route' => 'desa.antikorupsi.index'],
+                    ['label' => 'Master Grup Indikator', 'route' => 'desa.master-grup-antikorupsi.index'],
+                ],
+            ];
+        }
+
+        if ((bool) ($user->is_skm_active ?? false)) {
+            $menuDesa[] = [
+                'label' => 'SKM Desa',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 4h10a2 2 0 012 2v14l-4-2-3 2-3-2-4 2V6a2 2 0 012-2z"/></svg>',
+                'route' => 'desa.skm.index',
+                'active' => request()->routeIs('desa.skm*'),
+            ];
+        }
+
+        if ((bool) ($user->is_aduan_active ?? false)) {
+            $menuDesa[] = [
+                'label' => 'Layanan Aduan',
+                'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8M8 14h5m-9 6l2.5-4.5A8 8 0 1120 10a8 8 0 01-12.7 6.5L4 20z"/></svg>',
+                'route' => 'desa.aduan.index',
+                'active' => request()->routeIs('desa.aduan*'),
+            ];
+        }
+    @endphp
+
+    <div class="min-h-screen bg-gray-50 theme-bg-main">
+
+    {{-- MOBILE BACKDROP --}}
+<div x-show="mobileSidebarOpen"
+     @click="mobileSidebarOpen = false"
+     x-transition.opacity.duration.300ms
+     class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden"
+     style="display:none;">
+</div>
+        {{-- SIDEBAR --}}
+        <aside
+    @mouseenter="sidebarHover = true"
+    @mouseleave="sidebarHover = false"
+    :class="[
+        mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        sidebarCollapsed && !sidebarHover ? 'lg:w-[86px] is-sidebar-collapsed' : 'lg:w-[292px]'
+    ]"
+    class="fixed inset-y-0 left-0 z-50 w-[292px] bg-gradient-to-b from-[#16205a] via-[#1e3a8a] to-[#0f172a] text-white border-r border-white/10 shadow-2xl transition-all duration-300 ease-out overflow-y-auto lg:overflow-visible">
+
+            <div class="h-full flex flex-col">
+
+                {{-- BRAND --}}
+                <div class="h-20 px-3 sm:px-5 flex items-center justify-between gap-2 sm:gap-3 border-b border-white/10 flex-shrink-0">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 sm:w-11 h-10 sm:h-11 bg-white rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                            <img src="{{ asset('img/logo-tarsius-beltim.png') }}"
+                                alt="Tarsius"
+                                class="h-7 sm:h-8 w-auto object-contain">
+                        </div>
+
+                        <div :class="sidebarCollapsed && !sidebarHover ? 'lg:opacity-0 lg:w-0' : 'opacity-100 w-auto'"
+                            class="min-w-0 overflow-hidden transition-all duration-300">
+                            <div class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] text-[#f59e0b]">
+                                Layanan
+                            </div>
+
+                            <div class="text-lg sm:text-xl font-black uppercase tracking-tight leading-none">
+                                TAR<span class="text-[#f59e0b]">SIUS</span>
+                            </div>
+                        </div>
                     </div>
-                    
-                    <div class="ml-3">
-                        <span class="text-[#f59e0b]">LAYANAN</span>
-                        <span class="block text-white font-black text-xl italic tracking-tighter uppercase leading-none">TAR<span class="text-[#f59e0b]">SIUS</span></span>
-                    </div>
+
+                    <button type="button"
+                            @click="mobileSidebarOpen = false"
+                            class="lg:hidden w-9 sm:w-10 h-9 sm:h-10 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0 text-white text-sm sm:text-base">
+                        ✕
+                    </button>
                 </div>
 
-                <nav class="flex-grow px-4 space-y-2 overflow-y-auto pb-4 custom-scrollbar">
-                    <p class="text-[10px] font-black text-white/30 uppercase px-4 mb-2 tracking-[0.2em]">Menu Utama</p>
-                    
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-white hover:bg-white/10 transition-all {{ request()->routeIs('dashboard') ? 'bg-[#f59e0b] shadow-lg shadow-orange-900/20' : '' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        <span class="text-xs font-black uppercase italic tracking-widest">Dashboard</span>
-                    </a>
+                {{-- MENU --}}
+                <nav class="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-5 space-y-1 sm:space-y-2">
 
-                    @if(auth()->user()->role === 'admin')
-                        @php
-                            $kritisCount = \App\Models\DomainTracker::where('status', 'Kritis')->orWhere('status', 'Expired')->count();
-                        @endphp
-                        
-                        <p class="pt-6 text-[10px] font-black text-white/30 uppercase px-4 mb-2 tracking-[0.2em]">Admin</p>
-                        
-                        <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-white/70 hover:bg-white/10 hover:text-white transition-all {{ request()->routeIs('admin.users.*') ? 'bg-[#f59e0b] text-white shadow-lg shadow-orange-900/20' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                            <span class="text-xs font-black uppercase italic tracking-widest">Manajemen User</span>
-                        </a>
+                    @if($user->role === 'desa')
+                        @foreach($menuDesa as $item)
+                            @if(isset($item['children']))
+                                <div x-data="{ open: {{ $item['active'] ? 'true' : 'false' }} }">
+                                    <button type="button"
+                                            @click="open = !open"
+                                            class="sidebar-nav-item w-full flex items-center gap-0 px-3 py-3 rounded-2xl transition-all
+                                                {{ $item['active'] ? 'bg-[#f59e0b] text-[#1e3a8a] shadow-lg shadow-orange-900/20' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
 
-                        <a href="{{ route('admin.status-laporan') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-white/70 hover:bg-white/10 hover:text-white transition-all {{ request()->routeIs('admin.status-laporan', 'admin.index') ? 'bg-[#f59e0b] text-white shadow-lg shadow-orange-900/20' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <span class="text-xs font-black uppercase italic tracking-widest">Status Laporan Desa</span>
-                        </a>
+                                        <span class="sidebar-icon-shell w-9 sm:w-10 h-9 sm:h-10 flex-shrink-0 rounded-2xl
+                                                    {{ $item['active'] ? 'bg-white/20' : 'bg-white/5' }}">
+                                            <span class="sidebar-icon-glyph w-5 sm:w-6 h-5 sm:h-6">
+                                                {!! $item['icon'] !!}
+                                            </span>
+                                        </span>
 
-                        <a href="{{ route('admin.kategori.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-2xl text-white/70 hover:bg-white/10 hover:text-white transition-all {{ request()->routeIs('admin.kategori.*') ? 'bg-[#f59e0b] text-white shadow-lg shadow-orange-900/20' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span class="text-xs font-black uppercase italic tracking-widest text-left">Kelola Kategori</span>
-                        </a>
+                                        <span :class="sidebarCollapsed && !sidebarHover ? 'lg:opacity-0 lg:w-0 lg:translate-x-2 lg:pl-0' : 'opacity-100 w-auto translate-x-0 pl-3'"
+                                            class="text-[10px] sm:text-xs font-black uppercase tracking-widest text-left flex-1 whitespace-nowrap overflow-hidden transition-all duration-300 ease-out">
+                                            {{ $item['label'] }}
+                                        </span>
 
-                        <div x-data="{ open: {{ request()->routeIs('admin.antikorupsi.*', 'admin.domain.*') ? 'true' : 'false' }} }" class="mt-1">
-                            <button @click="open = ! open" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-white/70 hover:bg-white/10 hover:text-white transition-all {{ request()->routeIs('admin.antikorupsi.*', 'admin.domain.*') ? 'bg-white/10 text-white' : '' }}">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                                    <span class="text-xs font-black uppercase italic tracking-widest text-left">Menu Lainnya</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    @if($kritisCount > 0)
-                                        <span class="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
-                                    @endif
-                                    <svg class="w-4 h-4 transform transition-transform duration-300" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
-                            </button>
+                                        <span :class="sidebarCollapsed && !sidebarHover ? 'lg:opacity-0 lg:w-0' : 'opacity-100 w-4'"
+                                            class="text-xs font-black overflow-hidden transition-all duration-300 ease-out flex-shrink-0">
+                                            <span x-show="!open">+</span>
+                                            <span x-show="open">−</span>
+                                        </span>
+                                    </button>
 
-                            <div x-show="open" 
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                                 class="mt-2 ml-4 pl-4 border-l-2 border-white/10 space-y-4 py-2" style="display: none;">
-                                
-                                <div>
-                                    <p class="text-[9px] font-black text-[#f59e0b] uppercase tracking-[0.2em] italic mb-2">Desa Antikorupsi</p>
-                                    <div class="space-y-3">
-                                        <a href="{{ route('admin.antikorupsi.setting') }}" class="block px-2 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors {{ request()->routeIs('admin.antikorupsi.setting') ? 'text-white' : '' }}">
-                                            - Pengaturan Akses
-                                        </a>
-                                    </div>
-                                </div>
+                                    <div x-show="open && ((!sidebarCollapsed || sidebarHover) || mobileSidebarOpen)"
+                                        x-transition:enter="transition ease-out duration-300"
+                                        x-transition:enter-start="opacity-0 -translate-y-2"
+                                        x-transition:enter-end="opacity-100 translate-y-0"
+                                        x-transition:leave="transition ease-in duration-200"
+                                        x-transition:leave-start="opacity-100 translate-y-0"
+                                        x-transition:leave-end="opacity-0 -translate-y-2"
+                                        class="mt-1 sm:mt-2 ml-10 sm:ml-11 pl-3 sm:pl-4 border-l border-white/10 space-y-1"
+                                        style="display:none;">
 
-                                <div class="pt-1">
-                                    <p class="text-[9px] font-black text-[#f59e0b] uppercase tracking-[0.2em] italic mb-2">Layanan Domain</p>
-                                    <div class="space-y-3">
-                                        <a href="{{ route('admin.domain.monitor') }}" class="flex items-center justify-between px-2 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors {{ request()->routeIs('admin.domain.monitor') ? 'text-white' : '' }}">
-                                            <span>- Monitor Domain</span>
-                                            @if($kritisCount > 0)
-                                                <span class="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[8px] font-black text-white italic animate-pulse shadow-lg">
-                                                    {{ $kritisCount }}
-                                                </span>
+                                        @foreach($item['children'] as $child)
+                                            @if(\Illuminate\Support\Facades\Route::has($child['route']))
+                                                <a href="{{ route($child['route']) }}"
+                                                   class="block rounded-xl px-3 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition
+                                                   {{ request()->routeIs($child['route']) ? 'bg-white/15 text-white' : 'text-white/50 hover:bg-white/10 hover:text-white' }}">
+                                                    {{ $child['label'] }}
+                                                </a>
+                                            @else
+                                                <div class="block rounded-xl px-3 py-2 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/20 cursor-not-allowed">
+                                                    {{ $child['label'] }}
+                                                </div>
                                             @endif
-                                        </a>
+                                        @endforeach
                                     </div>
                                 </div>
-                            </div>
-                        </div>
+                            @else
+                                @if(\Illuminate\Support\Facades\Route::has($item['route']))
+                                    <a href="{{ route($item['route']) }}"
+                                        class="sidebar-nav-item flex items-center gap-0 px-3 py-3 rounded-2xl transition-all
+                                                {{ $item['active'] ? 'bg-[#f59e0b] text-[#1e3a8a] shadow-lg shadow-orange-900/20' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+
+                                            <span class="sidebar-icon-shell w-9 sm:w-10 h-9 sm:h-10 flex-shrink-0 rounded-2xl
+                                                        {{ $item['active'] ? 'bg-white/20' : 'bg-white/5' }}">
+                                                <span class="sidebar-icon-glyph w-5 sm:w-6 h-5 sm:h-6">
+                                                    {!! $item['icon'] !!}
+                                                </span>
+                                            </span>
+
+                                            <span :class="sidebarCollapsed && !sidebarHover ? 'lg:opacity-0 lg:w-0 lg:translate-x-2 lg:pl-0' : 'opacity-100 w-auto translate-x-0 pl-3'"
+                                                class="text-[10px] sm:text-xs font-black uppercase tracking-widest whitespace-nowrap overflow-hidden transition-all duration-300 ease-out">
+                                                {{ $item['label'] }}
+                                            </span>
+                                        </a>
+                                @endif
+                            @endif
+                        @endforeach
                     @endif
 
-                    @if(auth()->user()->role === 'desa' && auth()->user()->is_antikorupsi_active)
-                        <p class="pt-6 text-[10px] font-black text-white/30 uppercase px-4 mb-2 tracking-[0.2em]">Desa</p>
-                        <div x-data="{ open: {{ request()->routeIs('desa.antikorupsi.*', 'desa.master-grup-antikorupsi.*') ? 'true' : 'false' }} }" class="mt-1">
-                            <button @click="open = ! open" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-white/70 hover:bg-white/10 hover:text-white transition-all {{ request()->routeIs('desa.antikorupsi.*', 'desa.master-grup-antikorupsi.*') ? 'bg-white/10 text-white' : '' }}">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                                    <span class="text-xs font-black uppercase italic tracking-widest text-left">Menu Lainnya</span>
-                                </div>
-                                <svg class="w-4 h-4 transform transition-transform duration-300" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
+                    @if($user->role === 'admin')
+                        @php
+                            $menuAdmin = [
+                                [
+                                    'label' => 'Dashboard',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 11.5L12 4l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-8.5z"/></svg>',
+                                    'route' => 'admin.dashboard',
+                                    'active' => request()->routeIs('admin.dashboard'),
+                                ],
+                                [
+                                    'label' => 'Manajemen User',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m0-4a4 4 0 100-8 4 4 0 000 8zm8 0a4 4 0 100-8 4 4 0 000 8z"/></svg>',
+                                    'route' => 'admin.users.index',
+                                    'active' => request()->routeIs('admin.users.*'),
+                                ],
+                                [
+                                    'label' => 'Status Laporan',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-6m3 6v-4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/></svg>',
+                                    'route' => 'admin.status-laporan',
+                                    'active' => request()->routeIs('admin.status-laporan'),
+                                ],
+                                [
+                                    'label' => 'Monitor Domain',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9M12 3c-2.5 2.5-4 5.5-4 9s1.5 6.5 4 9"/></svg>',
+                                    'route' => 'admin.domain.monitor',
+                                    'active' => request()->routeIs('admin.domain.monitor'),
+                                ],
+                                [
+                                    'label' => 'Monitor SSL',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 118 0v4M5 11h14a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z"/></svg>',
+                                    'route' => 'admin.ssl.monitor',
+                                    'active' => request()->routeIs('admin.ssl.monitor'),
+                                ],
+                                [
+                                    'label' => 'Pengaturan Modul',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 3v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-3z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>',
+                                    'route' => 'admin.module.setting',
+                                    'active' => request()->routeIs('admin.module.*'),
+                                ],
+                                [
+                                    'label' => 'Log Aktivitas',
+                                    'icon' => '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h6v6m-9 4h12a2 2 0 002-2V7l-8-4-8 4v12a2 2 0 002 2z"/></svg>',
+                                    'route' => 'admin.activity.logs',
+                                    'active' => request()->routeIs('admin.activity.logs'),
+                                ],
+                            ];
+                        @endphp
 
-                            <div x-show="open" 
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                                 class="mt-2 ml-4 pl-4 border-l-2 border-white/10 space-y-4 py-2" style="display: none;">
-                                <div>
-                                    <p class="text-[9px] font-black text-[#f59e0b] uppercase tracking-[0.2em] italic mb-2">Desa Antikorupsi</p>
-                                    <div class="space-y-3">
-                                        <a href="{{ route('desa.master-grup-antikorupsi.index') }}" class="block px-2 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors {{ request()->routeIs('desa.master-grup-antikorupsi.*') ? 'text-white' : '' }}">
-                                            - Master Grup Indikator
-                                        </a>
-                                        <a href="{{ route('desa.antikorupsi.index') }}" class="block px-2 text-[10px] font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors {{ request()->routeIs('desa.antikorupsi.*') ? 'text-white' : '' }}">
-                                            - Input Antikorupsi
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @foreach($menuAdmin as $item)
+                            @if(\Illuminate\Support\Facades\Route::has($item['route']))
+                                <a href="{{ route($item['route']) }}"
+                                class="sidebar-nav-item flex items-center gap-0 px-3 py-3 rounded-2xl transition-all
+                                        {{ $item['active'] ? 'bg-[#f59e0b] text-[#1e3a8a] shadow-lg shadow-orange-900/20' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
+
+                                    <span class="sidebar-icon-shell w-9 sm:w-10 h-9 sm:h-10 flex-shrink-0 rounded-2xl
+                                                {{ $item['active'] ? 'bg-white/20' : 'bg-white/5' }}">
+                                        <span class="sidebar-icon-glyph w-5 sm:w-6 h-5 sm:h-6">
+                                            {!! $item['icon'] !!}
+                                        </span>
+                                    </span>
+
+                                    <span :class="sidebarCollapsed && !sidebarHover ? 'lg:opacity-0 lg:w-0 lg:translate-x-2 lg:pl-0' : 'opacity-100 w-auto translate-x-0 pl-3'"
+                                        class="text-[10px] sm:text-xs font-black uppercase italic tracking-widest whitespace-nowrap overflow-hidden transition-all duration-300 ease-out">
+                                        {{ $item['label'] }}
+                                    </span>
+                                </a>
+                            @endif
+                        @endforeach
                     @endif
                 </nav>
+            </div>
+        </aside>
 
-                <div class="p-4 bg-black/20 border-t border-white/10">
-                    <div class="p-4 border-t border-blue-800 bg-[#1e3a8a]/50">
-                        <div class="flex items-center gap-3 px-2 mb-4">
-                            <div class="w-8 h-8 rounded-lg bg-[#f59e0b] flex items-center justify-center text-[#1e3a8a] font-black text-xs shadow-lg">
-                                {{ substr(Auth::user()->name, 0, 1) }}
+        {{-- CONTENT WRAPPER --}}
+        <div class="min-h-screen transition-all duration-300"
+     :class="sidebarCollapsed ? 'lg:pl-[86px]' : 'lg:pl-[292px]'">
+
+            {{-- TOPBAR --}}
+            <header class="sticky top-0 z-40 h-16 sm:h-20 bg-white/90 backdrop-blur-xl border-b border-slate-200 theme-bg-card theme-border">
+                <div class="h-full px-3 sm:px-4 lg:px-10 flex items-center justify-between gap-2 sm:gap-3">
+
+                    <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+                        <button type="button"
+                                @click="window.innerWidth < 1024 ? mobileSidebarOpen = true : toggleSidebar()"
+                                class="w-10 sm:w-11 h-10 sm:h-11 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
+
+                        <div class="min-w-0 flex-1">
+                            <h1 class="text-xs sm:text-sm lg:text-lg font-black text-slate-900 uppercase theme-text-main truncate">
+                                {{ $title ?? ($user->role === 'admin' ? 'Dashboard Kabupaten' : 'Dashboard Desa') }}
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 sm:gap-3">
+
+                        {{-- ALERT CENTER --}}
+                        <div x-data="{ openAlert: false }" class="relative">
+                            <button type="button"
+                                    @click="openAlert = !openAlert"
+                                    class="relative w-10 sm:w-11 h-10 sm:h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-sm hover:bg-slate-50 theme-bg-card theme-border flex-shrink-0 text-lg sm:text-xl">
+                                🔔
+
+                                @if($totalAlert > 0)
+                                    <span class="absolute -top-1 -right-1 min-w-4 h-4 sm:min-w-5 sm:h-5 px-0.5 sm:px-1 rounded-full bg-red-600 text-white text-[8px] sm:text-[10px] font-black flex items-center justify-center">
+                                        {{ $totalAlert }}
+                                    </span>
+                                @endif
+                            </button>
+
+                            <div x-show="openAlert"
+                                 @click.away="openAlert = false"
+                                 x-transition
+                                 class="absolute right-0 mt-3 w-[calc(100vw-1rem)] sm:w-96 bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden theme-bg-card theme-border z-50"
+                                 style="display:none;">
+                                <div class="px-5 py-4 border-b border-slate-100 theme-border">
+                                    <h3 class="text-xs font-black uppercase tracking-widest text-slate-800 theme-text-main">
+                                        Alert Center
+                                    </h3>
+                                </div>
+
+                                <div class="p-4 space-y-3 max-h-96 overflow-y-auto">
+
+                        @if($user->role === 'desa')
+                            @if(\Illuminate\Support\Facades\Route::has('desa.ppid.permohonan.index'))
+                                <a href="{{ route('desa.ppid.permohonan.index') }}"
+                                class="block rounded-2xl bg-slate-50 p-4 hover:bg-blue-50">
+                                    <div class="text-xs font-black text-slate-900">
+                                        Permohonan PPID Baru
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 mt-1">
+                                        {{ $jumlahPermohonanBaru }} permohonan menunggu tindak lanjut.
+                                    </div>
+                                </a>
+                            @endif
+
+                            @if(\Illuminate\Support\Facades\Route::has('desa.ppid.keberatan.index'))
+                                <a href="{{ route('desa.ppid.keberatan.index') }}"
+                                class="block rounded-2xl bg-slate-50 p-4 hover:bg-amber-50">
+                                    <div class="text-xs font-black text-slate-900">
+                                        Keberatan Informasi Baru
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 mt-1">
+                                        {{ $jumlahKeberatanBaru }} keberatan belum ditanggapi.
+                                    </div>
+                                </a>
+                            @endif
+                        @endif
+
+                        @if($totalAlert === 0)
+                            <div class="rounded-2xl bg-slate-50 p-4 text-xs font-bold text-slate-400">
+                                Belum ada notifikasi baru.
                             </div>
-                            <div class="flex flex-col">
-                                <span class="text-[10px] font-black text-white uppercase">{{ Auth::user()->name }}</span>
-                                <span class="text-[8px] text-blue-300 font-bold uppercase tracking-widest">{{ Auth::user()->role }}</span>
+                        @endif
+
+                    </div>
                             </div>
                         </div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="w-full flex items-center h-10 hover:bg-white/10 text-blue-200 hover:text-white px-4 rounded-xl transition-all group focus:outline-none">
-                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                                <span class="ml-3 text-[10px] font-black uppercase italic tracking-widest">Logout</span>
+
+                        {{-- THEME --}}
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" @change="toggleDark()" :checked="darkMode">
+                            
+                            <div class="w-14 h-8 bg-gray-200 rounded-full peer peer-focus:ring-2 peer-focus:ring-blue-300 
+                                /* Saat tidak aktif: ikon bulan */
+                                after:content-['☀️'] 
+                                after:absolute after:top-1 after:left-1 after:bg-black after:rounded-full after:h-6 after:w-6 after:transition-all
+                                
+                                /* Saat aktif (peer-checked): geser ke kanan dan ganti ikon jadi matahari */
+                                peer-checked:bg-blue-600
+                                peer-checked:after:translate-x-full 
+                                peer-checked:after:content-['🌙']">
+                            </div>
+                        </label>
+
+                        {{-- USER DROPDOWN --}}
+                        <div x-data="{ openUser: false }" class="relative">
+                            <button type="button"
+                                    @click="openUser = !openUser"
+                                    class="flex items-center gap-2 sm:gap-3 rounded-2xl bg-white border border-slate-200 px-2 sm:px-4 py-2 shadow-sm hover:bg-slate-50 theme-bg-card theme-border flex-shrink-0">
+                                <div class="w-8 sm:w-9 h-8 sm:h-9 rounded-xl bg-slate-100 flex items-center justify-center font-black text-xs sm:text-sm">
+                                    {{ substr($user->name, 0, 1) }}
+                                </div>
+
+                                <div class="hidden md:block text-left">
+                                    <div class="text-xs font-black text-slate-800 theme-text-main">
+                                        {{ $user->name }}
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 font-bold uppercase">
+                                        {{ $user->role }}
+                                    </div>
+                                </div>
                             </button>
-                        </form>
+
+                            <div x-show="openUser"
+                                 @click.away="openUser = false"
+                                 x-transition
+                                 class="absolute right-0 mt-3 w-48 sm:w-56 bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden theme-bg-card theme-border z-50"
+                                 style="display:none;">
+                                <div class="p-3">
+                                    @if(\Illuminate\Support\Facades\Route::has('profile.edit'))
+                                        <a href="{{ route('profile.edit') }}"
+                                           class="block rounded-2xl px-4 py-3 text-xs font-bold text-slate-600 hover:bg-slate-50">
+                                            Profil User
+                                        </a>
+                                    @endif
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="w-full text-left rounded-2xl px-4 py-3 text-xs font-bold text-red-600 hover:bg-red-50">
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </aside>
-            <div class="flex-grow min-w-0 theme-bg-main transition-all duration-300" :class="layout === 'sidebar' ? 'ml-64' : ''">
-                
-                <template x-if="layout === 'navbar'">
-                    @include('layouts.navigation')
-                </template>
+            </header>
 
-                @isset($header)
-                    <header class="theme-bg-card border-b theme-border">
-                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                            <div class="text-2xl font-black theme-text-main uppercase italic tracking-tighter">{{ $header }}</div>
+            {{-- PAGE HEADER LAMA JIKA MASIH ADA --}}
+            @isset($header)
+                <header class="theme-bg-card border-b theme-border">
+                    <div class="max-w-[1400px] mx-auto py-4 sm:py-6 px-3 sm:px-6 lg:px-10">
+                        <div class="text-lg sm:text-2xl font-black theme-text-main uppercase tracking-tighter">
+                            {{ $header }}
                         </div>
-                    </header>
-                @endisset
-
-                <main class="py-12">
-                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        {{ $slot }}
                     </div>
-                </main>
-            </div>
+                </header>
+            @endisset
+
+            {{-- MAIN --}}
+            <main class="px-3 sm:px-4 lg:px-10 py-4 sm:py-6 lg:py-10">
+                {{ $slot }}
+            </main>
         </div>
-
-        <div class="fixed bottom-6 right-6 z-[60] flex flex-col gap-3">
-            
-            <button @click="toggleDark()" 
-                    class="group relative flex items-center justify-center w-14 h-14 rounded-[1.5rem] shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border"
-                    :class="darkMode ? 'bg-slate-800 border-slate-700 text-yellow-400' : 'bg-white border-slate-200 text-slate-600'">
-                
-                <svg x-show="!darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
-                </svg>
-
-                <svg x-show="darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-
-                <span class="absolute right-16 px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none tracking-widest">
-                    Tema <span x-text="darkMode ? 'Terang' : 'Gelap'"></span>
-                </span>
-            </button>
-
-            <button @click="toggleLayout()" 
-                    class="group relative flex items-center justify-center w-14 h-14 bg-[#f59e0b] text-[#1e3a8a] rounded-[1.5rem] shadow-2xl shadow-orange-500/20 hover:scale-110 active:scale-95 transition-all duration-300">
-                <svg x-show="layout === 'navbar'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                <svg x-show="layout === 'sidebar'" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
-                
-                <span class="absolute right-16 px-4 py-2 bg-slate-900 text-white text-[10px] font-black uppercase rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none tracking-widest">
-                    Tukar Ke <span x-text="layout === 'navbar' ? 'Sidebar' : 'Navbar'"></span>
-                </span>
-            </button>
-        </div>
+    </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 

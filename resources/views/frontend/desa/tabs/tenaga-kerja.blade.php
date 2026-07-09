@@ -175,19 +175,19 @@
                                     
                                     <td class="p-4 font-black italic text-left" x-text="name"></td>
                                     
-                                    <!-- Kolom LK -->
+                                    
                                     <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.lk)"></td>
                                     <td class="p-4 text-center bg-blue-50/30 text-blue-600 font-black" 
                                         :class="selectedItem === name ? 'text-white' : ''"
                                         x-text="calculatePercentLK(name) + '%'"></td>
                                     
-                                    <!-- Kolom PR -->
+                                    
                                     <td class="p-4 text-center border-l border-slate-50" x-text="formatNumber(allYearsData[name][selectedTahun]?.pr)"></td>
                                     <td class="p-4 text-center bg-pink-50/30 text-pink-600 font-black" 
                                         :class="selectedItem === name ? 'text-white' : ''"
                                         x-text="calculatePercentPR(name) + '%'"></td> 
                                     
-                                    <!-- Kolom Total -->
+                                    
                                     <td class="p-4 text-center bg-slate-50/50 border-l border-slate-50 text-slate-900" 
                                         :class="selectedItem === name ? 'text-white' : ''"
                                         x-text="formatNumber(allYearsData[name][selectedTahun]?.total)"></td>

@@ -17,6 +17,14 @@ class Desa extends Model
         'welcome_message',     
         'featured_category_id',
         'is_antikorupsi_active',
+        'alamat_kantor',
+        'email_desa',
+        'website_desa',
+        'telepon_desa',
+        'logo_desa',
+        'nama_ppid',
+        'jabatan_ppid',
+        'nip_ppid',
     ];
 
     public function statistics()

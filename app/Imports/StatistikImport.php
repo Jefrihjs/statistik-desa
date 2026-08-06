@@ -23,8 +23,9 @@ class StatistikImport implements ToModel, WithHeadingRow
 
         if ($indicator) {
 
-            if ($indicator->category->slug == 'demografi' && 
-                ($indicator->name == 'Laki-laki' || $indicator->name == 'Perempuan')) {
+            if (($indicator->category->slug == 'demografi' && 
+                ($indicator->name == 'Laki-laki' || $indicator->name == 'Perempuan')) ||
+                ($indicator->category->slug == 'kelompok-usia')) {
                 return null;
             }
 

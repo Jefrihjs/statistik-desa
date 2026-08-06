@@ -117,7 +117,7 @@
                     labels: labels,
                     datasets: isPie ? [{
                         data: labels.map(n => self.allYearsData[n]?.[self.selectedTahun]?.total || 0),
-                        backgroundColor: ['#1e3a8a','#2563eb','#3b82f6','#60a5fa','#f59e0b','#fbbf24','#fcd34d'],
+                        backgroundColor: window.getChartPalette(labels.length),
                         hoverOffset: 30,
                         borderWidth: 5,
                         borderColor: '#ffffff'
@@ -125,13 +125,13 @@
                         {
                             label: 'Laki-laki',
                             data: labels.map(n => self.allYearsData[n]?.[self.selectedTahun]?.lk || 0),
-                            backgroundColor: '#2563eb',
+                            backgroundColor: window.getChartPalette(2, true)[0],
                             borderRadius: 8
                         },
                         {
                             label: 'Perempuan',
                             data: labels.map(n => self.allYearsData[n]?.[self.selectedTahun]?.pr || 0),
-                            backgroundColor: '#db2777',
+                            backgroundColor: window.getChartPalette(2, true)[1],
                             borderRadius: 8
                         }
                     ]

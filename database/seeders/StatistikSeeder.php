@@ -19,9 +19,10 @@ class StatistikSeeder extends Seeder
         // 2. PER TAHUN USIA
         $catUsiaDetail = Category::updateOrCreate(['slug' => 'usia-detail'], ['name' => 'Data Penduduk Per Tahun Usia', 'icon' => 'calendar']);
         for ($i = 0; $i <= 75; $i++) {
-            $label = ($i == 75) ? 'Usia 75+' : 'Usia ' . $i;
+            $label = 'Usia ' . $i;
             Indicator::updateOrCreate(['category_id' => $catUsiaDetail->id, 'name' => $label], ['unit' => 'Jiwa']);
         }
+        Indicator::updateOrCreate(['category_id' => $catUsiaDetail->id, 'name' => 'Usia 75+'], ['unit' => 'Jiwa']);
 
         // 3. KELOMPOK UMUR
         $catKelompokUsia = Category::updateOrCreate(['slug' => 'kelompok-usia'], ['name' => 'Kelompok Umur', 'icon' => 'chart-bar']);

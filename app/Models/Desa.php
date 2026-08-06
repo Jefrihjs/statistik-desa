@@ -21,10 +21,13 @@ class Desa extends Model
         'email_desa',
         'website_desa',
         'telepon_desa',
+        'nama_kepala_desa',
+        'nip_kepala',
         'logo_desa',
         'nama_ppid',
         'jabatan_ppid',
         'nip_ppid',
+        'public_template_id',
     ];
 
     public function statistics()

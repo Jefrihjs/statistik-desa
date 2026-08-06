@@ -269,6 +269,32 @@
                             </div>
                         </div>
 
+                        {{-- Pilihan Template Publik --}}
+                        <div>
+                            <label class="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">Pilihan Template Publik (6 Pilihan)</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                @foreach([
+                                    1 => ['name' => 'Template 1 - Modern (Default)', 'desc' => 'Desain bersih dengan layout terstruktur dan warna kontras tinggi.', 'color' => 'bg-gradient-to-br from-blue-600 to-indigo-900'],
+                                    2 => ['name' => 'Template 2 - Classic', 'desc' => 'Desain tradisional yang berfokus pada keterbacaan data tabel.', 'color' => 'bg-gradient-to-br from-emerald-600 to-teal-900'],
+                                    3 => ['name' => 'Template 3 - Elegan', 'desc' => 'Tampilan gelap berkelas (Dark Mode) dengan aksen warna neon.', 'color' => 'bg-slate-900'],
+                                    4 => ['name' => 'Template 4 - Minimalis', 'desc' => 'Mengutamakan ruang kosong (whitespace) dan kesederhanaan.', 'color' => 'bg-stone-100 border border-stone-200 text-stone-900'],
+                                    5 => ['name' => 'Template 5 - Kreatif', 'desc' => 'Desain ceria dan penuh warna untuk menyajikan infografis.', 'color' => 'bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500'],
+                                    6 => ['name' => 'Template 6 - Profesional', 'desc' => 'Dashboard korporat dengan layout metrik yang padat.', 'color' => 'bg-gradient-to-br from-cyan-600 to-blue-800']
+                                ] as $id => $tpl)
+                                    <label class="relative rounded-[2rem] overflow-hidden cursor-pointer group shadow-sm hover:shadow-md border-2 transition-all flex flex-col justify-between p-6 min-h-[160px] {{ ($desaAktif->public_template_id ?? 1) == $id ? 'border-blue-600 scale-[1.02]' : 'border-slate-100 hover:border-slate-200' }}">
+                                        <input type="radio" name="public_template_id" value="{{ $id }}" class="absolute top-5 right-5 focus:ring-0 text-blue-600 w-4 h-4" {{ ($desaAktif->public_template_id ?? 1) == $id ? 'checked' : '' }}>
+                                        <div class="w-12 h-12 rounded-2xl mb-4 flex items-center justify-center {{ str_contains($tpl['color'], 'text-') ? '' : 'text-white' }} {{ $tpl['color'] }} font-black text-sm">
+                                            T{{ $id }}
+                                        </div>
+                                        <div class="text-left mt-auto">
+                                            <h4 class="text-xs font-black text-slate-800 uppercase tracking-wide group-hover:text-blue-600 transition-colors">{{ $tpl['name'] }}</h4>
+                                            <p class="text-[9px] text-slate-400 font-medium leading-relaxed mt-1">{{ $tpl['desc'] }}</p>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
                         {{-- Pesan Kepala Desa --}}
                         <div>
                             <label class="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-3">Pesan Kepala Desa</label>

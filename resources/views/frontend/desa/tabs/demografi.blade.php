@@ -79,12 +79,12 @@
             if (this.selectedItem !== 'Semua') {
                 labels = ['Laki-laki', 'Perempuan'];
                 dataValues = [this.currentStats.lk, this.currentStats.pr];
-                bgColors = this.isShowingKK ? ['#059669', '#10b981'] : ['#2563eb', '#db2777'];
+                bgColors = window.getChartPalette(2, true);
             } else {
                 const targetItems = Object.keys(this.allYearsData).filter(n => this.allYearsData[n][this.selectedTahun]?.is_kk === this.isShowingKK);
                 labels = targetItems;
                 dataValues = targetItems.map(n => this.allYearsData[n][this.selectedTahun]?.total || 0);
-                bgColors = ['#1e3a8a', '#2563eb', '#3b82f6', '#60a5fa', '#059669', '#10b981', '#fbbf24', '#f59e0b'];
+                bgColors = window.getChartPalette(targetItems.length);
             }
 
             new Chart(ctx, {

@@ -113,11 +113,11 @@
                     labels: labels,
                     datasets: type === 'bar'
                         ? [
-                            { label: 'Laki-laki', data: labels.map(n => this.allYearsData[n][this.selectedTahun]?.lk || 0), backgroundColor: '#2563eb', borderRadius: 8 },
-                            { label: 'Perempuan', data: labels.map(n => this.allYearsData[n][this.selectedTahun]?.pr || 0), backgroundColor: '#db2777', borderRadius: 8 }
+                            { label: 'Laki-laki', data: labels.map(n => this.allYearsData[n][this.selectedTahun]?.lk || 0), backgroundColor: window.getChartPalette(2, true)[0], borderRadius: 8 },
+                            { label: 'Perempuan', data: labels.map(n => this.allYearsData[n][this.selectedTahun]?.pr || 0), backgroundColor: window.getChartPalette(2, true)[1], borderRadius: 8 }
                         ]
                         : [
-                            { data: labels.map(n => this.allYearsData[n][this.selectedTahun]?.total || 0), backgroundColor: ['#1e3a8a', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'] }
+                            { data: labels.map(n => this.allYearsData[n][this.selectedTahun]?.total || 0), backgroundColor: window.getChartPalette(labels.length) }
                         ]
                 },
                 options: {

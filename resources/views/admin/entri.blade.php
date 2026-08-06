@@ -181,16 +181,30 @@
                                                     <div class="text-[9px] text-slate-400 mt-1 uppercase tracking-widest font-bold">Satuan: {{ $ind->unit ?? 'Jiwa' }}</div>
                                                 </td>
                                                 <td class="p-4 text-center">
-                                                    <input type="number" name="stats[{{ $ind->id }}][Laki-laki]"
-                                                           value="{{ $ind->statistics->where('gender', 'Laki-laki')->where('year', $tahun)->first()->value ?? 0 }}"
-                                                           @input.debounce.1000ms="saveData('{{ $ind->id }}', 'Laki-laki', $el.value)"
-                                                           class="w-full p-4 bg-blue-50/50 border-none rounded-2xl text-center font-black text-xl text-blue-900 focus:ring-2 focus:ring-blue-500 shadow-inner">
+                                                    @if(($currentTab == 'demografi' && ($ind->name == 'Laki-laki' || $ind->name == 'Perempuan')) || $currentTab == 'kelompok-usia')
+                                                        <input type="number" readonly
+                                                               value="{{ $ind->statistics->where('gender', 'Laki-laki')->where('year', $tahun)->first()->value ?? 0 }}"
+                                                               class="w-full p-4 bg-slate-100 border-none rounded-2xl text-center font-black text-xl text-slate-500 cursor-not-allowed shadow-inner"
+                                                               title="Dihitung otomatis dari Data Penduduk Per Tahun Usia">
+                                                    @else
+                                                        <input type="number" name="stats[{{ $ind->id }}][Laki-laki]"
+                                                               value="{{ $ind->statistics->where('gender', 'Laki-laki')->where('year', $tahun)->first()->value ?? 0 }}"
+                                                               @input.debounce.1000ms="saveData('{{ $ind->id }}', 'Laki-laki', $el.value)"
+                                                               class="w-full p-4 bg-blue-50/50 border-none rounded-2xl text-center font-black text-xl text-blue-900 focus:ring-2 focus:ring-blue-500 shadow-inner">
+                                                    @endif
                                                 </td>
                                                 <td class="p-4 text-center">
-                                                    <input type="number" name="stats[{{ $ind->id }}][Perempuan]"
-                                                           value="{{ $ind->statistics->where('gender', 'Perempuan')->where('year', $tahun)->first()->value ?? 0 }}"
-                                                           @input.debounce.1000ms="saveData('{{ $ind->id }}', 'Perempuan', $el.value)"
-                                                           class="w-full p-4 bg-pink-50/50 border-none rounded-2xl text-center font-black text-xl text-pink-900 focus:ring-2 focus:ring-pink-500 shadow-inner">
+                                                    @if(($currentTab == 'demografi' && ($ind->name == 'Laki-laki' || $ind->name == 'Perempuan')) || $currentTab == 'kelompok-usia')
+                                                        <input type="number" readonly
+                                                               value="{{ $ind->statistics->where('gender', 'Perempuan')->where('year', $tahun)->first()->value ?? 0 }}"
+                                                               class="w-full p-4 bg-slate-100 border-none rounded-2xl text-center font-black text-xl text-slate-500 cursor-not-allowed shadow-inner"
+                                                               title="Dihitung otomatis dari Data Penduduk Per Tahun Usia">
+                                                    @else
+                                                        <input type="number" name="stats[{{ $ind->id }}][Perempuan]"
+                                                               value="{{ $ind->statistics->where('gender', 'Perempuan')->where('year', $tahun)->first()->value ?? 0 }}"
+                                                               @input.debounce.1000ms="saveData('{{ $ind->id }}', 'Perempuan', $el.value)"
+                                                               class="w-full p-4 bg-pink-50/50 border-none rounded-2xl text-center font-black text-xl text-pink-900 focus:ring-2 focus:ring-pink-500 shadow-inner">
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @empty

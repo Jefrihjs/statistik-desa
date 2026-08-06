@@ -42,7 +42,8 @@ class StatistikCategorySheet implements FromCollection, WithTitle, WithHeadings,
     public function map($indicator): array
     {
         $isOtomatis = ($this->category->slug == 'demografi' && 
-                      ($indicator->name == 'Laki-laki' || $indicator->name == 'Perempuan'));
+                      ($indicator->name == 'Laki-laki' || $indicator->name == 'Perempuan')) ||
+                      ($this->category->slug == 'kelompok-usia');
         return [
             $indicator->id,
             $indicator->name,

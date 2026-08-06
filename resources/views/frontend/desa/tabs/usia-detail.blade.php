@@ -8,7 +8,7 @@
         allYearsData: {
             @foreach($cat->indicators as $ind)
                 '{{ addslashes($ind->name) }}': {
-                    sort: @php preg_match('/\d+/', $ind->name, $matches); echo (int)($matches[0] ?? 999); @endphp,
+                    sort: @php preg_match('/\d+/', $ind->name, $matches); $val = (int)($matches[0] ?? 999); if (str_contains($ind->name, '+')) { $val += 0.5; } echo $val; @endphp,
                     years: {
                         @foreach($ind->statistics->groupBy('year') as $year => $stats)
                             '{{ $year }}': {
@@ -128,13 +128,13 @@
                                 let v = this.allYearsData[n].years[this.selectedTahun]?.lk || 0;
                                 return isPiramida ? -v : v;
                             }),
-                            backgroundColor: '#2563eb',
+                            backgroundColor: window.getChartPalette(2, true)[0],
                             borderRadius: 8
                         },
                         {
                             label: 'Perempuan',
                             data: labels.map(n => this.allYearsData[n].years[this.selectedTahun]?.pr || 0),
-                            backgroundColor: '#db2777',
+                            backgroundColor: window.getChartPalette(2, true)[1],
                             borderRadius: 8
                         }
                     ]

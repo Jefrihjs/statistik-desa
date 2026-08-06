@@ -33,6 +33,7 @@ class PengaturanDesaController extends Controller
             'layout_type'      => 'nullable|in:default,infographic',
             'featured_category_id' => 'nullable|exists:kategoris,id',
             'welcome_message'  => 'nullable|string|max:2000',
+            'public_template_id' => 'nullable|integer|between:1,6',
         ]);
 
         // Upload logo
@@ -49,6 +50,7 @@ class PengaturanDesaController extends Controller
             'nama_kepala_desa', 'nip_kepala',
             'nama_ppid', 'jabatan_ppid', 'nip_ppid',
             'layout_type', 'featured_category_id', 'welcome_message',
+            'public_template_id',
         ];
 
         foreach ($fields as $field) {

@@ -68,6 +68,17 @@ class StatistikController extends Controller
             }])
             ->get();
 
+        foreach ($categories as $category) {
+            if ($category->slug === 'usia-detail' || $category->slug === 'kelompok-usia') {
+                $category->setRelation('indicators', $category->indicators->sortBy(function($ind) {
+                    preg_match('/\d+/', $ind->name, $matches);
+                    $val = (int)($matches[0] ?? 999);
+                    if (str_contains($ind->name, '+')) { $val += 0.5; }
+                    return $val;
+                })->values());
+            }
+        }
+
         $categoriesWithData = [];
         foreach ($categories as $category) {
             foreach ($category->indicators as $indicator) {
@@ -149,7 +160,7 @@ class StatistikController extends Controller
         }
     }
 
-    private function syncDemografi($desa_id, $tahun)
+    public function syncDemografi($desa_id, $tahun)
     {
         $totalLK = Statistic::where('desa_id', $desa_id)->where('year', $tahun)->where('gender', 'Laki-laki')
             ->whereHas('indicator', function($q) {
@@ -175,6 +186,78 @@ class StatistikController extends Controller
                 ['desa_id' => $desa_id, 'indicator_id' => $indPR->id, 'year' => $tahun, 'gender' => 'Perempuan'],
                 ['value' => $totalPR]
             );
+        }
+
+        // Sync Kelompok Usia (Kelompok Umur)
+        $catKelompokUsia = Category::where('slug', 'kelompok-usia')->first();
+        if ($catKelompokUsia) {
+            $genders = ['Laki-laki', 'Perempuan'];
+            foreach ($genders as $gender) {
+                $usiaDetailStats = Statistic::where('desa_id', $desa_id)
+                    ->where('year', $tahun)
+                    ->where('gender', $gender)
+                    ->whereHas('indicator', function($q) {
+                        $q->whereHas('category', function($cat) { $cat->where('slug', 'usia-detail'); });
+                    })
+                    ->with('indicator')
+                    ->get()
+                    ->mapWithKeys(function ($stat) {
+                        $name = $stat->indicator->name;
+                        if (preg_match('/Usia\s+(\d+)\+/', $name, $matches)) {
+                            return ['75+' => $stat->value];
+                        } elseif (preg_match('/Usia\s+(\d+)/', $name, $matches)) {
+                            return [(int)$matches[1] => $stat->value];
+                        }
+                        return [];
+                    });
+
+                $groups = [
+                    '0-4' => [0, 4],
+                    '5-9' => [5, 9],
+                    '10-14' => [10, 14],
+                    '15-19' => [15, 19],
+                    '20-24' => [20, 24],
+                    '25-29' => [25, 29],
+                    '30-34' => [30, 34],
+                    '35-39' => [35, 39],
+                    '40-44' => [40, 44],
+                    '45-49' => [45, 49],
+                    '50-54' => [50, 54],
+                    '55-59' => [55, 59],
+                    '60-64' => [60, 64],
+                    '65-69' => [65, 69],
+                    '70-74' => [70, 74],
+                ];
+
+                foreach ($groups as $groupName => $range) {
+                    $sum = 0;
+                    for ($a = $range[0]; $a <= $range[1]; $a++) {
+                        $sum += $usiaDetailStats->get($a, 0);
+                    }
+                    $indicator = Indicator::where('category_id', $catKelompokUsia->id)->where('name', (string)$groupName)->first();
+                    if ($indicator) {
+                        Statistic::updateOrCreate(
+                            ['desa_id' => $desa_id, 'indicator_id' => $indicator->id, 'year' => $tahun, 'gender' => $gender],
+                            ['value' => $sum]
+                        );
+                    }
+                }
+
+                $sum75Plus = $usiaDetailStats->get(75, 0) + $usiaDetailStats->get('75+', 0);
+                foreach ($usiaDetailStats as $ageKey => $val) {
+                    if (is_int($ageKey) && $ageKey >= 76) {
+                        $sum75Plus += $val;
+                    }
+                }
+
+                $indicator75Plus = Indicator::where('category_id', $catKelompokUsia->id)->where('name', '75+')->first();
+                if ($indicator75Plus) {
+                    Statistic::updateOrCreate(
+                        ['desa_id' => $desa_id, 'indicator_id' => $indicator75Plus->id, 'year' => $tahun, 'gender' => $gender],
+                        ['value' => $sum75Plus]
+                    );
+                }
+            }
         }
     }
 
@@ -235,6 +318,17 @@ class StatistikController extends Controller
                 $q->where('year', $tahun);
             }])->get();
 
+        foreach ($categories as $category) {
+            if ($category->slug === 'usia-detail' || $category->slug === 'kelompok-usia') {
+                $category->setRelation('indicators', $category->indicators->sortBy(function($ind) {
+                    preg_match('/\d+/', $ind->name, $matches);
+                    $val = (int)($matches[0] ?? 999);
+                    if (str_contains($ind->name, '+')) { $val += 0.5; }
+                    return $val;
+                })->values());
+            }
+        }
+
         $allStats = Statistic::where('year', $tahun)
             ->with('indicator.category')
             ->get()
@@ -257,6 +351,17 @@ class StatistikController extends Controller
     {
         $desa = Desa::findOrFail($desa_id);
         $categories = Category::with('indicators')->get();
+
+        foreach ($categories as $category) {
+            if ($category->slug === 'usia-detail' || $category->slug === 'kelompok-usia') {
+                $category->setRelation('indicators', $category->indicators->sortBy(function($ind) {
+                    preg_match('/\d+/', $ind->name, $matches);
+                    $val = (int)($matches[0] ?? 999);
+                    if (str_contains($ind->name, '+')) { $val += 0.5; }
+                    return $val;
+                })->values());
+            }
+        }
         
         $hiddenIds = DesaItemHide::where('desa_id', $desa_id)->pluck('hideable_id')->toArray();
 

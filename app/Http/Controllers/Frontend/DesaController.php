@@ -37,6 +37,24 @@ class DesaController extends Controller
             }])
             ->get();
 
-        return view('frontend.desa_profil', compact('desa', 'categories', 'tahun', 'daftarTahun'));
+        foreach ($categories as $category) {
+            if ($category->slug === 'usia-detail' || $category->slug === 'kelompok-usia') {
+                $category->setRelation('indicators', $category->indicators->sortBy(function($ind) {
+                    preg_match('/\d+/', $ind->name, $matches);
+                    $val = (int)($matches[0] ?? 999);
+                    if (str_contains($ind->name, '+')) { $val += 0.5; }
+                    return $val;
+                })->values());
+            }
+        }
+
+        $templateId = $desa->public_template_id ?? 1;
+        $viewName = "public.template_" . $templateId;
+        
+        if (!view()->exists($viewName)) {
+            $viewName = 'frontend.desa_profil';
+        }
+
+        return view($viewName, compact('desa', 'categories', 'tahun', 'daftarTahun'));
     }
 }

@@ -13,7 +13,7 @@ class PengaturanDesaController extends Controller
         $desa = auth()->user()->desa;
         $categories = Category::where('is_active', true)->orderBy('name')->get();
 
-        return view('desa.pengaturan.edit', compact('desa', 'categories'));
+        return view('desa.settings.edit', compact('desa', 'categories'));
     }
 
     public function update(Request $request)

@@ -58,7 +58,11 @@
             $perempuan = $demografi->indicators->where('name', 'Perempuan')
                 ->sum(function($i) use ($tahun) { return $i->statistics->where('year', $tahun)->sum('value'); });
         }
-        $pekerjaan = $categories->where('slug', 'mata-pencaharian')->first();
+        $unggulanCat = null;
+        if ($desa->featured_category_id) {
+            $unggulanCat = $categories->where('id', $desa->featured_category_id)->first();
+        }
+        $pekerjaan = $unggulanCat ?: $categories->where('slug', 'mata-pencaharian')->first();
         $topJob = null;
         if ($pekerjaan) {
             $topJob = $pekerjaan->indicators->filter(function($ind) {
@@ -102,7 +106,7 @@
                     ['label' => 'Total Penduduk', 'val' => $totalJiwa, 'unit' => 'Jiwa'],
                     ['label' => 'Laki-laki', 'val' => $lakiLaki, 'unit' => 'Jiwa'],
                     ['label' => 'Perempuan', 'val' => $perempuan, 'unit' => 'Jiwa'],
-                    ['label' => 'Pekerjaan Utama', 'val' => $topJob ? $topJob->name : 'N/A', 'unit' => $topJob ? number_format($topJob->total_value,0,',','.').' Orang' : '-']
+                    ['label' => $pekerjaan ? $pekerjaan->name : 'Data Unggulan', 'val' => $topJob ? $topJob->name : 'N/A', 'unit' => $topJob ? number_format($topJob->total_value,0,',','.').' '.($pekerjaan && $pekerjaan->slug === 'mata-pencaharian' ? 'Orang' : ($topJob->unit ?? 'Jiwa')) : '-']
                 ] as $card)
                     <div class="bg-white border border-slate-200 p-5 rounded-2xl flex flex-col justify-between shadow-sm">
                         <span class="text-[9px] uppercase font-bold tracking-widest text-teal-600 border-b border-dashed border-teal-100 pb-1.5">{{ $card['label'] }}</span>

@@ -61,7 +61,11 @@
             $perempuan = $demografi->indicators->where('name', 'Perempuan')
                 ->sum(function($i) use ($tahun) { return $i->statistics->where('year', $tahun)->sum('value'); });
         }
-        $pekerjaan = $categories->where('slug', 'mata-pencaharian')->first();
+        $unggulanCat = null;
+        if ($desa->featured_category_id) {
+            $unggulanCat = $categories->where('id', $desa->featured_category_id)->first();
+        }
+        $pekerjaan = $unggulanCat ?: $categories->where('slug', 'mata-pencaharian')->first();
         $topJob = null;
         if ($pekerjaan) {
             $topJob = $pekerjaan->indicators->filter(function($ind) {
@@ -111,7 +115,7 @@
                     ['label' => 'Total Penduduk', 'val' => $totalJiwa, 'desc' => 'Jiwa Terdaftar', 'bg' => 'bg-white text-slate-800 border-l-4 border-blue-600'],
                     ['label' => 'Laki-laki', 'val' => $lakiLaki, 'desc' => 'Jiwa', 'bg' => 'bg-white text-slate-800 border-l-4 border-indigo-600'],
                     ['label' => 'Perempuan', 'val' => $perempuan, 'desc' => 'Jiwa', 'bg' => 'bg-white text-slate-800 border-l-4 border-pink-500'],
-                    ['label' => 'Sektor Pekerjaan Utama', 'val' => $topJob ? $topJob->name : 'N/A', 'desc' => $topJob ? number_format($topJob->total_value,0,',','.').' Pekerja' : '-', 'bg' => 'bg-white text-slate-800 border-l-4 border-amber-500']
+                    ['label' => $pekerjaan ? $pekerjaan->name : 'Data Unggulan', 'val' => $topJob ? $topJob->name : 'N/A', 'desc' => $topJob ? number_format($topJob->total_value,0,',','.').' '.($pekerjaan && $pekerjaan->slug === 'mata-pencaharian' ? 'Pekerja' : ($topJob->unit ?? 'Jiwa')) : '-', 'bg' => 'bg-white text-slate-800 border-l-4 border-amber-500']
                 ] as $card)
                     <div class="card-stat rounded-3xl p-6 bg-white shadow-sm border border-slate-100 flex flex-col justify-between min-h-[140px] {{ $card['bg'] }}">
                         <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $card['label'] }}</p>

@@ -61,7 +61,11 @@
             $perempuan = $demografi->indicators->where('name', 'Perempuan')
                 ->sum(function($i) use ($tahun) { return $i->statistics->where('year', $tahun)->sum('value'); });
         }
-        $pekerjaan = $categories->where('slug', 'mata-pencaharian')->first();
+        $unggulanCat = null;
+        if ($desa->featured_category_id) {
+            $unggulanCat = $categories->where('id', $desa->featured_category_id)->first();
+        }
+        $pekerjaan = $unggulanCat ?: $categories->where('slug', 'mata-pencaharian')->first();
         $topJob = null;
         if ($pekerjaan) {
             $topJob = $pekerjaan->indicators->filter(function($ind) {
@@ -107,7 +111,7 @@
                     ['label' => 'Total Warga', 'val' => $totalJiwa, 'color' => 'bg-pink-100 text-pink-700'],
                     ['label' => 'Laki-laki', 'val' => $lakiLaki, 'color' => 'bg-sky-100 text-sky-700'],
                     ['label' => 'Perempuan', 'val' => $perempuan, 'color' => 'bg-rose-100 text-rose-700'],
-                    ['label' => 'Kerja Terbanyak', 'val' => $topJob ? $topJob->name : 'N/A', 'color' => 'bg-amber-100 text-amber-700', 'text' => true]
+                    ['label' => $pekerjaan ? $pekerjaan->name : 'Data Unggulan', 'val' => $topJob ? $topJob->name : 'N/A', 'color' => 'bg-amber-100 text-amber-700', 'text' => true]
                 ] as $card)
                     <div class="bubbly-card p-6 {{ $card['color'] }} shadow-sm flex flex-col justify-between min-h-[130px]">
                         <span class="text-[9px] uppercase font-bold tracking-wider opacity-85">{{ $card['label'] }}</span>

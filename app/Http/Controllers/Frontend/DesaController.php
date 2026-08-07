@@ -37,6 +37,12 @@ class DesaController extends Controller
             }])
             ->get();
 
+        if ($desa->featured_category_id) {
+            $categories = $categories->sortBy(function($cat) use ($desa) {
+                return $cat->id == $desa->featured_category_id ? 0 : 1;
+            })->values();
+        }
+
         foreach ($categories as $category) {
             if ($category->slug === 'usia-detail' || $category->slug === 'kelompok-usia') {
                 $category->setRelation('indicators', $category->indicators->sortBy(function($ind) {

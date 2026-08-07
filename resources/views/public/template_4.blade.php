@@ -58,7 +58,11 @@
             $perempuan = $demografi->indicators->where('name', 'Perempuan')
                 ->sum(function($i) use ($tahun) { return $i->statistics->where('year', $tahun)->sum('value'); });
         }
-        $pekerjaan = $categories->where('slug', 'mata-pencaharian')->first();
+        $unggulanCat = null;
+        if ($desa->featured_category_id) {
+            $unggulanCat = $categories->where('id', $desa->featured_category_id)->first();
+        }
+        $pekerjaan = $unggulanCat ?: $categories->where('slug', 'mata-pencaharian')->first();
         $topJob = null;
         if ($pekerjaan) {
             $topJob = $pekerjaan->indicators->filter(function($ind) {
@@ -98,7 +102,7 @@
                     ['label' => 'TOTAL RESIDENTS', 'val' => $totalJiwa],
                     ['label' => 'MALE', 'val' => $lakiLaki],
                     ['label' => 'FEMALE', 'val' => $perempuan],
-                    ['label' => 'PRIMARY SECTOR', 'val' => $topJob ? $topJob->name : 'N/A']
+                    ['label' => $pekerjaan ? strtoupper($pekerjaan->name) : 'FEATURED SECTOR', 'val' => $topJob ? $topJob->name : 'N/A']
                 ] as $card)
                     <div class="border border-stone-200 p-6 rounded-none flex flex-col justify-between min-h-[120px]">
                         <span class="text-[8px] font-bold tracking-widest text-stone-400 block">{{ $card['label'] }}</span>

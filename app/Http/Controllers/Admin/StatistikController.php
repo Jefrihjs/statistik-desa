@@ -106,6 +106,49 @@ class StatistikController extends Controller
             abort(403, 'Anda tidak memiliki hak akses untuk desa ini.');
         }
 
+        // VALIDASI KONSISTENSI TOTAL PENDUDUK (Hanya saat submit form penuh, bukan AJAX autosave)
+        if (!$request->ajax() && !$request->wantsJson()) {
+            $indicators = Indicator::with('category')->get()->keyBy('id');
+            $totals = [
+                'usia-detail' => 0,
+                'mata-pencaharian' => 0,
+                'agama' => 0,
+            ];
+            
+            foreach ($request->stats as $indId => $genders) {
+                $indicator = $indicators->get($indId);
+                if ($indicator && isset($totals[$indicator->category->slug])) {
+                    $totals[$indicator->category->slug] += ($genders['Laki-laki'] ?? 0) + ($genders['Perempuan'] ?? 0);
+                }
+            }
+            
+            $activeTotals = array_filter($totals, function($val) {
+                return $val > 0;
+            });
+            
+            if (count($activeTotals) > 1) {
+                $firstVal = reset($activeTotals);
+                foreach ($activeTotals as $slug => $total) {
+                    if ($total != $firstVal) {
+                        $catNames = [
+                            'usia-detail' => 'Data Penduduk Per Tahun Usia',
+                            'mata-pencaharian' => 'Mata Pencaharian',
+                            'agama' => 'Agama & Kepercayaan',
+                        ];
+                        
+                        $details = [];
+                        foreach ($activeTotals as $s => $val) {
+                            $name = $catNames[$s] ?? $s;
+                            $details[] = "{$name} ({$val} Jiwa)";
+                        }
+                        $errorMsg = "Gagal Menyimpan! Total Penduduk tidak konsisten. " . implode(" tidak sama dengan ", $details) . ". Mohon cek kembali inputan Anda.";
+                        
+                        return back()->with('error', $errorMsg)->withInput();
+                    }
+                }
+            }
+        }
+
         foreach ($request->stats as $indicatorId => $genders) {
             foreach ($genders as $gender => $value) {
                 Statistic::updateOrCreate(
@@ -144,6 +187,54 @@ class StatistikController extends Controller
 
         try {
             $desa_id = auth()->user()->role === 'admin' ? $request->desa_id : auth()->user()->desa_id;
+
+            // VALIDASI KONSISTENSI TOTAL PENDUDUK PADA EXCEL SEBELUM IMPORT
+            $rows = Excel::toArray(new \App\Imports\StatistikImport($desa_id, $request->tahun), $request->file('file'))[0] ?? [];
+            
+            $indicators = Indicator::with('category')->get()->keyBy('id');
+            $totals = [
+                'usia-detail' => 0,
+                'mata-pencaharian' => 0,
+                'agama' => 0,
+            ];
+            
+            foreach ($rows as $row) {
+                if (isset($row['id'])) {
+                    $indicator = $indicators->get($row['id']);
+                    if ($indicator && isset($totals[$indicator->category->slug])) {
+                        if ($indicator->category->slug === 'demografi' && ($indicator->name === 'Laki-laki' || $indicator->name === 'Perempuan')) {
+                            continue;
+                        }
+                        $totals[$indicator->category->slug] += ($row['laki_laki'] ?? 0) + ($row['perempuan'] ?? 0);
+                    }
+                }
+            }
+            
+            $activeTotals = array_filter($totals, function($val) {
+                return $val > 0;
+            });
+            
+            if (count($activeTotals) > 1) {
+                $firstVal = reset($activeTotals);
+                foreach ($activeTotals as $slug => $total) {
+                    if ($total != $firstVal) {
+                        $catNames = [
+                            'usia-detail' => 'Data Penduduk Per Tahun Usia',
+                            'mata-pencaharian' => 'Mata Pencaharian',
+                            'agama' => 'Agama & Kepercayaan',
+                        ];
+                        
+                        $details = [];
+                        foreach ($activeTotals as $s => $val) {
+                            $name = $catNames[$s] ?? $s;
+                            $details[] = "{$name} ({$val} Jiwa)";
+                        }
+                        $errorMsg = "Gagal Import! Total Penduduk di Excel tidak konsisten. " . implode(" tidak sama dengan ", $details) . ". Mohon perbaiki file Excel Anda.";
+                        
+                        return back()->with('error', $errorMsg);
+                    }
+                }
+            }
 
             \Maatwebsite\Excel\Facades\Excel::import(
                 new \App\Imports\StatistikImport($desa_id, $request->tahun), 

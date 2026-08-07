@@ -27,6 +27,19 @@
         }
     }">
         <div class="max-w-7xl mx-auto">
+            @if(session('success'))
+                <div class="mb-6 p-6 bg-emerald-50 border-l-4 border-emerald-500 rounded-3xl flex items-center gap-4 text-emerald-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-sm">
+                    <span>🟢</span>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 p-6 bg-rose-50 border-l-4 border-rose-500 rounded-3xl flex items-center gap-4 text-rose-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-sm">
+                    <span>🔴</span>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
             
             <div class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 mb-6"
                 style="background: linear-gradient(135deg, {{ $headerColor }}, {{ $accentColor }});

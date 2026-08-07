@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Desa;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class PengaturanDesaController extends Controller
 {
     public function edit()
     {
         $desa = auth()->user()->desa;
-        $categories = \App\Models\Kategori::where('is_active', true)->orderBy('name')->get();
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
 
         return view('desa.pengaturan.edit', compact('desa', 'categories'));
     }

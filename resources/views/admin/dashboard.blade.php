@@ -25,6 +25,13 @@
     <div class="py-12 min-h-screen bg-slate-50 theme-bg-main text-left">
     <div class="max-w-[1400px] mx-auto px-6 lg:px-10">
 
+        @if (session('success'))
+            <div class="mb-8 p-6 bg-emerald-50 border-l-4 border-emerald-500 rounded-3xl flex items-center gap-4 text-emerald-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-sm">
+                <span>🟢</span>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
         {{-- HEADER --}}
         <div class="relative overflow-hidden rounded-[2.5rem] bg-slate-900 text-white p-8 lg:p-10 mb-8 shadow-sm">
             <div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-blue-500/10"></div>
@@ -46,6 +53,14 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3">
+                    <form action="{{ route('admin.sync-all-demografi') }}" method="POST" class="inline-flex">
+                        @csrf
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-2xl bg-blue-600 hover:bg-blue-700 border border-transparent px-6 py-4 text-xs font-black uppercase tracking-widest text-white transition-all shadow-lg shadow-blue-500/20">
+                            Sinkronisasi Semua Data Demografi
+                        </button>
+                    </form>
+
                     <button onclick="window.resetKeKabupaten()"
                             class="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/10 px-6 py-4 text-xs font-black uppercase tracking-widest text-white hover:bg-white/20">
                         Reset Kabupaten

@@ -48,6 +48,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 // ==========================================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [StatistikController::class, 'dashboard'])->name('dashboard');
+    Route::post('/sync-all-demografi', [StatistikController::class, 'syncAllDemografi'])->name('sync-all-demografi');
     Route::get('/desa', [StatistikController::class, 'index'])->name('index');
 
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);

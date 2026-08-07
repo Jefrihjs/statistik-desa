@@ -48,6 +48,10 @@ class StatistikController extends Controller
 
     public function entri(Request $request, $desa_id)
     {
+        if (auth()->user()->role !== 'admin' && auth()->user()->desa_id != $desa_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk desa ini.');
+        }
+
         $desa = Desa::findOrFail($desa_id);
         $tahun = (int) $request->query('tahun', date('Y'));
 
@@ -98,6 +102,10 @@ class StatistikController extends Controller
 
     public function simpan(Request $request)
     {
+        if (auth()->user()->role !== 'admin' && auth()->user()->desa_id != $request->desa_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk desa ini.');
+        }
+
         foreach ($request->stats as $indicatorId => $genders) {
             foreach ($genders as $gender => $value) {
                 Statistic::updateOrCreate(
@@ -261,12 +269,44 @@ class StatistikController extends Controller
         }
     }
 
+    public function syncAllDemografi()
+    {
+        $desas = \App\Models\Desa::all();
+        $years = Statistic::select('year')->distinct()->pluck('year');
+
+        $count = 0;
+        foreach ($desas as $desa) {
+            foreach ($years as $year) {
+                $exists = Statistic::where('desa_id', $desa->id)->where('year', $year)->exists();
+                if ($exists) {
+                    $this->syncDemografi($desa->id, $year);
+                    $count++;
+                }
+            }
+        }
+
+        \App\Services\ActivityLogger::log(
+            'Statistik',
+            'Sinkronisasi Massal Demografi',
+            'User melakukan sinkronisasi massal seluruh data demografi (kelompok umur).',
+            [
+                'jumlah_kombinasi_disinkronkan' => $count,
+            ]
+        );
+
+        return back()->with('success', "Berhasil mensinkronisasi data kelompok umur untuk {$count} kombinasi desa dan tahun!");
+    }
+
     public function storeTahun(Request $request)
     {
         $request->validate([
             'year' => 'required|numeric|min:2000|max:2100',
             'desa_id' => 'required'
         ]);
+
+        if (auth()->user()->role !== 'admin' && auth()->user()->desa_id != $request->desa_id) {
+            abort(403, 'Anda tidak memiliki hak akses untuk desa ini.');
+        }
 
         $tahun = $request->year;
         $desaId = $request->desa_id;

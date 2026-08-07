@@ -31,7 +31,7 @@ class PengaturanDesaController extends Controller
             'jabatan_ppid'     => 'nullable|string|max:200',
             'nip_ppid'         => 'nullable|string|max:50',
             'layout_type'      => 'nullable|in:default,infographic',
-            'featured_category_id' => 'nullable|exists:kategoris,id',
+            'featured_category_id' => 'nullable|exists:categories,id',
             'welcome_message'  => 'nullable|string|max:2000',
             'public_template_id' => 'nullable|integer|between:1,6',
         ]);

@@ -99,14 +99,19 @@
             {{-- MINIMAL METRICS --}}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
                 @foreach([
-                    ['label' => 'TOTAL RESIDENTS', 'val' => $totalJiwa],
-                    ['label' => 'MALE', 'val' => $lakiLaki],
-                    ['label' => 'FEMALE', 'val' => $perempuan],
-                    ['label' => $pekerjaan ? strtoupper($pekerjaan->name) : 'FEATURED SECTOR', 'val' => $topJob ? $topJob->name : 'N/A']
+                    ['label' => 'TOTAL RESIDENTS', 'val' => $totalJiwa, 'desc' => 'Jiwa'],
+                    ['label' => 'MALE', 'val' => $lakiLaki, 'desc' => 'Jiwa'],
+                    ['label' => 'FEMALE', 'val' => $perempuan, 'desc' => 'Jiwa'],
+                    ['label' => $pekerjaan ? strtoupper($pekerjaan->name) : 'FEATURED SECTOR', 'val' => $topJob ? $topJob->name : 'N/A', 'desc' => $topJob ? 'Komposisi Tertinggi: '.number_format($topJob->total_value,0,',','.').' '.($pekerjaan && $pekerjaan->slug === 'mata-pencaharian' ? 'Pekerja' : ($topJob->unit ?? 'Jiwa')) : '-']
                 ] as $card)
                     <div class="border border-stone-200 p-6 rounded-none flex flex-col justify-between min-h-[120px]">
                         <span class="text-[8px] font-bold tracking-widest text-stone-400 block">{{ $card['label'] }}</span>
-                        <h3 class="text-xl font-bold text-stone-900 mt-4 tracking-tight">{{ is_numeric($card['val']) ? number_format($card['val'],0,',','.') : $card['val'] }}</h3>
+                        <div>
+                            <h3 class="text-xl font-bold text-stone-900 mt-4 tracking-tight">{{ is_numeric($card['val']) ? number_format($card['val'],0,',','.') : $card['val'] }}</h3>
+                            @if(isset($card['desc']))
+                                <span class="text-[9px] text-stone-400 block mt-1 uppercase font-semibold">{{ $card['desc'] }}</span>
+                            @endif
+                        </div>
                     </div>
                 @endforeach
             </div>

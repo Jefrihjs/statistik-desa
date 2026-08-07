@@ -108,16 +108,16 @@
             {{-- SUMMARY BUBBLES --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach([
-                    ['label' => 'Total Warga', 'val' => $totalJiwa, 'color' => 'bg-pink-100 text-pink-700'],
-                    ['label' => 'Laki-laki', 'val' => $lakiLaki, 'color' => 'bg-sky-100 text-sky-700'],
-                    ['label' => 'Perempuan', 'val' => $perempuan, 'color' => 'bg-rose-100 text-rose-700'],
-                    ['label' => $pekerjaan ? $pekerjaan->name : 'Data Unggulan', 'val' => $topJob ? $topJob->name : 'N/A', 'color' => 'bg-amber-100 text-amber-700', 'text' => true]
+                    ['label' => 'Total Warga', 'val' => $totalJiwa, 'desc' => 'Jiwa', 'color' => 'bg-pink-100 text-pink-700'],
+                    ['label' => 'Laki-laki', 'val' => $lakiLaki, 'desc' => 'Jiwa', 'color' => 'bg-sky-100 text-sky-700'],
+                    ['label' => 'Perempuan', 'val' => $perempuan, 'desc' => 'Jiwa', 'color' => 'bg-rose-100 text-rose-700'],
+                    ['label' => $pekerjaan ? $pekerjaan->name : 'Data Unggulan', 'val' => $topJob ? $topJob->name : 'N/A', 'desc' => $topJob ? 'Komposisi Tertinggi: '.number_format($topJob->total_value,0,',','.').' '.($pekerjaan && $pekerjaan->slug === 'mata-pencaharian' ? 'Pekerja' : ($topJob->unit ?? 'Jiwa')) : '-', 'color' => 'bg-amber-100 text-amber-700', 'text' => true]
                 ] as $card)
                     <div class="bubbly-card p-6 {{ $card['color'] }} shadow-sm flex flex-col justify-between min-h-[130px]">
                         <span class="text-[9px] uppercase font-bold tracking-wider opacity-85">{{ $card['label'] }}</span>
                         <div class="mt-4">
                             <h3 class="font-extrabold tracking-tight {{ $card['text'] ?? false ? 'text-base' : 'text-2xl' }}">{{ is_numeric($card['val']) ? number_format($card['val'],0,',','.') : $card['val'] }}</h3>
-                            <span class="text-[9px] block mt-0.5 opacity-60">Jiwa</span>
+                            <span class="text-[9px] block mt-0.5 opacity-60">{{ $card['desc'] ?? 'Jiwa' }}</span>
                         </div>
                     </div>
                 @endforeach

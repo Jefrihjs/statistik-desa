@@ -141,12 +141,19 @@
                             {{ $label }}
                         </h3>
                         
-                        <a href="{{ url('/embed/ppid/' . ($desaAktif->slug ?? $desaAktif->id) . '/' . $key) }}" 
-                        target="_blank" 
-                        class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
-                        title="Klik untuk membuka tautan embed khusus {{ $label }}">
-                            🔗 Tautan Embed {{ $label }} ↗
-                        </a>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ url('/embed/ppid/' . ($desaAktif->slug ?? $desaAktif->id) . '/' . $key) }}" 
+                            target="_blank" 
+                            class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+                            title="Klik untuk membuka tautan embed khusus {{ $label }}">
+                                🔗 Tautan Embed {{ $label }} ↗
+                            </a>
+                            <button onclick="copyToClipboard('{{ url('/embed/ppid/' . ($desaAktif->slug ?? $desaAktif->id) . '/' . $key) }}')" 
+                            class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg transition-colors cursor-pointer"
+                            title="Salin tautan embed">
+                                📋 Salin
+                            </button>
+                        </div>
                     </div>
 
                         <div class="p-6 space-y-3">
@@ -406,6 +413,32 @@
             if (result.isConfirmed) {
                 document.getElementById('delete-dip-form-' + id).submit();
             }
+        });
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Tautan disalin!',
+                text: 'Tautan embed berhasil disalin ke clipboard.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }, function(err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal menyalin',
+                text: 'Terjadi kesalahan saat menyalin tautan.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
         });
     }
 </script>

@@ -10,6 +10,8 @@ class PpidEmbedController extends Controller
 {
     public function dip($slug, $kategori)
     {
+        $kategoriNormalized = str_replace('_', '-', $kategori);
+
         $kategoriMap = [
             'berkala' => 'Informasi Berkala',
             'serta-merta' => 'Informasi Serta Merta',
@@ -17,9 +19,9 @@ class PpidEmbedController extends Controller
             'dikecualikan' => 'Informasi Dikecualikan',
         ];
 
-        abort_if(!array_key_exists($kategori, $kategoriMap), 404);
+        abort_if(!array_key_exists($kategoriNormalized, $kategoriMap), 404);
 
-        $kategoriDb = str_replace('-', '_', $kategori);
+        $kategoriDb = str_replace('-', '_', $kategoriNormalized);
 
         $desa = Desa::where('slug', $slug)->firstOrFail();
 
@@ -34,7 +36,7 @@ class PpidEmbedController extends Controller
         return view('embed.ppid.dip', [
             'desa' => $desa,
             'items' => $items,
-            'kategoriLabel' => $kategoriMap[$kategori],
+            'kategoriLabel' => $kategoriMap[$kategoriNormalized],
         ]);
     }
 }

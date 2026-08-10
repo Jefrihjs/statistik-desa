@@ -177,7 +177,6 @@ Route::get('/embed/ppid/{slug}/monitoring/{kode}/sk-penolakan', [PpidPermohonanE
 Route::post('/embed/ppid/{slug}/monitoring/{kode}/keberatan', [PpidPermohonanEmbedController::class, 'storeKeberatan'])->name('embed.ppid.permohonan.keberatan.store');
 Route::get('/embed/ppid/{slug}/monitoring/{kode}/tidak-lengkap', [PpidPermohonanEmbedController::class, 'cetakTidakLengkap'])->name('embed.ppid.permohonan.tidak_lengkap');
 Route::get('/embed/ppid/{slug}/{kategori}', [PpidEmbedController::class, 'dip'])->name('embed.ppid.dip');
-Route::get('/embed/ppid/{slug}/{kategori}', [App\Http\Controllers\PublicPpidController::class, 'embed'])->name('public.ppid.embed');
 
 // --- SKM Publik ---
 Route::get('/skm/{slug}', [\App\Http\Controllers\Public\SkmPublicController::class, 'create'])->name('public.skm.create');

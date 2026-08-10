@@ -94,7 +94,7 @@
                     <div>
                         <label class="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Kode Embed (iframe)</label>
                         <div class="flex items-stretch gap-2">
-                            <pre class="flex-1 rounded-xl border border-slate-200 theme-border bg-slate-50 theme-bg-main px-3 py-2.5 text-[10px] font-mono text-slate-600 overflow-x-auto whitespace-pre-wrap break-all select-all" id="aduanEmbedText">&lt;iframe src="{{ $aduanUrl }}" width="100%" height="900" frameborder="0" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;</pre>
+                            <textarea readonly id="aduanEmbedText" class="flex-1 rounded-xl border border-slate-200 theme-border bg-slate-50 theme-bg-main px-3 py-2 text-[10px] font-mono text-slate-600 focus:outline-none resize-none overflow-y-hidden" rows="2" onclick="this.select()">&lt;iframe src="{{ $aduanUrl }}" width="100%" height="1200" frameborder="0" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;</textarea>
                             <button type="button" onclick="copyText('aduanEmbedText', this)" class="shrink-0 rounded-xl bg-slate-900 px-3.5 text-[9px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-colors flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                                 <span>Salin</span>
@@ -133,7 +133,7 @@
                     <div>
                         <label class="block text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Kode Embed (iframe)</label>
                         <div class="flex items-stretch gap-2">
-                            <pre class="flex-1 rounded-xl border border-slate-200 theme-border bg-slate-50 theme-bg-main px-3 py-2.5 text-[10px] font-mono text-slate-600 overflow-x-auto whitespace-pre-wrap break-all select-all" id="cekEmbedText">&lt;iframe src="{{ $cekStatusUrl }}" width="100%" height="500" frameborder="0" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;</pre>
+                            <textarea readonly id="cekEmbedText" class="flex-1 rounded-xl border border-slate-200 theme-border bg-slate-50 theme-bg-main px-3 py-2 text-[10px] font-mono text-slate-600 focus:outline-none resize-none overflow-y-hidden" rows="2" onclick="this.select()">&lt;iframe src="{{ $cekStatusUrl }}" width="100%" height="1200" frameborder="0" style="border:none; border-radius:12px;"&gt;&lt;/iframe&gt;</textarea>
                             <button type="button" onclick="copyText('cekEmbedText', this)" class="shrink-0 rounded-xl bg-slate-900 px-3.5 text-[9px] font-black uppercase tracking-widest text-white hover:bg-slate-800 transition-colors flex items-center gap-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                                 <span>Salin</span>
@@ -425,7 +425,7 @@
     <script>
         function copyText(elementId, btn) {
             var el = document.getElementById(elementId);
-            var text = el.textContent || el.innerText;
+            var text = el.value || el.textContent || el.innerText;
             navigator.clipboard.writeText(text).then(function() {
                 var span = btn.querySelector('span');
                 var original = span.textContent;

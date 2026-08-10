@@ -141,18 +141,27 @@
                             {{ $label }}
                         </h3>
                         
-                        <div class="flex items-center gap-3">
-                            <a href="{{ url('/embed/ppid/' . ($desaAktif->slug ?? $desaAktif->id) . '/' . $key) }}" 
-                            target="_blank" 
-                            class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
-                            title="Klik untuk membuka tautan embed khusus {{ $label }}">
-                                🔗 Tautan Embed {{ $label }} ↗
-                            </a>
-                            <button onclick="copyToClipboard('{{ url('/embed/ppid/' . ($desaAktif->slug ?? $desaAktif->id) . '/' . $key) }}')" 
-                            class="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg transition-colors cursor-pointer"
-                            title="Salin tautan embed">
-                                📋 Salin
-                            </button>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+                            <div class="flex items-center gap-1.5">
+                                <a href="{{ url('/embed/ppid/' . ($desaAktif->slug ?? $desaAktif->id) . '/' . $key) }}" 
+                                target="_blank" 
+                                class="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+                                title="Pratinjau Tampilan Halaman Publik / Embed">
+                                    🔗 Pratinjau ↗
+                                </a>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="text" readonly 
+                                    value='<iframe src="{{ url("/embed/ppid/" . ($desaAktif->slug ?? $desaAktif->id) . "/" . $key) }}" width="100%" height="1200" frameborder="0" style="border:none; border-radius:12px;"></iframe>' 
+                                    id="embed-ppid-{{ $key }}"
+                                    class="text-xs font-mono bg-white border border-slate-300 rounded-lg px-2 py-1 w-64 focus:outline-none select-all" 
+                                    onclick="this.select()">
+                                <button onclick="copyToClipboard(document.getElementById('embed-ppid-{{ $key }}').value)" 
+                                class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg transition-colors cursor-pointer"
+                                title="Salin Kode Embed">
+                                    📋 Salin
+                                </button>
+                            </div>
                         </div>
                     </div>
 

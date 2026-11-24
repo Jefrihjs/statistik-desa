@@ -19,7 +19,6 @@
         }
 
         $sslTag = $sslInfo['pesan'];
-        
         if ($tracker && $sslInfo['status'] === 'active') {
             $sslTagColor = $sslInfo['hari'] <= 15 
                 ? 'bg-rose-50 text-rose-700 ring-rose-700/10' 
@@ -123,6 +122,18 @@
                 'locked_text' => 'Modul Layanan Aduan belum diaktifkan oleh admin kabupaten.',
                 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h8M8 14h5m-9 6l2.5-4.5A8 8 0 1120 10a8 8 0 01-12.7 6.5L4 20z"/></svg>',
             ],
+                [
+                    'nama' => 'Permohonan Surat Online',
+                    'deskripsi' => 'Layanan pengajuan surat keterangan warga secara online dan pengaturan syarat dokumen per jenis surat.',
+                    'tag' => 'Layanan',
+                    'icon_color' => 'text-teal-600',
+                    'icon_bg' => 'bg-teal-50',
+                    'tag_class' => 'bg-teal-50 text-teal-700 ring-teal-700/10',
+                    'route' => 'desa.surat.index',
+                    'enabled' => (bool) ($user->is_surat_active ?? false),
+                    'locked_text' => 'Modul Permohonan Surat belum diaktifkan oleh admin kabupaten.',
+                    'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+                ],
             ];
         @endphp
 

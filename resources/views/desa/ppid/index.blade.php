@@ -4,6 +4,26 @@
 
         $headerColor = $desaAktif->header_color ?? '#2563eb';
         $accentColor = $desaAktif->accent_color ?? '#0f766e';
+        $slugDesa = $desaAktif->slug ?? $desaAktif->id;
+
+        $layananEmbed = [
+            [
+                'id' => 'permohonan',
+                'judul' => 'Form Pengajuan Permohonan Informasi',
+                'deskripsi' => 'Formulir publik bagi masyarakat untuk mengajukan permohonan informasi ke PPID Desa.',
+                'url' => route('embed.ppid.permohonan', $slugDesa),
+                'height' => 1100,
+                'badge' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            ],
+            [
+                'id' => 'monitoring',
+                'judul' => 'Cek Status Permohonan & Pengajuan Keberatan',
+                'deskripsi' => 'Halaman pelacakan kode permohonan sekaligus formulir pengajuan keberatan jika permohonan ditolak atau tidak ditanggapi.',
+                'url' => route('embed.ppid.permohonan.monitoring', $slugDesa),
+                'height' => 1000,
+                'badge' => 'bg-amber-50 text-amber-700 border-amber-200',
+            ],
+        ];
     @endphp
     <div class="py-10 px-4 bg-slate-50 min-h-screen">
         <div class="max-w-5xl mx-auto">
@@ -21,25 +41,25 @@
 
             <div style="background: linear-gradient(135deg, {{ $headerColor }}, {{ $accentColor }}); border-radius: 2.5rem; padding: 35px; color: white; margin-bottom: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden;">
                 <div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10;">
-                <div>
-                <p style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 2px; opacity: 0.9;">
-                    TARSIUS &bull; Layanan Informasi Publik
-                </p>
+                    <div>
+                        <p style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 2px; opacity: 0.9;">
+                            TARSIUS &bull; Layanan Informasi Publik
+                        </p>
 
-                <h1 style="font-size: 28px; font-weight: 900; text-transform: uppercase;  line-height: 1;">
-                    PPID DESA
-                </h1>
+                        <h1 style="font-size: 28px; font-weight: 900; text-transform: uppercase; line-height: 1;">
+                            PPID DESA
+                        </h1>
 
-                <p style="font-size: 12px; margin-top: 12px; opacity: .9; max-width: 720px;">
-                    Kelola Daftar Informasi Publik desa dan pantau permohonan informasi dari masyarakat.
-                </p>
+                        <p style="font-size: 12px; margin-top: 12px; opacity: .9; max-width: 720px;">
+                            Kelola Daftar Informasi Publik desa dan pantau permohonan informasi dari masyarakat.
+                        </p>
+                    </div>
+
+                    <span style="font-size: 24px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 1rem;">
+                        🗂️
+                    </span>
+                </div>
             </div>
-
-            <span style="font-size: 24px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 1rem;">
-                🗂️
-            </span>
-        </div>
-    </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -98,7 +118,7 @@
                                 {{ $jumlahKeberatanMasuk }}
                             </span>
                         @endif
-                        <div class="w-14 h-14 rounded-2xl bg-rose-500 text-white-600 flex items-center justify-center mb-5">
+                        <div class="w-14 h-14 rounded-2xl bg-rose-500 text-white flex items-center justify-center mb-5 font-black text-xl">
                             !
                         </div>
                         <h3 class="text-lg font-black text-slate-800 uppercase">
@@ -107,7 +127,7 @@
                         <p class="mt-3 text-sm text-slate-500 leading-relaxed">
                             Lihat dan tindak lanjuti keberatan informasi yang diajukan masyarakat.
                         </p>
-                         <div class="mt-6 text-xs font-black text-blue-600 uppercase tracking-widest">
+                        <div class="mt-6 text-xs font-black text-blue-600 uppercase tracking-widest">
                             Lihat Keberatan →
                         </div>
                     </a>
@@ -128,7 +148,7 @@
                         <p class="mt-3 text-sm text-slate-500 leading-relaxed">
                             Cetak register permohonan informasi dan register keberatan berdasarkan tahun laporan.
                         </p>
-                         <div class="mt-6 text-xs font-black text-blue-600 uppercase tracking-widest">
+                        <div class="mt-6 text-xs font-black text-blue-600 uppercase tracking-widest">
                             Lihat Laporan →
                         </div>
                     </a>
@@ -159,50 +179,121 @@
 
             </div>
 
+            <div class="mt-8 bg-white rounded-[2rem] border border-slate-200 p-7 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-5 border-b border-slate-100">
+                    <div>
+                        <span class="inline-block text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1">
+                            Integrasi Portal Desa
+                        </span>
+                        <h2 class="text-lg font-black text-slate-800 uppercase">
+                            Link Publik & Kode Embed Layanan PPID
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Salin kode <code class="font-mono text-slate-700">&lt;iframe&gt;</code> di bawah ini untuk disematkan ke halaman website resmi desa, atau bagikan tautan langsung ke masyarakat.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach($layananEmbed as $item)
+                        @php
+                            $iframeCode = '<iframe src="' . $item['url'] . '" width="100%" height="' . $item['height'] . '" frameborder="0" style="border:none; border-radius:12px;"></iframe>';
+                        @endphp
+                        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-start justify-between gap-3">
+                                    <h3 class="text-sm font-black text-slate-800 uppercase leading-snug">
+                                        {{ $item['judul'] }}
+                                    </h3>
+                                    <a href="{{ $item['url'] }}" target="_blank"
+                                       class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border {{ $item['badge'] }} hover:opacity-80 transition">
+                                        🔗 Buka ↗
+                                    </a>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    {{ $item['deskripsi'] }}
+                                </p>
+                            </div>
+
+                            <div class="mt-4">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label for="embed-{{ $item['id'] }}" class="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        Kode Embed HTML
+                                    </label>
+                                    <button type="button"
+                                            onclick="copyEmbedPpid('embed-{{ $item['id'] }}', this)"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition cursor-pointer">
+                                        📋 Salin Kode
+                                    </button>
+                                </div>
+                                <textarea id="embed-{{ $item['id'] }}" readonly rows="3"
+                                          onclick="this.select()"
+                                          class="w-full text-xs font-mono bg-white border border-slate-300 rounded-xl p-2.5 text-slate-700 focus:outline-none focus:border-indigo-500 select-all">{{ $iframeCode }}</textarea>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
         </div>
     </div>
 
+    <script>
+        function copyEmbedPpid(elementId, btn) {
+            const el = document.getElementById(elementId);
+            el.select();
+            el.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(el.value).then(() => {
+                const original = btn.innerHTML;
+                btn.innerHTML = '✅ Tersalin';
+                btn.classList.replace('bg-slate-800', 'bg-emerald-600');
+                setTimeout(() => {
+                    btn.innerHTML = original;
+                    btn.classList.replace('bg-emerald-600', 'bg-slate-800');
+                }, 2000);
+            });
+        }
+    </script>
+
     <style>
-    @property --angle {
-        syntax: "<angle>";
-        initial-value: 0deg;
-        inherits: false;
-    }
+        @property --angle {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: false;
+        }
 
-    .card-glowing {
-        position: relative;
-        z-index: 1;
-        padding: 3px; 
-        border-radius: 2.1rem; 
-    }
+        .card-glowing {
+            position: relative;
+            z-index: 1;
+            padding: 3px;
+            border-radius: 2.1rem;
+        }
 
-    .card-glowing::after, 
-    .card-glowing::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: conic-gradient(from var(--angle), transparent 70%, #2563eb);
-        
-        z-index: -1;
-        border-radius: inherit;
-        animation: 3s spin linear infinite;
-        
-        opacity: 0;
-        transition: opacity 0.4s ease;
-    }
+        .card-glowing::after,
+        .card-glowing::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: conic-gradient(from var(--angle), transparent 70%, #2563eb);
+            z-index: -1;
+            border-radius: inherit;
+            animation: 3s spin linear infinite;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
 
-    .card-glowing:hover::after {
-        opacity: 1; 
-    }
-    
-    .card-glowing:hover::before {
-        filter: blur(1.5rem);
-        opacity: 0.5; 
-    }
+        .card-glowing:hover::after {
+            opacity: 1;
+        }
 
-    @keyframes spin {
-        from { --angle: 0deg; }
-        to { --angle: 360deg; }
-    }
-</style>
+        .card-glowing:hover::before {
+            filter: blur(1.5rem);
+            opacity: 0.5;
+        }
+
+        @keyframes spin {
+            from { --angle: 0deg; }
+            to { --angle: 360deg; }
+        }
+    </style>
 </x-app-layout>

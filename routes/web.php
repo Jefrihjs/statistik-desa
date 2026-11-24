@@ -147,6 +147,15 @@ Route::middleware(['auth', 'role:desa'])->prefix('desa')->name('desa.')->group(f
 
     Route::get('/aduan', [\App\Http\Controllers\Desa\AduanDesaController::class, 'index'])->name('aduan.index');
     Route::patch('/aduan/{aduan}/status', [\App\Http\Controllers\Desa\AduanDesaController::class, 'updateStatus'])->name('aduan.update-status');
+    // --- FITUR PERMOHONAN SURAT ONLINE ---
+    Route::get('/surat', [\App\Http\Controllers\Desa\SuratDesaController::class, 'index'])->name('surat.index');
+    Route::post('/surat/permohonan/{id}/status', [\App\Http\Controllers\Desa\SuratDesaController::class, 'updateStatus'])->name('surat.permohonan.status');
+    Route::delete('/surat/permohonan/{id}', [\App\Http\Controllers\Desa\SuratDesaController::class, 'destroyPermohonan'])->name('surat.permohonan.destroy');
+    Route::post('/surat/jenis', [\App\Http\Controllers\Desa\SuratDesaController::class, 'storeJenis'])->name('surat.jenis.store');
+    Route::put('/surat/jenis/{id}', [\App\Http\Controllers\Desa\SuratDesaController::class, 'updateJenis'])->name('surat.jenis.update');
+    Route::patch('/surat/jenis/{id}/toggle', [\App\Http\Controllers\Desa\SuratDesaController::class, 'toggleJenis'])->name('surat.jenis.toggle');
+    Route::delete('/surat/jenis/{id}', [\App\Http\Controllers\Desa\SuratDesaController::class, 'destroyJenis'])->name('surat.jenis.destroy');
+    Route::post('/surat/jenis/import-default', [\App\Http\Controllers\Desa\SuratDesaController::class, 'importDefault'])->name('surat.jenis.import-default');
 });
 
 // ==========================================
@@ -192,5 +201,12 @@ Route::post('/aduan/{slug}', [\App\Http\Controllers\Public\AduanPublicController
 Route::get('/aduan/{slug}/selesai/{kode}', [\App\Http\Controllers\Public\AduanPublicController::class, 'success'])->name('public.aduan.success');
 Route::get('/aduan/{slug}/cek-status', [\App\Http\Controllers\Public\AduanPublicController::class, 'checkStatus'])->name('public.aduan.check-status');
 Route::post('/aduan/{slug}/cek-status', [\App\Http\Controllers\Public\AduanPublicController::class, 'showStatus'])->name('public.aduan.show-status');
+
+
+// --- Permohonan Surat Publik ---
+Route::get('/surat/{slug}', [\App\Http\Controllers\Public\SuratPublicController::class, 'create'])->name('public.surat.create');
+Route::post('/surat/{slug}', [\App\Http\Controllers\Public\SuratPublicController::class, 'store'])->name('public.surat.store');
+Route::get('/surat/{slug}/selesai/{kode}', [\App\Http\Controllers\Public\SuratPublicController::class, 'success'])->name('public.surat.success');
+Route::get('/surat/{slug}/lacak', [\App\Http\Controllers\Public\SuratPublicController::class, 'tracking'])->name('public.surat.tracking');
 
 require __DIR__.'/auth.php';

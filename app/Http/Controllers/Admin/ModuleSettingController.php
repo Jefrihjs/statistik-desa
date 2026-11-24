@@ -21,7 +21,7 @@ class ModuleSettingController extends Controller
     public function toggle(Request $request, User $user)
     {
         $validated = $request->validate([
-            'module' => ['required', 'in:statistik,ppid,antikorupsi,skm,aduan'],
+            'module' => ['required', 'in:statistik,ppid,antikorupsi,skm,aduan,surat'],
         ]);
 
         $column = match ($validated['module']) {
@@ -30,6 +30,7 @@ class ModuleSettingController extends Controller
             'antikorupsi' => 'is_antikorupsi_active',
             'skm' => 'is_skm_active',
             'aduan' => 'is_aduan_active',
+            'surat' => 'is_surat_active',
         };
 
         $newValue = ! (bool) $user->{$column};

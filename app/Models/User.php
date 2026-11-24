@@ -25,6 +25,7 @@ class User extends Authenticatable
         'is_antikorupsi_active',
         'is_skm_active',
         'is_aduan_active',
+        'is_surat_active',
     ];
 
     protected $hidden = [
@@ -45,6 +46,7 @@ class User extends Authenticatable
             'is_antikorupsi_active' => 'boolean',
             'is_skm_active' => 'boolean',
             'is_aduan_active' => 'boolean',
+            'is_surat_active' => 'boolean',
         ];
     }
 

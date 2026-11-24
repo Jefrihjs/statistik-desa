@@ -8,6 +8,7 @@
             'antikorupsi' => $users->where('is_antikorupsi_active', true)->count(),
             'skm' => $users->where('is_skm_active', true)->count(),
             'aduan' => $users->where('is_aduan_active', true)->count(),
+            'surat' => $users->where('is_surat_active', true)->count(),
         ];
 
         $modules = [
@@ -41,13 +42,16 @@
                 'column' => 'is_aduan_active',
                 'color' => '#f43f5e',
             ],
+            [
+                'key' => 'surat',
+                'label' => 'Surat',
+                'column' => 'is_surat_active',
+                'color' => '#14b8a6',
+            ],
         ];
     @endphp
 
     <style>
-        /* ============================================ */
-        /* STANDARD TOGGLE SWITCH                       */
-        /* ============================================ */
         .std-toggle {
             position: relative;
             display: inline-block;
@@ -67,7 +71,7 @@
             position: absolute;
             inset: 0;
             cursor: pointer;
-            background-color: #cbd5e1; /* slate-300 */
+            background-color: #cbd5e1;
             border-radius: 9999px;
             transition: background-color 0.2s ease;
         }
@@ -84,7 +88,6 @@
             transition: transform 0.2s ease;
         }
 
-        /* ON state */
         .std-toggle.is-on .std-toggle__track {
             background-color: var(--toggle-color, #10b981);
         }
@@ -93,9 +96,9 @@
             transform: translateX(20px);
         }
 
-        /* Loading state */
         .std-toggle.is-loading .std-toggle__track {
-            background-color: #94a3b8; /* slate-400 */
+            background-color: #94a3b8;
+            cursor: wait;
         }
 
         .std-toggle.is-loading .std-toggle__thumb {
@@ -105,11 +108,6 @@
         @keyframes togglePulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
-        }
-
-        /* Disabled */
-        .std-toggle.is-loading .std-toggle__track {
-            cursor: wait;
         }
     </style>
 
@@ -127,7 +125,7 @@
                         </p>
                         <h1 class="text-3xl font-black uppercase italic tracking-tight">Pengaturan Modul Desa</h1>
                         <p class="mt-3 text-sm text-slate-300 max-w-3xl leading-relaxed">
-                            Aktifkan atau nonaktifkan akses layanan Statistik, PPID, Antikorupsi, dan SKM untuk masing-masing desa.
+                            Aktifkan atau nonaktifkan akses layanan Statistik, PPID, Antikorupsi, SKM, Aduan, dan Permohonan Surat untuk masing-masing desa.
                         </p>
                     </div>
                     <div class="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/10 px-6 py-4">
@@ -140,7 +138,7 @@
             </div>
 
             {{-- SUMMARY --}}
-            <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
                 <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-5 shadow-sm">
                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 theme-text-sub mb-2">Total Desa</p>
                     <p class="text-2xl font-black text-slate-900 theme-text-main">{{ $totalUser }}</p>
@@ -164,6 +162,10 @@
                 <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-5 shadow-sm">
                     <p class="text-[10px] font-black uppercase tracking-widest text-rose-500 mb-2">Aduan Aktif</p>
                     <p class="text-2xl font-black text-rose-600" id="count-aduan">{{ $modulAktif['aduan'] }}</p>
+                </div>
+                <div class="rounded-[2rem] bg-white theme-bg-card border border-slate-200 theme-border p-5 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-teal-500 mb-2">Surat Aktif</p>
+                    <p class="text-2xl font-black text-teal-600" id="count-surat">{{ $modulAktif['surat'] }}</p>
                 </div>
             </div>
 
@@ -209,7 +211,7 @@
                                             <input type="hidden" name="module" value="{{ $module['key'] }}">
 
                                             <button type="submit"
-                                                    class="module-toggle-btn min-w-[140px] inline-flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition shadow-sm
+                                                    class="module-toggle-btn min-w-[130px] inline-flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition shadow-sm
                                                     {{ $active
                                                         ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                                                         : 'bg-white theme-bg-card text-slate-500 border-slate-200 hover:bg-slate-50'
@@ -287,10 +289,10 @@
                         if (active) {
                             toggle.classList.add('is-on');
                             toggle.classList.remove('is-loading');
-                            button.className = 'module-toggle-btn min-w-[140px] inline-flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition shadow-sm bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100';
+                            button.className = 'module-toggle-btn min-w-[130px] inline-flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition shadow-sm bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100';
                         } else {
                             toggle.classList.remove('is-on', 'is-loading');
-                            button.className = 'module-toggle-btn min-w-[140px] inline-flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition shadow-sm bg-white theme-bg-card text-slate-500 border-slate-200 hover:bg-slate-50';
+                            button.className = 'module-toggle-btn min-w-[130px] inline-flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-widest transition shadow-sm bg-white theme-bg-card text-slate-500 border-slate-200 hover:bg-slate-50';
                         }
 
                         const counterElement = document.getElementById(`count-${moduleKey}`);

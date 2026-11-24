@@ -4,25 +4,24 @@ namespace App\Http\Controllers\Desa;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
     /**
-     * Halaman Hub Utama TARSIUS (Menampilkan 5 Card Layanan)
+     * Halaman Hub Utama TARSIUS
      */
     public function index()
     {
-        $desa = auth()->user()->desa; 
+        $desa = auth()->user()->desa;
         abort_if(!$desa, 404, 'Akun Anda belum terhubung dengan data desa mana pun.');
 
-        // 1. Ambil data tracking domain dari database
         $tracker = DB::table('domain_trackers')
             ->where('desa_id', $desa->id)
             ->first();
 
-        // 2. Lakukan live check SSL berdasarkan domain_name dari database
         $sslInfo = [
             'status' => 'error',
             'pesan' => 'Belum Terdata',
@@ -30,7 +29,10 @@ class DashboardController extends Controller
         ];
 
         if ($tracker && $tracker->domain_name) {
-            $sslInfo = $this->getRealSslDays($tracker->domain_name);
+            $cacheKey = 'ssl_info_' . md5($tracker->domain_name);
+            $sslInfo = Cache::remember($cacheKey, now()->addHours(6), function () use ($tracker) {
+                return $this->getRealSslDays($tracker->domain_name);
+            });
         }
 
         return view('desa.dashboard', compact('desa', 'tracker', 'sslInfo'));
@@ -53,12 +55,11 @@ class DashboardController extends Controller
                 ]
             ]);
 
-            // Koneksi via port 443 dengan timeout 3 detik
             $client = @stream_socket_client(
                 "ssl://" . $cleanDomain . ":443",
                 $errno,
                 $errstr,
-                3,
+                1.5,
                 STREAM_CLIENT_CONNECT,
                 $streamContext
             );
@@ -69,7 +70,8 @@ class DashboardController extends Controller
 
             $params = stream_context_get_params($client);
             $cert = openssl_x509_parse($params["options"]["ssl"]["peer_certificate"]);
-            
+            fclose($client);
+
             if (!$cert || !isset($cert['validTo_time_t'])) {
                 return ['status' => 'error', 'pesan' => 'SSL Invalid', 'hari' => 0];
             }
@@ -88,7 +90,7 @@ class DashboardController extends Controller
                 'hari' => $sisaHari
             ];
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'error', 'pesan' => 'Gagal Cek', 'hari' => 0];
         }
     }
@@ -124,7 +126,7 @@ class DashboardController extends Controller
         $desa = auth()->user()->desa;
         abort_if(!$desa, 404);
 
-        return view('desa.settings', compact('desa')); 
+        return view('desa.settings', compact('desa'));
     }
 
     /**
@@ -152,7 +154,7 @@ class DashboardController extends Controller
         if ($request->filled('header_color')) {
             $desa->header_color = $request->header_color;
         }
-        
+
         if ($request->filled('accent_color')) {
             $desa->accent_color = $request->accent_color;
         }
@@ -168,7 +170,7 @@ class DashboardController extends Controller
     public function statusLaporan(Request $request)
     {
         $desas = \App\Models\Desa::orderBy('kecamatan')->orderBy('nama_desa')->get();
-        
+
         $listTahun = \App\Models\Statistic::select('year')
                         ->distinct()
                         ->orderBy('year', 'desc')
